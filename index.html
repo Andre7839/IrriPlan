@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IrriPlan</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f0e8;--s:#fff;--s2:#eceadf;--s3:#e2dfd3;
+  --ink:#18180f;--k2:#4a4840;--k3:#90887c;
+  --gr:#1a5c38;--grl:#caf0da;--grm:#2d9854;
+  --bl:#174080;--bll:#d3e8ff;--blm:#2b68c8;
+  --or:#7a3a08;--orl:#fde8c4;--orm:#ca6c10;
+  --re:#7a1818;--rel:#fde0e0;--rem:#c42424;
+  --bd:rgba(24,24,15,.09);--bds:rgba(24,24,15,.17);
+  --r:10px;--m:'JetBrains Mono',monospace;--f:'Inter',sans-serif;
+  --sh:0 1px 8px rgba(24,24,15,.07)
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#111108;--s:#1a1a12;--s2:#22221a;--s3:#2c2c22;
+  --ink:#f2f0e8;--k2:#a8a498;--k3:#66645c;
+  --gr:#2d9854;--grl:#071a0e;--grm:#228040;
+  --bl:#2b68c8;--bll:#081828;--blm:#2058b0;
+  --or:#ca6c10;--orl:#281408;--orm:#a85808;
+  --re:#c42424;--rel:#280808;--rem:#a01818;
+  --bd:rgba(242,240,232,.08);--bds:rgba(242,240,232,.15)
+}}
+
+body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* ─ HEADER ─ */
+header{background:var(--s);border-bottom:1px solid var(--bd);padding:.65rem 1.4rem;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-ico{width:32px;height:32px;background:var(--gr);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-ico svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round}
+.logo-name{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.logo-sub{font-size:10px;color:var(--k3);font-family:var(--m);margin-top:1px}
+.hdr-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pill{font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--grl);color:var(--gr);border:1px solid var(--grm)}
+.api-pill{font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;
+  border:1px solid var(--bds);background:var(--s2);color:var(--k3);
+  display:flex;align-items:center;gap:5px;cursor:pointer;transition:all .15s}
+.api-pill:hover{border-color:var(--grm);color:var(--gr)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--k3);flex-shrink:0}
+.dot.ok{background:var(--grm)}.dot.err{background:var(--rem)}
+.dot.chk{background:var(--orm);animation:blink .9s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ─ UNIT TOGGLE ─ */
+.unit-toggle{display:flex;background:var(--s2);border:1px solid var(--bds);border-radius:20px;padding:2px;gap:2px}
+.unit-btn{padding:3px 12px;border-radius:16px;font-family:var(--m);font-size:10px;font-weight:700;
+  cursor:pointer;border:none;background:transparent;color:var(--k3);transition:all .15s}
+.unit-btn.active{background:var(--gr);color:#fff}
+
+/* ─ MAIN ─ */
+main{max-width:1020px;margin:0 auto;padding:1rem 1.2rem 4rem;overflow-x:hidden}
+
+/* ─ SECTION CARD ─ */
+.sc{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);
+  padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--sh)}
+.sc-title{font-family:var(--m);font-size:10px;font-weight:700;color:var(--k3);
+  text-transform:uppercase;letter-spacing:.7px;margin-bottom:.8rem}
+
+/* ─ GRID ─ */
+.g4{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:.75rem;align-items:end}
+.g3{display:grid;grid-template-columns:1.4fr 1.1fr 1fr;gap:.75rem;align-items:end}
+.g6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.75rem;align-items:end}
+@media(max-width:860px){.g6{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:720px){.g4{grid-template-columns:1fr 1fr 1fr}.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:460px){.g4,.g3,.g6{grid-template-columns:1fr 1fr}}
+
+/* ─ FIELD ─ */
+.fl{display:flex;flex-direction:column;gap:4px}
+.fl label{font-family:var(--m);font-size:10px;font-weight:700;color:var(--k3);text-transform:uppercase;letter-spacing:.4px}
+.fl input,.fl select{
+  padding:7px 10px;font-family:var(--m);font-size:13px;
+  background:var(--s2);border:1px solid var(--bds);border-radius:7px;
+  color:var(--ink);outline:none;transition:border-color .15s;
+  -webkit-appearance:none;appearance:none}
+.fl select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2390887c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
+.fl input:focus,.fl select:focus{border-color:var(--grm);box-shadow:0 0 0 2px rgba(45,152,84,.12)}
+
+/* ─ LOCATION SEARCH ─ */
+.loc-wrap{position:relative}
+.loc-row{display:flex;gap:6px;align-items:stretch}
+.loc-row input{flex:1}
+.loc-btn{padding:7px 13px;background:var(--s2);border:1px solid var(--bds);border-radius:7px;
+  cursor:pointer;color:var(--k3);font-size:12px;font-family:var(--m);
+  white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px}
+.loc-btn:hover{background:var(--s3);color:var(--ink);border-color:var(--grm)}
+.loc-btn.active{background:var(--grl);color:var(--gr);border-color:var(--grm)}
+.loc-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:var(--s);border:1px solid var(--bds);border-radius:8px;
+  max-height:280px;overflow-y:auto;z-index:999;box-shadow:0 8px 30px rgba(24,24,15,.14)}
+.loc-menu.open{display:block}
+.loc-item{padding:9px 13px;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .1s}
+.loc-item:last-child{border-bottom:none}
+.loc-item:hover{background:var(--s2)}
+.loc-name{font-family:var(--m);font-size:12px;font-weight:700;color:var(--ink)}
+.loc-detail{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:1px}
+.loc-coords{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:2px;font-style:italic}
+.loc-searching{padding:10px 13px;font-family:var(--m);font-size:11px;color:var(--k3);display:flex;align-items:center;gap:7px}
+.loc-spin{width:12px;height:12px;border:2px solid var(--bds);border-top-color:var(--grm);border-radius:50%;animation:rot .7s linear infinite;flex-shrink:0}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ─ COORDS BADGE ─ */
+.coords-badge{font-family:var(--m);font-size:10px;color:var(--k3);background:var(--s2);
+  border:1px solid var(--bd);border-radius:6px;padding:3px 8px;margin-top:4px;display:inline-block}
+.coords-badge span{color:var(--k2);font-weight:600}
+
+/* ─ Kc ─ */
+input[type=range]{width:100%;accent-color:var(--gr);margin:4px 0;cursor:pointer}
+
+/* ─ BTN ─ */
+.btn{padding:8px 18px;background:var(--gr);color:#fff;border:none;border-radius:7px;
+  font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;width:100%;justify-content:center;
+  transition:opacity .15s,transform .1s}
+.btn:hover{opacity:.88}.btn:active{transform:scale(.98)}.btn:disabled{opacity:.38;cursor:not-allowed;transform:none}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+  border-radius:50%;animation:rot .7s linear infinite;display:none;flex-shrink:0}
+
+/* ─ STATUS ─ */
+.sb{font-family:var(--m);font-size:12px;padding:9px 12px;border-radius:7px;margin-bottom:.9rem;display:none;line-height:1.5}
+.sb.err{background:var(--rel);color:var(--re);border:1px solid var(--rem);display:block}
+.sb.warn{background:var(--orl);color:var(--or);border:1px solid var(--orm);display:block}
+
+/* ─ PLACEHOLDER ─ */
+.ph{text-align:center;padding:3rem 1.5rem;color:var(--k3);border:2px dashed var(--bd);border-radius:var(--r)}
+.ph-i{font-size:36px;margin-bottom:8px;opacity:.2}
+.ph-t{font-size:14px;line-height:1.8}
+.ph-t strong{color:var(--k2)}
+#results{display:none}
+#irrSection{display:none}
+
+/* ─ SUMMARY CARDS ─ */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.9rem}
+@media(max-width:640px){.cards{grid-template-columns:repeat(2,1fr)}}
+.cv{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);padding:.8rem 1rem;box-shadow:var(--sh)}
+.cv.g{background:var(--grl);border-color:var(--grm)}.cv.b{background:var(--bll);border-color:var(--blm)}.cv.a{background:var(--orl);border-color:var(--orm)}
+.cv-l{font-family:var(--m);font-size:9px;color:var(--k3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.cv-v{font-family:var(--m);font-size:22px;font-weight:700;line-height:1}
+.cv.g .cv-v{color:var(--gr)}.cv.b .cv-v{color:var(--bl)}.cv.a .cv-v{color:var(--or)}
+.cv-v .su{font-size:11px;color:var(--k3);margin-left:2px;font-weight:400}
+.cv-s{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:3px;line-height:1.4}
+
+/* ─ CHART ─ */
+.chp{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);
+  padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--sh)}
+.ch-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.8rem;gap:6px;flex-wrap:wrap}
+.ch-h{font-size:13px;font-weight:700}
+.ch-n{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:1px}
+.leg{display:flex;gap:12px;flex-wrap:wrap}
+.leg-i{display:flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;color:var(--k3)}
+.leg-b{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.leg-l{width:20px;height:3px;border-radius:2px;flex-shrink:0}
+.ch-c{position:relative;height:220px}
+
+/* ─ TABLE ─ */
+.tp{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:.9rem;box-shadow:var(--sh)}
+.tp-h{padding:.75rem 1.1rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.tp-t{font-size:13px;font-weight:700}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;background:var(--s2);color:var(--k3);border:1px solid var(--bd)}
+.tag.g{background:var(--grl);color:var(--gr);border-color:var(--grm)}
+.tag.b{background:var(--bll);color:var(--bl);border-color:var(--blm)}
+.tag.a{background:var(--orl);color:var(--or);border-color:var(--orm)}
+table{width:100%;border-collapse:collapse}
+thead th{padding:7px 11px;font-family:var(--m);font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.4px;color:var(--k3);background:var(--s2);border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th.r,td.r{text-align:right}
+tbody tr{border-bottom:1px solid var(--bd);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--s2)}
+tbody tr.rp{background:rgba(202,240,218,.16)}
+tbody tr.rp:hover{background:var(--grl)}
+tbody tr.rf{background:rgba(211,232,255,.13)}
+tbody tr.rf:hover{background:var(--bll)}
+tbody tr.rt td:first-child{border-left:3px solid var(--orm)}
+tbody tr.rpk{font-weight:600}
+td{padding:8px 11px;font-size:13px;font-family:var(--m);color:var(--ink);vertical-align:middle}
+.dn{font-family:var(--f);font-size:13px;font-weight:600}
+.bw{display:flex;align-items:center;gap:5px;justify-content:flex-end}
+.bb{width:50px;height:5px;background:var(--s3);border-radius:3px;overflow:hidden;flex-shrink:0}
+.bf{height:100%;border-radius:3px}.bg{background:var(--grm)}.bbl{background:var(--blm)}.ba{background:var(--orm)}
+.ev{font-weight:700}.rp .ev{color:var(--gr)}.rf .ev{color:var(--bl)}.rpk .ev{color:var(--or)}
+.ptag{font-size:9px;padding:1px 5px;border-radius:6px;margin-left:3px;background:var(--orl);color:var(--or);border:1px solid var(--orm);font-family:var(--m)}
+tfoot tr td{padding:8px 11px;font-family:var(--m);font-size:12px;font-weight:700;background:var(--s2);border-top:2px solid var(--bds);color:var(--k2)}
+
+/* ─ METHOD NOTE ─ */
+.mn{font-family:var(--m);font-size:11px;color:var(--k3);background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;line-height:1.7;margin-bottom:.9rem;box-shadow:var(--sh)}
+.mn strong{color:var(--k2);font-weight:700}
+
+/* ─ IRR PANEL ─ */
+.irr-sc{background:var(--s);border:1.5px solid var(--blm);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--sh)}
+.irr-title{font-family:var(--m);font-size:10px;font-weight:700;color:var(--bl);text-transform:uppercase;letter-spacing:.7px;margin-bottom:.8rem;display:flex;align-items:center;gap:6px}
+
+/* ─ IRR CARDS ─ */
+.icc{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.9rem}
+@media(max-width:600px){.icc{grid-template-columns:1fr 1fr}}
+.ic{background:var(--bll);border:1px solid var(--blm);border-radius:var(--r);padding:.8rem 1rem;box-shadow:var(--sh)}
+.ic.hi{background:var(--orl);border-color:var(--orm)}
+.ic-l{font-family:var(--m);font-size:9px;color:var(--bl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.ic.hi .ic-l{color:var(--or)}
+.ic-v{font-family:var(--m);font-size:22px;font-weight:700;line-height:1;color:var(--bl)}
+.ic.hi .ic-v{color:var(--or)}
+.ic-v .su{font-size:11px;color:var(--k3);margin-left:2px;font-weight:400}
+.ic-s{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:3px;line-height:1.4}
+td.it{font-weight:700;color:var(--bl)}
+td.ih{font-weight:700;color:var(--or)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-ico">
+      <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/></svg>
+    </div>
+    <div>
+      <div class="logo-name">IrriPlan</div>
+      <div class="logo-sub">By UCD Advanced Irrigation Lab</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="pill" id="stPill">No location</div>
+    <div class="unit-toggle">
+      <button class="unit-btn" id="btnSI" onclick="setUnits('SI')">SI</button>
+      <button class="unit-btn active" id="btnUS" onclick="setUnits('US')">US</button>
+    </div>
+    <div class="api-pill" id="apiPill" onclick="checkAPIs()">
+      <div class="dot chk" id="apiDot"></div><span id="apiTxt">Checking…</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ── LOCATION + CROP + Kc ── -->
+<div class="sc">
+  <div class="g4" style="margin-bottom:.75rem">
+
+    <!-- LOCATION SEARCH -->
+    <div class="fl">
+      <label>Location (any city, region, or coordinates)</label>
+      <div class="loc-wrap" id="locWrap">
+        <div class="loc-row">
+          <input type="text" id="locIn"
+            placeholder="e.g. Fresno CA · Seville Spain · 36.7,-119.7"
+            autocomplete="off"
+            oninput="onLocInput()"
+            onkeydown="locKey(event)">
+          <button class="loc-btn" id="gpsBtn" onclick="useGPS()" title="Use my GPS location">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 4"/></svg>
+            GPS
+          </button>
+        </div>
+        <div class="loc-menu" id="locMenu"></div>
+        <div id="coordsBadge" style="display:none;align-items:center;gap:6px;margin-top:4px">
+          <div class="coords-badge"><span id="coordsTxt"></span></div>
+          <button id="copyBtn" onclick="copyCoords()" title="Copy coordinates to clipboard"
+            style="padding:3px 9px;font-family:var(--m);font-size:10px;font-weight:700;
+              background:var(--s2);border:1px solid var(--bds);border-radius:6px;
+              cursor:pointer;color:var(--k3);transition:all .15s;display:flex;align-items:center;gap:4px">
+            <svg id="copyIcon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copyLbl">Copy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fl">
+      <label>Crop</label>
+      <select id="cropSel" onchange="onCrop()"></select>
+    </div>
+    <div class="fl">
+      <label>Growth Stage</label>
+      <select id="stageSel" onchange="onStage()"></select>
+    </div>
+    <div class="fl">
+      <button class="btn" id="runBtn" onclick="runAll()">
+        <span class="spin" id="spin"></span><span id="runLbl">Load Data</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Kc row -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.75rem">
+    <div class="fl">
+      <label>Kc override</label>
+      <input type="number" id="kcIn" min="0.1" max="1.5" step="0.01" value="1.00" oninput="kcNum()">
+    </div>
+    <div class="fl">
+      <label>Active Kc &nbsp;<span id="kcDisp" style="font-family:var(--m);font-size:15px;font-weight:700;color:var(--gr)">1.00</span></label>
+      <input type="range" id="kcSlider" min="0.10" max="1.50" step="0.01" value="1.00" oninput="kcSlide()" style="height:4px;margin:6px 0 0 0">
+    </div>
+  </div>
+</div>
+
+<div class="sb" id="sb"></div>
+
+<!-- PLACEHOLDER -->
+<div class="ph" id="ph">
+  <div class="ph-i">🌍</div>
+  <div class="ph-t">
+    Type any city, region, or coordinates · choose crop &amp; stage · click <strong>Load Data</strong><br>
+    Past 7d: <strong>ERA5 reanalysis</strong> · Next 7d: <strong>Open-Meteo forecast</strong> · ETo: <strong>FAO-56 PM</strong>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results">
+  <div class="mn" id="mn"></div>
+  <div class="cards" id="sumCards"></div>
+
+  <div class="chp">
+    <div class="ch-top">
+      <div><div class="ch-h">Reference ET₀ (mm/day)</div><div class="ch-n" id="etoNote"></div></div>
+      <div class="leg">
+        <div class="leg-i"><div class="leg-b" style="background:var(--grm)"></div>ERA5 past</div>
+        <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>Forecast</div>
+      </div>
+    </div>
+    <div class="ch-c"><canvas id="etoC"></canvas></div>
+  </div>
+
+  <div class="chp">
+    <div class="ch-top">
+      <div><div class="ch-h" id="etcH">Crop water demand ETc</div><div class="ch-n">ETc = ETo × Kc · orange = cumulative from today</div></div>
+      <div class="leg">
+        <div class="leg-i"><div class="leg-b" style="background:var(--grm)"></div>ETc past</div>
+        <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>ETc forecast</div>
+        <div class="leg-i"><div class="leg-l" style="background:var(--orm)"></div>Cumulative</div>
+      </div>
+    </div>
+    <div class="ch-c"><canvas id="etcC"></canvas></div>
+  </div>
+
+  <div class="tp">
+    <table>
+      <thead><tr id="tblHead"></tr></thead>
+      <tbody id="tb"></tbody>
+      <tfoot><tr id="tf"></tr></tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- ── DRIP SYSTEM ── -->
+<div class="irr-sc" id="dripPanel" style="display:none">
+  <div class="irr-title">💧 Drip System</div>
+  <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.75rem;align-items:end">
+    <div class="fl">
+      <label>Area <span id="lArea"></span></label>
+      <input type="number" id="iArea" value="1" min="0.01" step="0.1" oninput="liveIrr()">
+    </div>
+    <div class="fl">
+      <label>Discharge <span id="lQ"></span></label>
+      <input type="number" id="iQ" value="0.16" min="0.01" step="0.01" oninput="liveIrr()">
+    </div>
+    <div class="fl">
+      <label>Emitter sp. <span id="lSe"></span></label>
+      <input type="number" id="iSe" value="12" min="1" step="1" oninput="liveIrr()">
+    </div>
+    <div class="fl">
+      <label>Row sp. <span id="lSr"></span></label>
+      <input type="number" id="iSr" value="5" min="0.5" step="0.5" oninput="liveIrr()">
+    </div>
+    <div class="fl">
+      <label>Efficiency %</label>
+      <input type="number" id="iEa" value="90" min="50" max="100" step="1" oninput="liveIrr()">
+    </div>
+    <div class="fl">
+      <label>Days / week</label>
+      <input type="number" id="iDays" value="7" min="1" max="7" step="1" oninput="liveIrr()">
+    </div>
+    <div class="fl">
+      <label>Start time</label>
+      <input type="time" id="iStart" value="06:00" oninput="liveIrr()">
+    </div>
+  </div>
+</div>
+
+<!-- IRRIGATION SECTION -->
+<div id="irrSection">
+  <div style="display:grid;grid-template-columns:auto 1fr auto;gap:.9rem;margin-bottom:.9rem;align-items:stretch">
+    <div style="background:var(--or);border-radius:var(--r);padding:1.1rem 1.4rem;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:140px;box-shadow:var(--sh)">
+      <div style="font-family:var(--m);font-size:10px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;white-space:nowrap">Per event</div>
+      <div id="eventTimeDisplay" style="font-family:var(--m);font-size:44px;font-weight:700;color:#fff;line-height:1">—</div>
+      <div id="eventTimeLabel" style="font-family:var(--m);font-size:12px;color:rgba(255,255,255,.65);margin-top:4px">hr / event</div>
+    </div>
+    <div class="icc" id="irrCards" style="margin-bottom:0"></div>
+    <div style="display:flex;align-items:center">
+      <button onclick="exportExcel()" style="
+        padding:10px 18px;background:var(--gr);color:#fff;border:none;border-radius:var(--r);
+        font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;
+        display:flex;align-items:center;gap:7px;white-space:nowrap;
+        box-shadow:var(--sh);transition:opacity .15s;height:100%;
+      " onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+        Export Excel
+      </button>
+    </div>
+  </div>
+
+  <div class="chp">
+    <div class="ch-top">
+      <div><div class="ch-h" style="color:var(--bl)">💧 7-Day Irrigation Schedule</div></div>
+      <div class="leg">
+        <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div><span id="legVol">Volume</span></div>
+        <div class="leg-i"><div class="leg-l" style="background:var(--orm)"></div>Time (hr)</div>
+      </div>
+    </div>
+    <div class="ch-c"><canvas id="irrC"></canvas></div>
+  </div>
+
+  <div class="tp">
+    <table>
+      <thead><tr>
+        <th>Date</th>
+        <th class="r">ETc</th>
+        <th class="r">Gross</th>
+        <th class="r" id="thVol">Volume</th>
+        <th class="r">Hr/day</th>
+        <th class="r">Hr/event</th>
+        <th class="r">Start</th>
+        <th class="r">End</th>
+      </tr></thead>
+      <tbody id="irrTb"></tbody>
+      <tfoot><tr id="irrTf"></tr></tfoot>
+    </table>
+  </div>
+</div>
+
+</main>
+
+<script>
+/* ══════ CROPS ══════ */
+const CROPS=[
+  {name:'Processing Tomato',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.90},{l:'Mid-season',kc:1.15},{l:'Late',kc:.80}]},
+  {name:'Fresh Tomato',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.90},{l:'Mid-season',kc:1.15},{l:'Late',kc:.70}]},
+  {name:'Alfalfa',stages:[{l:'Post-cut',kc:.40},{l:'Vegetative',kc:.85},{l:'Pre-bloom',kc:1.05},{l:'Dormancy',kc:.90}]},
+  {name:'Maize / Corn',stages:[{l:'Emergence',kc:.30},{l:'Development',kc:.70},{l:'Tasseling',kc:1.20},{l:'Dough',kc:.60}]},
+  {name:'Cotton',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.20},{l:'Late',kc:.70}]},
+  {name:'Wheat (winter)',stages:[{l:'Initial',kc:.30},{l:'Development',kc:.70},{l:'Heading',kc:1.15},{l:'Ripening',kc:.40}]},
+  {name:'Sunflower',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.10},{l:'Late',kc:.45}]},
+  {name:'Onion / Garlic',stages:[{l:'Initial',kc:.70},{l:'Development',kc:.90},{l:'Mid-season',kc:1.05},{l:'Bulbing',kc:.75}]},
+  {name:'Lettuce',stages:[{l:'Initial',kc:.70},{l:'Development',kc:.90},{l:'Mid-season',kc:1.00},{l:'Late',kc:.95}]},
+  {name:'Strawberry',stages:[{l:'Establishment',kc:.40},{l:'Vegetative',kc:.70},{l:'Fruiting',kc:.85},{l:'Late',kc:.75}]},
+  {name:'Almonds',stages:[{l:'Leaf-out',kc:.40},{l:'Bloom / nut set',kc:.90},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}]},
+  {name:'Pistachios',stages:[{l:'Leaf-out',kc:.35},{l:'Shoot growth',kc:.85},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}]},
+  {name:'Walnuts',stages:[{l:'Leaf-out',kc:.50},{l:'Canopy growth',kc:.85},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}]},
+  {name:'Wine Grapes',stages:[{l:'Budbreak',kc:.30},{l:'Canopy dev.',kc:.60},{l:'Véraison',kc:.70},{l:'Dormancy',kc:.45}]},
+  {name:'Table Grapes',stages:[{l:'Budbreak',kc:.35},{l:'Canopy dev.',kc:.65},{l:'Sizing',kc:.85},{l:'Harvest',kc:.60}]},
+  {name:'Citrus (mature)',stages:[{l:'Winter',kc:.75},{l:'Spring',kc:.80},{l:'Summer',kc:.85},{l:'Fall',kc:.75}]},
+  {name:'Rice',stages:[{l:'Transplanting',kc:1.05},{l:'Tillering',kc:1.10},{l:'Heading',kc:1.20},{l:'Ripening',kc:1.00}]},
+  {name:'Dry Bean',stages:[{l:'Initial',kc:.40},{l:'Development',kc:.75},{l:'Mid-season',kc:1.15},{l:'Pod fill',kc:.55}]},
+  {name:'Safflower',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.10},{l:'Late',kc:.50}]},
+  {name:'Turf / Grass',stages:[{l:'Full cover',kc:.85},{l:'Dormant',kc:.60},{l:'Summer',kc:1.00},{l:'Cool season',kc:.80}]},
+  {name:'Olive',stages:[{l:'Flowering',kc:.65},{l:'Fruit set',kc:.70},{l:'Full canopy',kc:.70},{l:'Harvest',kc:.60}]},
+  {name:'Sugarcane',stages:[{l:'Emergence',kc:.40},{l:'Tillering',kc:.80},{l:'Grand growth',kc:1.25},{l:'Ripening',kc:.75}]},
+  {name:'Soybean',stages:[{l:'Initial',kc:.40},{l:'Development',kc:.80},{l:'Mid-season',kc:1.15},{l:'Late',kc:.50}]},
+  {name:'Potato',stages:[{l:'Initial',kc:.50},{l:'Development',kc:.75},{l:'Mid-season',kc:1.15},{l:'Late',kc:.75}]},
+  {name:'Pepper',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.85},{l:'Mid-season',kc:1.05},{l:'Late',kc:.90}]},
+  {name:'Sugarbeet',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.20},{l:'Late',kc:.70}]},
+];
+
+/* ══════ UNIT CONSTANTS ══════ */
+const AC2HA=0.404686, IN2M=0.0254, GPH2LH=3.78541, MM2IN=0.0393701;
+let unitSys='US';
+
+function setUnits(sys){
+  unitSys=sys;
+  document.getElementById('btnSI').classList.toggle('active',sys==='SI');
+  document.getElementById('btnUS').classList.toggle('active',sys==='US');
+  updateUnitLabels();
+  applyUnitDefaults();
+  liveIrr();
+}
+function updateUnitLabels(){
+  const si=unitSys==='SI';
+  document.getElementById('lArea').textContent=si?'(ha)':'(ac)';
+  document.getElementById('lQ').textContent=si?'(L/hr)':'(gph)';
+  document.getElementById('lSe').textContent=si?'(m)':'(in)';
+  document.getElementById('lSr').textContent=si?'(m)':'(ft)';
+}
+function applyUnitDefaults(){
+  if(unitSys==='US'){
+    document.getElementById('iArea').value='1';
+    document.getElementById('iQ').value='0.16';
+    document.getElementById('iSe').value='12';
+    document.getElementById('iSr').value='5';
+  } else {
+    document.getElementById('iArea').value=(1*AC2HA).toFixed(3);
+    document.getElementById('iQ').value=(0.16*GPH2LH).toFixed(2);
+    document.getElementById('iSe').value=(12*IN2M).toFixed(2);
+    document.getElementById('iSr').value=(5*0.3048).toFixed(2);
+  }
+}
+function getSIValues(){
+  const ra=parseFloat(document.getElementById('iArea').value)||0;
+  const rq=parseFloat(document.getElementById('iQ').value)||0;
+  const rse=parseFloat(document.getElementById('iSe').value)||0;
+  const rsr=parseFloat(document.getElementById('iSr').value)||0;
+  const ea=(parseFloat(document.getElementById('iEa').value)||90)/100;
+  if(unitSys==='US')return{area:ra*AC2HA,q:rq*GPH2LH,se:rse*IN2M,sr:rsr*0.3048,ea};
+  return{area:ra,q:rq,se:rse,sr:rsr,ea};
+}
+
+/* ══════ LOCATION STATE ══════ */
+let selLoc=null; // {name, lat, lon, country, admin1}
+let locSearchTimer=null, locMenuOpen=false;
+
+/* ══════ GEOCODING via Open-Meteo ══════ */
+async function geocode(q){
+  const url=`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=en&format=json`;
+  const r=await fetch(url);
+  if(!r.ok)return[];
+  const j=await r.json();
+  return(j.results||[]).map(x=>({
+    name:x.name,
+    lat:x.latitude,
+    lon:x.longitude,
+    country:x.country||'',
+    admin1:x.admin1||'',
+    timezone:x.timezone||'UTC',
+    display:`${x.name}${x.admin1?', '+x.admin1:''}${x.country?', '+x.country:''}`
+  }));
+}
+
+/* Parse raw coordinate string: "36.7, -119.7" or "36.7 -119.7" or "36.7N 119.7W" */
+function parseCoords(s){
+  // Handle cardinal directions
+  s=s.replace(/([0-9.]+)\s*N/gi,'$1').replace(/([0-9.]+)\s*S/gi,'-$1')
+      .replace(/([0-9.]+)\s*E/gi,'$1').replace(/([0-9.]+)\s*W/gi,'-$1');
+  const m=s.match(/(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)/);
+  if(!m)return null;
+  const lat=parseFloat(m[1]),lon=parseFloat(m[2]);
+  if(isNaN(lat)||isNaN(lon))return null;
+  if(lat<-90||lat>90||lon<-180||lon>180)return null;
+  return{lat,lon};
+}
+
+function onLocInput(){
+  const v=document.getElementById('locIn').value.trim();
+  clearTimeout(locSearchTimer);
+  if(!v){hideLocMenu();return;}
+  // Check if looks like coordinates
+  const coords=parseCoords(v);
+  if(coords){
+    showLocMenu([{
+      name:`${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`,
+      lat:coords.lat,lon:coords.lon,
+      country:'Custom coordinates',admin1:'',timezone:'auto',
+      display:`📍 ${coords.lat.toFixed(4)}°, ${coords.lon.toFixed(4)}°`
+    }]);
+    return;
+  }
+  if(v.length<2){hideLocMenu();return;}
+  showLocMenu([{searching:true}]);
+  locSearchTimer=setTimeout(async()=>{
+    try{
+      const results=await geocode(v);
+      if(results.length)showLocMenu(results);
+      else showLocMenu([{empty:true}]);
+    }catch(e){showLocMenu([{empty:true}]);}
+  },350);
+}
+
+function showLocMenu(items){
+  const m=document.getElementById('locMenu');
+  if(items.length===1&&items[0].searching){
+    m.innerHTML=`<div class="loc-searching"><div class="loc-spin"></div>Searching…</div>`;
+  } else if(items.length===1&&items[0].empty){
+    m.innerHTML=`<div class="loc-searching">No results — try coordinates (lat, lon)</div>`;
+  } else {
+    m.innerHTML=items.map((x,i)=>`
+      <div class="loc-item" onmousedown="pickLoc(${i})">
+        <div class="loc-name">${x.name}</div>
+        <div class="loc-detail">${[x.admin1,x.country].filter(Boolean).join(', ')||'Custom'}</div>
+        <div class="loc-coords">${x.lat.toFixed(4)}°, ${x.lon.toFixed(4)}°</div>
+      </div>`).join('');
+    // Store items for pick
+    m._items=items;
+  }
+  m.classList.add('open');
+  locMenuOpen=true;
+}
+
+function hideLocMenu(){
+  document.getElementById('locMenu').classList.remove('open');
+  locMenuOpen=false;
+}
+
+function pickLoc(i){
+  const m=document.getElementById('locMenu');
+  const item=m._items?m._items[i]:null;
+  if(!item)return;
+  selLoc=item;
+  document.getElementById('locIn').value=item.display||item.name;
+  document.getElementById('stPill').textContent=item.name;
+  document.getElementById('coordsBadge').style.display='flex';
+  document.getElementById('coordsTxt').textContent=`${item.lat.toFixed(4)}°N  ${item.lon.toFixed(4)}°E`;
+  resetCopyBtn();
+  hideLocMenu();
+}
+
+function locKey(e){
+  const items=document.getElementById('locMenu')._items||[];
+  if(e.key==='Escape'){hideLocMenu();return;}
+  if(e.key==='Enter'&&items.length){e.preventDefault();pickLoc(0);}
+}
+
+/* ── GPS ── */
+const GPS_SVG='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 4"/></svg>';
+
+function useGPS(){
+  const btn=document.getElementById('gpsBtn');
+  if(!navigator.geolocation){
+    alert('Geolocation not available in this browser');return;
+  }
+  // Show spinner in button
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" style="animation:rot .7s linear infinite"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="28 56" stroke-linecap="round"/></svg> Locating…';
+  btn.disabled=true;
+
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const lat=+pos.coords.latitude.toFixed(6);
+    const lon=+pos.coords.longitude.toFixed(6);
+
+    // Fill coords immediately so user sees something
+    document.getElementById('locIn').value=`${lat}, ${lon}`;
+    document.getElementById('coordsBadge').style.display='flex';
+    document.getElementById('coordsTxt').textContent=`${lat}°  ${lon}°`;
+    resetCopyBtn();
+
+    // Set a basic selLoc right away so Load Data works even if reverse-geocode fails
+    selLoc={name:`${lat}, ${lon}`,lat,lon,country:'GPS location',admin1:'',timezone:'auto',display:`${lat}, ${lon}`};
+    document.getElementById('stPill').textContent='GPS location';
+
+    // Reverse-geocode: find nearest named place via Open-Meteo geocoding
+    // Use a bounding-box search by querying nearby place names — actually
+    // Open-Meteo doesn't have reverse geocoding, so we use the BigDataCloud
+    // free reverse geocoding API (no key required, CORS-enabled).
+    try{
+      const r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+      if(r.ok){
+        const j=await r.json();
+        const city=j.city||j.locality||j.principalSubdivision||'';
+        const admin=j.principalSubdivision||'';
+        const country=j.countryName||'';
+        const tz=j.localityInfo?.informative?.find(x=>x.description==='time zone')?.name||'auto';
+        if(city){
+          const displayName=`${city}${admin&&admin!==city?', '+admin:''}${country?', '+country:''}`;
+          selLoc={name:city,lat,lon,country,admin1:admin,timezone:tz||'auto',display:displayName};
+          // Show place name + coords in the input box
+          document.getElementById('locIn').value=`${displayName}  (${lat}, ${lon})`;
+          document.getElementById('stPill').textContent=city;
+          document.getElementById('coordsTxt').textContent=`${lat}°  ${lon}°`;
+        }
+      }
+    }catch(e){/* reverse geocode failed — coords already shown, that's fine */}
+
+    btn.innerHTML=GPS_SVG+' GPS';
+    btn.disabled=false;
+    btn.classList.add('active');
+
+  },err=>{
+    const msgs={1:'Permission denied — allow location access and try again.',2:'Position unavailable.',3:'Location request timed out.'};
+    alert(msgs[err.code]||'GPS error');
+    btn.innerHTML=GPS_SVG+' GPS';
+    btn.disabled=false;
+  },{timeout:10000,maximumAge:60000});
+}
+
+// Close menu on outside click
+document.addEventListener('mousedown',e=>{
+  if(!document.getElementById('locWrap').contains(e.target))hideLocMenu();
+});
+
+/* ══════ STATE ══════ */
+let kc=1.00, chartEto=null, chartEtc=null, chartIrr=null;
+let cachedFct=[], cachedCrop='', cachedStage='';
+let cachedAllRows=[], cachedKc=1.00;
+
+/* ══════ FAO-56 PENMAN-MONTEITH ══════ */
+function pm(Tmax,Tmin,RH,Rs,u10,lat_deg,doy){
+  const T=(Tmax+Tmin)/2, lat=lat_deg*Math.PI/180;
+  const u2=u10*(4.87/Math.log(67.8*10-5.42));
+  const D=4098*0.6108*Math.exp(17.27*T/(T+237.3))/Math.pow(T+237.3,2);
+  const g=0.000665*101.3;
+  const es=(0.6108*Math.exp(17.27*Tmax/(Tmax+237.3))+0.6108*Math.exp(17.27*Tmin/(Tmin+237.3)))/2;
+  const ea=RH/100*es;
+  const dr=1+0.033*Math.cos(2*Math.PI*doy/365);
+  const dec=0.409*Math.sin(2*Math.PI*doy/365-1.39);
+  const ws=Math.acos(Math.max(-1,Math.min(1,-Math.tan(lat)*Math.tan(dec))));
+  const Ra=(24*60/Math.PI)*0.082*dr*(ws*Math.sin(lat)*Math.sin(dec)+Math.cos(lat)*Math.cos(dec)*Math.sin(ws));
+  const Rso=0.75*Ra, Rns=(1-0.23)*Rs;
+  const sig=4.903e-9;
+  const Rnl=sig*((Math.pow(Tmax+273.16,4)+Math.pow(Tmin+273.16,4))/2)*
+    (0.34-0.14*Math.sqrt(Math.max(0,ea)))*(1.35*Math.min(1,Rs/Math.max(Rso,.001))-.35);
+  const Rn=Math.max(0,Rns-Rnl);
+  const num=0.408*D*Rn+g*(900/(T+273))*u2*(es-ea);
+  const den=D+g*(1+0.34*u2);
+  return Math.max(0,num/den);
+}
+
+/* ══════ DATE UTILS ══════ */
+function iso(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function doy(ds){const d=new Date(ds+'T12:00:00');return Math.ceil((d-new Date(d.getFullYear(),0,0))/86400e3)}
+function ld(ds){return new Date(ds+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}
+function sd(ds){return new Date(ds+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+function wd(ds){return new Date(ds+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'})}
+function todayISO(){return iso(new Date())}
+
+/* ══════ UI ══════ */
+function showSb(msg,cls){const b=document.getElementById('sb');b.innerHTML=msg;b.className='sb '+cls}
+function hideSb(){document.getElementById('sb').className='sb'}
+function setLoading(on){
+  document.getElementById('spin').style.display=on?'block':'none';
+  document.getElementById('runLbl').textContent=on?'Loading…':'Load Data';
+  document.getElementById('runBtn').disabled=on;
+}
+
+/* ══════ CROPS ══════ */
+function buildCrops(){
+  const sel=document.getElementById('cropSel');
+  CROPS.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.name;sel.appendChild(o)});
+  buildStages(0);
+}
+function buildStages(ci){
+  const sel=document.getElementById('stageSel');sel.innerHTML='';
+  CROPS[ci].stages.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.l;sel.appendChild(o)});
+  applyKc(ci,0);
+}
+function onCrop(){buildStages(+document.getElementById('cropSel').value)}
+function onStage(){applyKc(+document.getElementById('cropSel').value,+document.getElementById('stageSel').value)}
+function applyKc(ci,si){kc=CROPS[ci].stages[si].kc;syncKc();}
+function kcNum(){const v=parseFloat(document.getElementById('kcIn').value);if(!isNaN(v)&&v>0){kc=v;syncKc('n')}}
+function kcSlide(){kc=parseFloat(document.getElementById('kcSlider').value);syncKc('s')}
+function syncKc(src){
+  if(src!=='n')document.getElementById('kcIn').value=kc.toFixed(2);
+  if(src!=='s')document.getElementById('kcSlider').value=kc;
+  document.getElementById('kcDisp').textContent=kc.toFixed(2);
+}
+
+/* ══════ API CHECK ══════ */
+async function checkAPIs(){
+  const dot=document.getElementById('apiDot'), txt=document.getElementById('apiTxt');
+  dot.className='dot chk'; txt.textContent='Checking…';
+  let geo=false,arch=false,fct=false;
+  try{const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name=Davis&count=1');geo=r.ok&&(await r.json()).results!=null}catch(e){}
+  try{const y=iso(new Date(Date.now()-2*864e5));const r=await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=38.53&longitude=-121.77&start_date=${y}&end_date=${y}&daily=et0_fao_evapotranspiration&timezone=America%2FLos_Angeles`);arch=r.ok&&(await r.json()).daily!=null}catch(e){}
+  try{const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=38.53&longitude=-121.77&daily=temperature_2m_max&forecast_days=1&timezone=America%2FLos_Angeles');fct=r.ok&&(await r.json()).daily!=null}catch(e){}
+  const ok=geo&&(arch||fct);
+  dot.className=ok?'dot ok':'dot err';
+  txt.textContent=[geo?'Geocoding ✓':'Geocoding ✗',arch?'ERA5 ✓':'ERA5 ✗',fct?'Forecast ✓':'Forecast ✗'].join('  ');
+}
+
+/* ══════ PARSE OPEN-METEO ══════ */
+function parseOM(d,src,lat){
+  return d.time.map((date,i)=>{
+    const Tmax=d.temperature_2m_max[i]??30, Tmin=d.temperature_2m_min[i]??15;
+    const RH=((d.relative_humidity_2m_max[i]??65)+(d.relative_humidity_2m_min[i]??35))/2;
+    const Rs=d.shortwave_radiation_sum[i]??20, u10=d.wind_speed_10m_max[i]??3;
+    const omEt=d.et0_fao_evapotranspiration?.[i];
+    const eto=(omEt!=null&&!isNaN(omEt))?+omEt.toFixed(2):+pm(Tmax,Tmin,RH,Rs,u10,lat,doy(date)).toFixed(2);
+    const rain=d.precipitation_sum?.[i]??null;
+    return{date,src,eto,tmax:+Tmax.toFixed(1),tmin:+Tmin.toFixed(1),rh:+RH.toFixed(0),
+      u2:+(u10*(4.87/Math.log(67.8*10-5.42))).toFixed(2),rs:+Rs.toFixed(1),rain:rain!=null?+rain.toFixed(1):null};
+  });
+}
+
+/* ══════ TIMEZONE ══════
+   Open-Meteo accepts a timezone string or "auto" for server-side detection.
+   We use "auto" so any global location gets local midnight-to-midnight days.
+══════════════════════════ */
+function tzParam(loc){
+  // Use "auto" for Open-Meteo — it resolves from lat/lon
+  return 'auto';
+}
+
+/* ══════ FETCH ERA5 PAST 7D ══════ */
+async function fetchPast(lat,lon,tz){
+  const s=iso(new Date(Date.now()-8*864e5)), e=iso(new Date(Date.now()-864e5));
+  const url=`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${s}&end_date=${e}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${encodeURIComponent(tz)}`;
+  const r=await fetch(url); if(!r.ok)throw new Error('ERA5 '+r.status);
+  const j=await r.json(); if(!j.daily?.time)throw new Error('ERA5 no data');
+  return parseOM(j.daily,'past',lat).slice(-7);
+}
+
+/* ══════ FETCH FORECAST 7D ══════ */
+async function fetchFct(lat,lon,tz){
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${encodeURIComponent(tz)}&forecast_days=7`;
+  const r=await fetch(url); if(!r.ok)throw new Error('Forecast '+r.status);
+  const j=await r.json(); if(!j.daily?.time)throw new Error('Forecast no data');
+  return parseOM(j.daily,'fct',lat);
+}
+
+/* ══════ CLAUDE FALLBACK ══════ */
+async function claudeFallback(lat,lon,mode){
+  const today=new Date(), dl=[];
+  if(mode==='past'){for(let i=7;i>=1;i--){const d=new Date(today);d.setDate(today.getDate()-i);dl.push(iso(d))}}
+  else{for(let i=0;i<7;i++){const d=new Date(today);d.setDate(today.getDate()+i);dl.push(iso(d))}}
+  const mo=today.getMonth()+1;
+  const isNH=lat>0;
+  const isTrop=Math.abs(lat)<23.5;
+  let hint;
+  if(isTrop)hint='Tropical: tmax 28-35,tmin 20-26,rh 65-85,rs 18-26,u2 1-3';
+  else if(isNH)hint=mo>=5&&mo<=9?'NH Summer: tmax 25-38,tmin 12-20,rh 25-60,rs 22-32,u2 1.5-3.5':mo>=10||mo<=2?'NH Winter: tmax 5-15,tmin -2-6,rh 55-80,rs 6-14,u2 1-3':'NH Spring/Fall: tmax 15-25,tmin 6-14,rh 40-65,rs 15-24,u2 1.5-3';
+  else hint=mo>=11||mo<=3?'SH Summer: tmax 25-35,tmin 14-20,rh 35-65,rs 22-30,u2 1.5-3':'SH Winter: tmax 8-16,tmin 2-8,rh 55-80,rs 8-15,u2 1-2.5';
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:`Realistic daily weather for lat=${lat.toFixed(2)},lon=${lon.toFixed(2)}. Dates: ${dl.join(',')}. ${hint}. Reply ONLY JSON array: [{"date":"YYYY-MM-DD","tmax":n,"tmin":n,"rh":n,"rs":n,"u2":n}]`}]})});
+  if(!resp.ok)throw new Error('Claude '+resp.status);
+  const j=await resp.json(); const raw=j.content?.[0]?.text??'';
+  const days=JSON.parse(raw.replace(/```json|```/g,'').trim());
+  return days.map(w=>({date:w.date,src:mode,eto:+pm(w.tmax,w.tmin,w.rh,w.rs,w.u2,lat,doy(w.date)).toFixed(2),tmax:w.tmax,tmin:w.tmin,rh:w.rh,u2:w.u2,rs:w.rs,fallback:true}));
+}
+
+/* ══════ MAIN RUN ══════ */
+async function runAll(){
+  // Accept manual coordinate input even without picking from dropdown
+  if(!selLoc){
+    const raw=document.getElementById('locIn').value.trim();
+    const coords=parseCoords(raw);
+    if(coords){
+      selLoc={name:`${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`,
+               lat:coords.lat,lon:coords.lon,country:'Custom coordinates',
+               admin1:'',timezone:'auto',
+               display:`📍 ${coords.lat.toFixed(4)}°, ${coords.lon.toFixed(4)}°`};
+    } else {
+      showSb('⚠ Select a location — type a city name or coordinates (lat, lon)','err');return;
+    }
+  }
+  const ci=+document.getElementById('cropSel').value, si=+document.getElementById('stageSel').value;
+  const cn=CROPS[ci].name, sn=CROPS[ci].stages[si].l;
+  setLoading(true); hideSb();
+  let pRows=[],fRows=[]; const warns=[];
+  const tz=tzParam(selLoc);
+  const [pr,fr]=await Promise.allSettled([fetchPast(selLoc.lat,selLoc.lon,tz),fetchFct(selLoc.lat,selLoc.lon,tz)]);
+  if(pr.status==='fulfilled')pRows=pr.value;
+  else{try{pRows=await claudeFallback(selLoc.lat,selLoc.lon,'past');warns.push('Past: AI estimate')}catch(e){warns.push('Past data unavailable')}}
+  if(fr.status==='fulfilled')fRows=fr.value;
+  else{try{fRows=await claudeFallback(selLoc.lat,selLoc.lon,'fct');warns.push('Forecast: AI estimate')}catch(e){warns.push('Forecast unavailable')}}
+  setLoading(false);
+  if(!pRows.length&&!fRows.length){showSb('⚠ All data sources failed — check network connection','err');return}
+  if(warns.length)showSb('ℹ '+warns.join(' · '),'warn');
+  const today=todayISO();
+  cachedFct=fRows.map(r=>({...r,etc:+(r.eto*kc).toFixed(2)}));
+  cachedCrop=cn; cachedStage=sn;
+  cachedAllRows=[...pRows,...fRows].map(r=>({...r,etc:+(r.eto*kc).toFixed(2),isToday:r.date===today}));
+  cachedKc=kc;
+  render(cachedAllRows,kc,cn,sn,pRows.length,fRows.length);
+}
+
+/* ══════ RENDER ══════ */
+function render(rows,kcv,cn,sn,nP,nF){
+  document.getElementById('ph').style.display='none';
+  document.getElementById('results').style.display='block';
+  document.getElementById('dripPanel').style.display='block';
+  const pR=rows.filter(r=>r.src==='past'), fR=rows.filter(r=>r.src==='fct');
+  const etoSum=rows.reduce((s,r)=>s+r.eto,0);
+  const etcSum=rows.reduce((s,r)=>s+r.etc,0);
+  const pEto=pR.reduce((s,r)=>s+r.eto,0);
+  const fEtc=fR.reduce((s,r)=>s+r.etc,0);
+  const pk=rows.reduce((a,b)=>a.etc>b.etc?a:b,rows[0]);
+  const si=unitSys==='SI';
+  const pFall=pR.some(r=>r.fallback), fFall=fR.some(r=>r.fallback);
+  document.getElementById('mn').innerHTML=
+    `<strong>${selLoc.name}</strong>${selLoc.admin1?', '+selLoc.admin1:''}${selLoc.country?', '+selLoc.country:''} &nbsp;·&nbsp; ${selLoc.lat.toFixed(4)}°N ${selLoc.lon.toFixed(4)}°E &nbsp;·&nbsp;`+
+    ` Past: ${pFall?'Claude AI':'ERA5 reanalysis'} &nbsp;·&nbsp; Forecast: ${fFall?'Claude AI':'Open-Meteo'}`;
+  const uEto=si?'mm':'in';
+  document.getElementById('sumCards').innerHTML=`
+    <div class="cv"><div class="cv-l">Location</div><div class="cv-v" style="font-size:15px;line-height:1.3">${selLoc.name}</div><div class="cv-s">${[selLoc.admin1,selLoc.country].filter(Boolean).join(', ')||'Custom'}</div></div>
+    <div class="cv g"><div class="cv-l">Past ETo (${nP}d)</div><div class="cv-v">${si?pEto.toFixed(1):(pEto*MM2IN).toFixed(2)}<span class="su">${uEto}</span></div><div class="cv-s">avg ${si?(pEto/Math.max(nP,1)).toFixed(1):(pEto*MM2IN/Math.max(nP,1)).toFixed(2)} ${uEto}/d</div></div>
+    <div class="cv b"><div class="cv-l">Forecast ETc (${nF}d)</div><div class="cv-v">${si?fEtc.toFixed(1):(fEtc*MM2IN).toFixed(2)}<span class="su">${uEto}</span></div><div class="cv-s">Kc=${kcv.toFixed(2)} · ${cn}</div></div>
+    <div class="cv"><div class="cv-l">Peak ETc day</div><div class="cv-v">${si?pk.etc.toFixed(2):(pk.etc*MM2IN).toFixed(2)}<span class="su">${uEto}</span></div><div class="cv-s">${sd(pk.date)}</div></div>`;
+  document.getElementById('etcH').textContent=`ETc — ${cn} (${sn})`;
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const gc=isDark?'rgba(242,240,232,.07)':'rgba(24,24,15,.07)', tc=isDark?'#66645c':'#90887c';
+  const labs=rows.map(r=>wd(r.date)+'\n'+sd(r.date));
+  const etoDisp=r=>si?r.eto:+(r.eto*MM2IN).toFixed(3);
+  document.getElementById('etoNote').textContent=`${selLoc.name} · past ${nP}d ERA5 + ${nF}d forecast`;
+  if(chartEto)chartEto.destroy();
+  chartEto=new Chart(document.getElementById('etoC'),{type:'bar',data:{labels:labs,datasets:[
+    {label:'ETo past',data:rows.map((r,i)=>i<nP?etoDisp(r):null),backgroundColor:'rgba(45,152,84,.72)',borderColor:'rgba(45,152,84,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+    {label:'ETo forecast',data:rows.map((r,i)=>i>=nP?etoDisp(r):null),backgroundColor:'rgba(43,104,200,.68)',borderColor:'rgba(43,104,200,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>ld(rows[ctx[0].dataIndex].date),label:ctx=>ctx.parsed.y!=null?`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)} ${si?'mm':'in'}`:null}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},title:{display:true,text:`ETo (${si?'mm':'in'}/day)`,color:tc,font:{size:11}},beginAtZero:true}}},plugins:[divP(nP,rows.length,isDark)]});
+  if(chartEtc)chartEtc.destroy();
+  const etcDisp2=r=>si?r.etc:+(r.etc*MM2IN).toFixed(3);
+  let cum=0; const cumD=rows.map((r,i)=>{
+    if(i<nP){return null;}  // null for past days — line starts at today
+    cum+=(si?r.etc:r.etc*MM2IN);return+cum.toFixed(2);
+  });
+  chartEtc=new Chart(document.getElementById('etcC'),{type:'bar',data:{labels:labs,datasets:[
+    {label:'ETc past',data:rows.map((r,i)=>i<nP?etcDisp2(r):null),yAxisID:'y',backgroundColor:'rgba(45,152,84,.72)',borderColor:'rgba(45,152,84,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+    {label:'ETc forecast',data:rows.map((r,i)=>i>=nP?etcDisp2(r):null),yAxisID:'y',backgroundColor:'rgba(43,104,200,.68)',borderColor:'rgba(43,104,200,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+    {label:'Cumulative',data:cumD,type:'line',yAxisID:'y2',borderColor:'rgba(202,108,16,1)',backgroundColor:'rgba(202,108,16,.10)',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>ld(rows[ctx[0].dataIndex].date),label:ctx=>{if(ctx.parsed.y==null)return null;return ctx.dataset.yAxisID==='y2'?`Cumul.: ${ctx.parsed.y.toFixed(1)} ${si?'mm':'in'}`:`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)} ${si?'mm':'in'}/d`}}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},title:{display:true,text:`ETc (${si?'mm':'in'}/day)`,color:tc,font:{size:11}},beginAtZero:true,position:'left'},y2:{grid:{display:false},ticks:{color:'rgba(202,108,16,.8)',font:{size:11}},title:{display:true,text:`Cumul. (${si?'mm':'in'})`,color:'rgba(202,108,16,.8)',font:{size:11}},beginAtZero:true,position:'right'}}},plugins:[divP(nP,rows.length,isDark)]});
+  const tUnit=si?'mm':'in', wUnit=si?'m/s':'mph', tTUnit=si?'°C':'°F';
+  document.getElementById('tblHead').innerHTML=`
+    <th>Date</th>
+    <th class="r">Tmax ${tTUnit}</th><th class="r">Tmin ${tTUnit}</th>
+    <th class="r">RH %</th><th class="r">Wind ${wUnit}</th><th class="r">Rs MJ/m²</th>
+    <th class="r">Rain ${tUnit}</th>
+    <th class="r">ETo ${tUnit}</th><th class="r">ETc ${tUnit}</th>`;
+  const maxEto=Math.max(...rows.map(r=>r.eto),.1);
+  const tbody=document.getElementById('tb'); tbody.innerHTML='';
+  rows.forEach(r=>{
+    const bwE=Math.round(r.eto/maxEto*100), bwC=Math.round(r.etc/(maxEto*kcv)*100);
+    const isPk=r.date===pk.date;
+    const rc=[r.src==='past'?'rp':'rf',r.isToday?'rt':'',isPk?'rpk':''].filter(Boolean).join(' ');
+    const tMaxD=r.tmax!=null?(si?r.tmax.toFixed(1):((r.tmax*9/5+32).toFixed(1))):'—';
+    const tMinD=r.tmin!=null?(si?r.tmin.toFixed(1):((r.tmin*9/5+32).toFixed(1))):'—';
+    const windD=r.u2!=null?(si?r.u2.toFixed(1):(r.u2*2.237).toFixed(1)):'—';
+    const etoD=si?r.eto.toFixed(2):(r.eto*MM2IN).toFixed(3);
+    const etcD=si?r.etc.toFixed(2):(r.etc*MM2IN).toFixed(3);
+    const rainD=r.rain!=null?(si?r.rain.toFixed(1):(r.rain*MM2IN).toFixed(3)):'—';
+    const rainCls=r.rain>0?'style="color:var(--bl);font-weight:600"':'';
+    const tr=document.createElement('tr'); tr.className=rc;
+    tr.innerHTML=`<td><div class="dn">${ld(r.date)}</div></td><td class="r">${tMaxD}</td><td class="r">${tMinD}</td><td class="r">${r.rh??'—'}</td><td class="r">${windD}</td><td class="r">${r.rs!=null?r.rs.toFixed(1):'—'}</td><td class="r" ${rainCls}>${rainD}</td><td class="r"><div class="bw"><div class="bb"><div class="bf ${r.src==='past'?'bg':'bbl'}" style="width:${bwE}%"></div></div>${etoD}</div></td><td class="r"><div class="bw"><div class="bb"><div class="bf ${r.src==='past'?'bg':'bbl'}" style="width:${bwC}%"></div></div><span class="ev">${etcD}</span>${isPk?'<span class="ptag">peak</span>':''}</div></td>`;
+    tbody.appendChild(tr);
+  });
+  const rainTotal=rows.reduce((s,r)=>s+(r.rain??0),0);
+  const rainTD=si?rainTotal.toFixed(1):(rainTotal*MM2IN).toFixed(2);
+  document.getElementById('tf').innerHTML=`<td colspan="6" style="font-size:12px">Totals · ${nP}d past + ${nF}d forecast</td><td class="r" style="color:var(--bl)">${rainTD} ${tUnit}</td><td class="r">${si?etoSum.toFixed(1):(etoSum*MM2IN).toFixed(2)} ${tUnit}</td><td class="r" style="color:var(--or)">${si?etcSum.toFixed(1):(etcSum*MM2IN).toFixed(2)} ${tUnit}</td>`;
+  renderIrr();
+}
+
+/* ══════ IRRIGATION ══════ */
+function liveIrr(){if(cachedFct.length)renderIrr()}
+
+function renderIrr(){
+  if(!cachedFct.length)return;
+  const {area,q,se,sr,ea}=getSIValues();
+  if(!area||!q||!se||!sr||!ea)return;
+  document.getElementById('irrSection').style.display='block';
+  const si=unitSys==='SI';
+  const dFreq=Math.max(1,Math.min(7,parseInt(document.getElementById('iDays').value)||7));
+  const nE=area*10000/(se*sr);
+  const Qhr=nE*q/1000;
+  const rows=cachedFct.map(r=>{
+    const dGross=r.etc/ea;
+    const vol=dGross*area*10;
+    const tHr=Qhr>0?vol/Qhr:0;
+    return{...r,dGross:+dGross.toFixed(2),vol:+vol.toFixed(2),tHr:+tHr.toFixed(2)};
+  });
+  const totVol=rows.reduce((s,r)=>s+r.vol,0);
+  const totHr=rows.reduce((s,r)=>s+r.tHr,0);
+  const pkVol=Math.max(...rows.map(r=>r.vol));
+  const pkRow=rows.find(r=>r.vol===pkVol);
+  const avgDailyVol=totVol/rows.length;
+  const volPerEvent=avgDailyVol*(7/dFreq);
+  const hrPerEvent=Qhr>0?volPerEvent/Qhr:0;
+  const vNum=v=>si?+v.toFixed(1):+(v*264.172).toFixed(0);
+  const vUnit=si?'m³':'gal';
+  const qDisp=si?`${q.toFixed(2)} L/hr`:`${(q/GPH2LH).toFixed(2)} gph`;
+  document.getElementById('legVol').textContent=`Volume (${vUnit})`;
+  document.getElementById('thVol').textContent=`Volume ${vUnit}`;
+  document.getElementById('eventTimeDisplay').textContent=hrPerEvent.toFixed(2);
+  document.getElementById('eventTimeLabel').textContent=`hr / event  (${dFreq}×/wk)`;
+  document.getElementById('irrCards').innerHTML=`
+    <div class="ic"><div class="ic-l">System Q</div><div class="ic-v">${si?Qhr.toFixed(1):(Qhr*264.172).toFixed(0)}<span class="su">${si?'m³/hr':'gal/hr'}</span></div><div class="ic-s">${Math.round(nE).toLocaleString()} emitters · ${qDisp}</div></div>
+    <div class="ic"><div class="ic-l">Total volume 7d</div><div class="ic-v">${si?totVol.toFixed(0):(totVol*264.172).toFixed(0)}<span class="su">${vUnit}</span></div><div class="ic-s">avg ${si?avgDailyVol.toFixed(1):(avgDailyVol*264.172).toFixed(0)} ${vUnit}/d</div></div>
+    <div class="ic hi"><div class="ic-l">Peak day</div><div class="ic-v">${si?pkVol.toFixed(1):(pkVol*264.172).toFixed(0)}<span class="su">${vUnit}</span></div><div class="ic-s">${sd(pkRow.date)} · ${pkRow.tHr.toFixed(1)} hr</div></div>
+    <div class="ic"><div class="ic-l">Total time 7d</div><div class="ic-v">${totHr.toFixed(1)}<span class="su">hr</span></div><div class="ic-s">forecast period</div></div>`;
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const gc=isDark?'rgba(242,240,232,.07)':'rgba(24,24,15,.07)', tc=isDark?'#66645c':'#90887c';
+  if(chartIrr)chartIrr.destroy();
+  chartIrr=new Chart(document.getElementById('irrC'),{type:'bar',data:{
+    labels:rows.map(r=>wd(r.date)+'\n'+sd(r.date)),
+    datasets:[
+      {label:`Volume (${vUnit})`,data:rows.map(r=>vNum(r.vol)),yAxisID:'y',backgroundColor:'rgba(43,104,200,.72)',borderColor:'rgba(43,104,200,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+      {label:'Time (hr)',data:rows.map(r=>r.tHr),type:'line',yAxisID:'y2',borderColor:'rgba(202,108,16,1)',backgroundColor:'rgba(202,108,16,.10)',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
+    ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>ld(rows[ctx[0].dataIndex].date),label:ctx=>ctx.dataset.yAxisID==='y2'?`Time: ${ctx.parsed.y.toFixed(2)} hr`:`Volume: ${ctx.parsed.y} ${vUnit}`}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},title:{display:true,text:`Volume (${vUnit}/day)`,color:'rgba(43,104,200,.9)',font:{size:11}},beginAtZero:true,position:'left'},y2:{grid:{display:false},ticks:{color:'rgba(202,108,16,.8)',font:{size:11}},title:{display:true,text:'Time (hr/day)',color:'rgba(202,108,16,.8)',font:{size:11}},beginAtZero:true,position:'right'}}}});
+  const startH=()=>{const t=document.getElementById('iStart').value||'06:00';const[h,m]=t.split(':');return+h+(+m)/60};
+  const fmtT=h=>{const hh=Math.floor(h)%24,mm=Math.round((h-Math.floor(h))*60);return`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`};
+  const maxVol=Math.max(...rows.map(r=>r.vol));
+  const tbody=document.getElementById('irrTb'); tbody.innerHTML='';
+  rows.forEach(r=>{
+    const isPk=r.vol===pkVol, bw=Math.round(r.vol/maxVol*100), sh=startH(), eh=sh+r.tHr;
+    const volDisp=si?r.vol.toFixed(1):(r.vol*264.172).toFixed(0);
+    const etcD=si?r.etc.toFixed(2):(r.etc*MM2IN).toFixed(3);
+    const dgD=si?r.dGross.toFixed(2):(r.dGross*MM2IN).toFixed(3);
+    const vEvent=r.vol*(7/dFreq);
+    const hEvent=Qhr>0?vEvent/Qhr:0;
+    const tr=document.createElement('tr'); tr.className=isPk?'rpk':'';
+    tr.innerHTML=`<td><div class="dn">${ld(r.date)}</div></td>`+
+      `<td class="r">${etcD}</td>`+
+      `<td class="r">${dgD}</td>`+
+      `<td class="r"><div class="bw"><div class="bb"><div class="bf ba" style="width:${bw}%"></div></div><span class="${isPk?'ih':'it'}">${volDisp}</span></div></td>`+
+      `<td class="r ${isPk?'ih':'it'}">${r.tHr.toFixed(2)}</td>`+
+      `<td class="r" style="color:var(--or);font-weight:600">${hEvent.toFixed(2)}</td>`+
+      `<td class="r">${fmtT(sh)}</td>`+
+      `<td class="r">${fmtT(eh)}</td>`;
+    tbody.appendChild(tr);
+  });
+  const totVolD=si?totVol.toFixed(0):(totVol*264.172).toFixed(0);
+  const tUnit=si?'mm':'in';
+  document.getElementById('irrTf').innerHTML=
+    `<td colspan="3" style="font-size:12px">7-day totals</td>`+
+    `<td class="r" style="color:var(--bl)">${totVolD} ${vUnit}</td>`+
+    `<td class="r" style="color:var(--or)">${totHr.toFixed(1)} hr</td>`+
+    `<td class="r" style="color:var(--or);font-size:11px">avg ${hrPerEvent.toFixed(2)} hr/ev</td>`+
+    `<td colspan="2"></td>`;
+}
+
+/* ══════ EXPORT EXCEL ══════ */
+function exportExcel(){
+  if(!cachedAllRows.length){alert('No data to export. Load data first.');return;}
+  const si=unitSys==='SI';
+  const {area,q,se,sr,ea}=getSIValues();
+  const dFreq=Math.max(1,Math.min(7,parseInt(document.getElementById('iDays').value)||7));
+  const nE=area*10000/(se*sr);
+  const Qhr=nE*q/1000;
+  const tUnit=si?'mm':'in', wUnit=si?'m/s':'mph', tTUnit=si?'°C':'°F', vUnit=si?'m³':'gal';
+  const areaDisp=si?`${area.toFixed(2)} ha`:`${(area/AC2HA).toFixed(2)} ac`;
+  const locLabel=selLoc?`${selLoc.name}${selLoc.admin1?', '+selLoc.admin1:''}${selLoc.country?', '+selLoc.country:''}`:'Unknown';
+  const wb=XLSX.utils.book_new();
+  const s1data=[
+    [`ETc & Irrigation Report — ${locLabel}  |  ${cachedCrop} · ${cachedStage}  |  Kc=${cachedKc.toFixed(2)}  |  Units: ${si?'SI (metric)':'US (imperial)'}`],
+    [],
+    ['Date','Source',`Tmax ${tTUnit}`,`Tmin ${tTUnit}`,'RH %',`Wind ${wUnit}`,'Rs MJ/m²',`Rain ${tUnit}`,`ETo ${tUnit}`,`ETc ${tUnit}`],
+    ...cachedAllRows.map(r=>[
+      r.date,r.src==='past'?'ERA5 archive':'Forecast',
+      r.tmax!=null?(si?r.tmax:+(r.tmax*9/5+32).toFixed(1)):null,
+      r.tmin!=null?(si?r.tmin:+(r.tmin*9/5+32).toFixed(1)):null,
+      r.rh??null,
+      r.u2!=null?(si?r.u2:+(r.u2*2.237).toFixed(1)):null,
+      r.rs??null,
+      r.rain!=null?(si?r.rain:+(r.rain*MM2IN).toFixed(3)):null,
+      si?r.eto:+(r.eto*MM2IN).toFixed(3),
+      si?r.etc:+(r.etc*MM2IN).toFixed(3),
+    ])
+  ];
+  const etoSum=cachedAllRows.reduce((s,r)=>s+r.eto,0);
+  const etcSum=cachedAllRows.reduce((s,r)=>s+r.etc,0);
+  const rainSum=cachedAllRows.reduce((s,r)=>s+(r.rain??0),0);
+  s1data.push(['Totals','','','','','','',
+    si?+rainSum.toFixed(1):+(rainSum*MM2IN).toFixed(2),
+    si?+etoSum.toFixed(1):+(etoSum*MM2IN).toFixed(2),
+    si?+etcSum.toFixed(1):+(etcSum*MM2IN).toFixed(2)
+  ]);
+  const ws1=XLSX.utils.aoa_to_sheet(s1data);
+  ws1['!cols']=[{wch:14},{wch:14},{wch:10},{wch:10},{wch:8},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,ws1,'ETo & ETc');
+  if(cachedFct.length&&Qhr>0){
+    const fctRows=cachedFct.map(r=>{
+      const dGross=r.etc/ea, vol=dGross*area*10, tHr=vol/Qhr;
+      const vEvent=vol*(7/dFreq), hEvent=vEvent/Qhr;
+      return{...r,dGross,vol,tHr,vEvent,hEvent};
+    });
+    const totVol=fctRows.reduce((s,r)=>s+r.vol,0);
+    const totHr=fctRows.reduce((s,r)=>s+r.tHr,0);
+    const hrPerEvent=fctRows.reduce((s,r)=>s+r.hEvent,0)/fctRows.length;
+    const startH=()=>{const t=document.getElementById('iStart').value||'06:00';const[h,m]=t.split(':');return+h+(+m)/60};
+    const fmtT=h=>{const hh=Math.floor(h)%24,mm=Math.round((h-Math.floor(h))*60);return`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`};
+    const s2data=[
+      [`Irrigation Schedule — ${locLabel}  |  ${areaDisp}  |  Q=${si?Qhr.toFixed(1):(Qhr*264.172).toFixed(0)} ${si?'m³/hr':'gal/hr'}  |  Ea=${Math.round(ea*100)}%  |  ${dFreq}×/week`],
+      [`Emitters: ${Math.round(nE).toLocaleString()}  |  Discharge: ${si?q.toFixed(2)+'L/hr':(q/GPH2LH).toFixed(2)+'gph'}  |  Spacing: ${si?se.toFixed(2)+'m':(se/IN2M).toFixed(0)+'in'} × ${si?sr.toFixed(2)+'m':(sr/0.3048).toFixed(1)+'ft'}`],
+      [],
+      ['Date',`ETc ${tUnit}`,`Gross depth ${tUnit}`,`Volume ${vUnit}`,'Hr/day',`Hr/event (${dFreq}×/wk)`,'Start','End'],
+      ...fctRows.map(r=>{
+        const sh=startH(), eh=sh+r.tHr;
+        return[r.date,si?+r.etc.toFixed(2):+(r.etc*MM2IN).toFixed(3),
+          si?+r.dGross.toFixed(2):+(r.dGross*MM2IN).toFixed(3),
+          si?+r.vol.toFixed(1):+(r.vol*264.172).toFixed(0),
+          +r.tHr.toFixed(2),+r.hEvent.toFixed(2),fmtT(sh),fmtT(eh)];
+      }),
+      ['Totals','','',si?+totVol.toFixed(0):+(totVol*264.172).toFixed(0),+totHr.toFixed(1),+hrPerEvent.toFixed(2),'',''],
+      [],
+      ['Avg hr/event',+hrPerEvent.toFixed(2),'hr'],
+      ['Total volume',si?+totVol.toFixed(0):+(totVol*264.172).toFixed(0),vUnit],
+      ['Total time',+totHr.toFixed(1),'hr'],
+    ];
+    const ws2=XLSX.utils.aoa_to_sheet(s2data);
+    ws2['!cols']=[{wch:14},{wch:12},{wch:14},{wch:12},{wch:10},{wch:18},{wch:8},{wch:8}];
+    XLSX.utils.book_append_sheet(wb,ws2,'Irrigation Schedule');
+  }
+  const locSlug=(selLoc?selLoc.name:'location').replace(/[^a-z0-9]/gi,'_').slice(0,20);
+  const dateStr=todayISO().replace(/-/g,'');
+  XLSX.writeFile(wb,`ETc_Irrigation_${locSlug}_${dateStr}.xlsx`);
+}
+
+/* ══════ DIVIDER PLUGIN ══════ */
+function divP(nP,nT,isDark){return{id:'div'+Math.random(),afterDraw(chart){
+  if(nP<=0||nP>=nT)return;
+  const{ctx,chartArea:{top,bottom},scales:{x}}=chart;
+  const xPos=(x.getPixelForValue(nP-1)+x.getPixelForValue(nP))/2;
+  ctx.save();ctx.setLineDash([4,3]);
+  ctx.strokeStyle=isDark?'rgba(242,240,232,.3)':'rgba(24,24,15,.25)';
+  ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(xPos,top);ctx.lineTo(xPos,bottom);ctx.stroke();
+  ctx.setLineDash([]);ctx.font='10px JetBrains Mono,monospace';
+  ctx.fillStyle=isDark?'rgba(242,240,232,.45)':'rgba(24,24,15,.4)';
+  ctx.textAlign='center';ctx.fillText('Today →',xPos+26,top+12);ctx.restore();
+}}}
+
+/* ══════ COPY COORDS ══════ */
+function copyCoords(){
+  if(!selLoc)return;
+  const txt=`${selLoc.lat.toFixed(6)}, ${selLoc.lon.toFixed(6)}`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    document.getElementById('copyLbl').textContent='Copied!';
+    document.getElementById('copyIcon').innerHTML='<polyline points="20 6 9 17 4 12"/>';
+    document.getElementById('copyBtn').style.color='var(--gr)';
+    document.getElementById('copyBtn').style.borderColor='var(--grm)';
+    document.getElementById('copyBtn').style.background='var(--grl)';
+    setTimeout(resetCopyBtn,2000);
+  }).catch(()=>{
+    // Fallback for browsers without clipboard API
+    const ta=document.createElement('textarea');
+    ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    document.getElementById('copyLbl').textContent='Copied!';
+    setTimeout(resetCopyBtn,2000);
+  });
+}
+function resetCopyBtn(){
+  document.getElementById('copyLbl').textContent='Copy';
+  document.getElementById('copyIcon').innerHTML='<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+  document.getElementById('copyBtn').style.color='';
+  document.getElementById('copyBtn').style.borderColor='';
+  document.getElementById('copyBtn').style.background='';
+}
+
+/* ══════ INIT ══════ */
+buildCrops();
+updateUnitLabels();
+checkAPIs();
+</script>
+</body>
+</html>
