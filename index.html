@@ -4,609 +4,1002 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IrriPlan</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f2f0e8;--s:#fff;--s2:#eceadf;--s3:#e2dfd3;
-  --ink:#18180f;--k2:#4a4840;--k3:#90887c;
-  --gr:#1a5c38;--grl:#caf0da;--grm:#2d9854;
+  --bg:#f2f0e8;--s:#fff;--s2:#eceadf;--s3:#e2dfd3;--s4:#d8d4c4;
+  --ink:#18180f;--k2:#4a4840;--k3:#90887c;--k4:#c0b8a8;
+  --gr:#1a5c38;--grl:#caf0da;--grm:#2d9854;--grd:#0f3820;
   --bl:#174080;--bll:#d3e8ff;--blm:#2b68c8;
   --or:#7a3a08;--orl:#fde8c4;--orm:#ca6c10;
   --re:#7a1818;--rel:#fde0e0;--rem:#c42424;
+  --pu:#4a2880;--pul:#e8d8ff;--pum:#7a48c8;
   --bd:rgba(24,24,15,.09);--bds:rgba(24,24,15,.17);
-  --r:10px;--m:'JetBrains Mono',monospace;--f:'Inter',sans-serif;
-  --sh:0 1px 8px rgba(24,24,15,.07)
+  --r:10px;--rm:7px;--rs:5px;
+  --m:'JetBrains Mono',monospace;--f:'Inter',sans-serif;
+  --sh:0 1px 8px rgba(24,24,15,.07);
+  --sh2:0 2px 16px rgba(24,24,15,.12)
 }
 @media(prefers-color-scheme:dark){:root{
-  --bg:#111108;--s:#1a1a12;--s2:#22221a;--s3:#2c2c22;
-  --ink:#f2f0e8;--k2:#a8a498;--k3:#66645c;
-  --gr:#2d9854;--grl:#071a0e;--grm:#228040;
+  --bg:#111108;--s:#1a1a12;--s2:#22221a;--s3:#2c2c22;--s4:#363628;
+  --ink:#f2f0e8;--k2:#a8a498;--k3:#66645c;--k4:#44423c;
+  --gr:#2d9854;--grl:#071a0e;--grm:#228040;--grd:#a0f0c0;
   --bl:#2b68c8;--bll:#081828;--blm:#2058b0;
   --or:#ca6c10;--orl:#281408;--orm:#a85808;
   --re:#c42424;--rel:#280808;--rem:#a01818;
+  --pu:#7a48c8;--pul:#180828;--pum:#5a30a0;
   --bd:rgba(242,240,232,.08);--bds:rgba(242,240,232,.15)
 }}
 
 body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;min-height:100vh}
 
-/* ─ HEADER ─ */
-header{background:var(--s);border-bottom:1px solid var(--bd);padding:.65rem 1.4rem;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-ico{width:32px;height:32px;background:var(--gr);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.logo-ico svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round}
-.logo-name{font-size:15px;font-weight:700;letter-spacing:-.3px}
-.logo-sub{font-size:10px;color:var(--k3);font-family:var(--m);margin-top:1px}
-.hdr-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.pill{font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--grl);color:var(--gr);border:1px solid var(--grm)}
-.api-pill{font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;
-  border:1px solid var(--bds);background:var(--s2);color:var(--k3);
+/* ─── HEADER ─── */
+header{background:linear-gradient(135deg,#0f2818 0%,#1a4a28 60%,#0d2840 100%);
+  padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;flex-wrap:wrap;box-shadow:0 2px 20px rgba(0,0,0,.3)}
+.logo{display:flex;align-items:center;gap:11px}
+.logo-ico{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-name{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.5);font-family:var(--m);margin-top:1px}
+.hdr-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.unit-toggle{display:flex;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  border-radius:20px;padding:2px;gap:2px}
+.unit-btn{padding:4px 14px;border-radius:16px;font-family:var(--m);font-size:10px;font-weight:700;
+  cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.6);transition:all .15s}
+.unit-btn.active{background:rgba(255,255,255,.9);color:#0f2818}
+.api-pill{font-family:var(--m);font-size:10px;padding:4px 11px;border-radius:20px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);
   display:flex;align-items:center;gap:5px;cursor:pointer;transition:all .15s}
-.api-pill:hover{border-color:var(--grm);color:var(--gr)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--k3);flex-shrink:0}
-.dot.ok{background:var(--grm)}.dot.err{background:var(--rem)}
-.dot.chk{background:var(--orm);animation:blink .9s infinite}
+.api-pill:hover{background:rgba(255,255,255,.18)}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3)}
+.dot.ok{background:#4cd990}.dot.err{background:#ff6b6b}
+.dot.chk{background:#ffd060;animation:blink .9s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ─ UNIT TOGGLE ─ */
-.unit-toggle{display:flex;background:var(--s2);border:1px solid var(--bds);border-radius:20px;padding:2px;gap:2px}
-.unit-btn{padding:3px 12px;border-radius:16px;font-family:var(--m);font-size:10px;font-weight:700;
-  cursor:pointer;border:none;background:transparent;color:var(--k3);transition:all .15s}
-.unit-btn.active{background:var(--gr);color:#fff}
+/* ─── STEP NAV ─── */
+.step-nav{background:var(--s);border-bottom:1px solid var(--bd);
+  position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.step-wrap{max-width:1100px;margin:0 auto;display:flex;align-items:stretch;padding:0 1rem}
+.step-btn{display:flex;align-items:center;gap:8px;padding:13px 16px;border:none;
+  background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--k3);
+  border-bottom:3px solid transparent;margin-bottom:-1px;transition:all .15s;
+  white-space:nowrap;font-family:var(--f)}
+.step-btn:hover:not(.active){color:var(--k2)}
+.step-btn.active{color:var(--gr);border-bottom-color:var(--gr)}
+.step-btn.done{color:var(--k2)}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--s3);font-size:11px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .18s;font-family:var(--m)}
+.step-btn.active .step-num{background:var(--gr);color:#fff}
+.step-btn.done .step-num{background:var(--grl);color:var(--gr)}
+.step-arrow{color:var(--k4);font-size:13px;align-self:center;padding:0 2px}
 
-/* ─ MAIN ─ */
-main{max-width:1020px;margin:0 auto;padding:1rem 1.2rem 4rem;overflow-x:hidden}
+/* ─── PAGES ─── */
+.page{display:none}.page.active{display:block}
+.pw{max-width:1100px;margin:0 auto;padding:1.5rem 1.2rem 4rem}
 
-/* ─ SECTION CARD ─ */
+/* ─── PAGE HEADER ─── */
+.ph{margin-bottom:1.25rem}
+.ph h2{font-size:18px;font-weight:700;display:flex;align-items:center;gap:9px}
+.ph-num{width:28px;height:28px;border-radius:50%;background:var(--gr);color:#fff;
+  font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:var(--m)}
+.ph p{font-size:13px;color:var(--k3);margin-top:4px;padding-left:37px}
+
+/* ─── CARDS ─── */
 .sc{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);
-  padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--sh)}
+  padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
 .sc-title{font-family:var(--m);font-size:10px;font-weight:700;color:var(--k3);
-  text-transform:uppercase;letter-spacing:.7px;margin-bottom:.8rem}
+  text-transform:uppercase;letter-spacing:.7px;margin-bottom:.85rem;
+  display:flex;align-items:center;gap:6px}
+.sc-title .ti{width:18px;height:18px;border-radius:4px;background:var(--s3);
+  display:flex;align-items:center;justify-content:center;font-size:10px}
 
-/* ─ GRID ─ */
-.g4{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:.75rem;align-items:end}
-.g3{display:grid;grid-template-columns:1.4fr 1.1fr 1fr;gap:.75rem;align-items:end}
-.g6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.75rem;align-items:end}
-@media(max-width:860px){.g6{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:720px){.g4{grid-template-columns:1fr 1fr 1fr}.g3{grid-template-columns:1fr 1fr}}
-@media(max-width:460px){.g4,.g3,.g6{grid-template-columns:1fr 1fr}}
+/* ─── GRIDS ─── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem}
+.tcol{display:grid;grid-template-columns:420px 1fr;gap:1.25rem;align-items:start}
+@media(max-width:860px){.tcol{grid-template-columns:1fr}}
+@media(max-width:640px){.g4,.g5{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:460px){.g2,.g3{grid-template-columns:1fr}}
 
-/* ─ FIELD ─ */
+/* ─── FIELDS ─── */
 .fl{display:flex;flex-direction:column;gap:4px}
-.fl label{font-family:var(--m);font-size:10px;font-weight:700;color:var(--k3);text-transform:uppercase;letter-spacing:.4px}
-.fl input,.fl select{
-  padding:7px 10px;font-family:var(--m);font-size:13px;
-  background:var(--s2);border:1px solid var(--bds);border-radius:7px;
+.fl label,.field-label{font-family:var(--m);font-size:10px;font-weight:700;
+  color:var(--k3);text-transform:uppercase;letter-spacing:.4px}
+.fl input,.fl select{padding:7px 10px;font-family:var(--m);font-size:13px;
+  background:var(--s2);border:1px solid var(--bds);border-radius:var(--rm);
   color:var(--ink);outline:none;transition:border-color .15s;
   -webkit-appearance:none;appearance:none}
 .fl select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2390887c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
 .fl input:focus,.fl select:focus{border-color:var(--grm);box-shadow:0 0 0 2px rgba(45,152,84,.12)}
+.fl input[type=range]{accent-color:var(--gr);padding:0;background:transparent;border:none;box-shadow:none}
+.fl input[type=range]:focus{box-shadow:none}
 
-/* ─ LOCATION SEARCH ─ */
+/* ─── LOCATION ─── */
 .loc-wrap{position:relative}
 .loc-row{display:flex;gap:6px;align-items:stretch}
 .loc-row input{flex:1}
-.loc-btn{padding:7px 13px;background:var(--s2);border:1px solid var(--bds);border-radius:7px;
-  cursor:pointer;color:var(--k3);font-size:12px;font-family:var(--m);
-  white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px}
+.loc-btn{padding:7px 12px;background:var(--s2);border:1px solid var(--bds);border-radius:var(--rm);
+  cursor:pointer;color:var(--k3);font-size:11px;font-family:var(--m);
+  white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:4px}
 .loc-btn:hover{background:var(--s3);color:var(--ink);border-color:var(--grm)}
-.loc-btn.active{background:var(--grl);color:var(--gr);border-color:var(--grm)}
+.loc-btn.on{background:var(--grl);color:var(--gr);border-color:var(--grm)}
 .loc-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
-  background:var(--s);border:1px solid var(--bds);border-radius:8px;
-  max-height:280px;overflow-y:auto;z-index:999;box-shadow:0 8px 30px rgba(24,24,15,.14)}
+  background:var(--s);border:1px solid var(--bds);border-radius:var(--rm);
+  max-height:260px;overflow-y:auto;z-index:999;box-shadow:var(--sh2)}
 .loc-menu.open{display:block}
 .loc-item{padding:9px 13px;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .1s}
 .loc-item:last-child{border-bottom:none}
 .loc-item:hover{background:var(--s2)}
-.loc-name{font-family:var(--m);font-size:12px;font-weight:700;color:var(--ink)}
-.loc-detail{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:1px}
-.loc-coords{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:2px;font-style:italic}
-.loc-searching{padding:10px 13px;font-family:var(--m);font-size:11px;color:var(--k3);display:flex;align-items:center;gap:7px}
-.loc-spin{width:12px;height:12px;border:2px solid var(--bds);border-top-color:var(--grm);border-radius:50%;animation:rot .7s linear infinite;flex-shrink:0}
+.loc-nm{font-family:var(--m);font-size:12px;font-weight:700}
+.loc-dt{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:1px}
+.loc-cd{font-family:var(--m);font-size:10px;color:var(--k3);font-style:italic}
+.loc-spin-row{padding:10px 13px;font-family:var(--m);font-size:11px;color:var(--k3);display:flex;align-items:center;gap:6px}
+.spin-sm{width:12px;height:12px;border:2px solid var(--bds);border-top-color:var(--grm);border-radius:50%;animation:rot .7s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
-
-/* ─ COORDS BADGE ─ */
 .coords-badge{font-family:var(--m);font-size:10px;color:var(--k3);background:var(--s2);
-  border:1px solid var(--bd);border-radius:6px;padding:3px 8px;margin-top:4px;display:inline-block}
+  border:1px solid var(--bd);border-radius:var(--rs);padding:3px 8px;margin-top:4px;display:inline-block}
 .coords-badge span{color:var(--k2);font-weight:600}
 
-/* ─ Kc ─ */
-input[type=range]{width:100%;accent-color:var(--gr);margin:4px 0;cursor:pointer}
-
-/* ─ BTN ─ */
-.btn{padding:8px 18px;background:var(--gr);color:#fff;border:none;border-radius:7px;
+/* ─── BUTTONS ─── */
+.btn{padding:9px 20px;background:var(--gr);color:#fff;border:none;border-radius:var(--rm);
   font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;gap:6px;white-space:nowrap;width:100%;justify-content:center;
-  transition:opacity .15s,transform .1s}
+  display:inline-flex;align-items:center;gap:7px;transition:opacity .15s,transform .1s;white-space:nowrap}
 .btn:hover{opacity:.88}.btn:active{transform:scale(.98)}.btn:disabled{opacity:.38;cursor:not-allowed;transform:none}
-.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
-  border-radius:50%;animation:rot .7s linear infinite;display:none;flex-shrink:0}
+.btn.full{width:100%;justify-content:center}
+.btn.outline{background:transparent;color:var(--gr);border:1.5px solid var(--grm)}
+.btn.outline:hover{background:var(--grl)}
+.btn.sm{padding:6px 14px;font-size:12px}
+.spin-btn{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+  border-radius:50%;animation:rot .7s linear infinite;display:none}
 
-/* ─ STATUS ─ */
-.sb{font-family:var(--m);font-size:12px;padding:9px 12px;border-radius:7px;margin-bottom:.9rem;display:none;line-height:1.5}
-.sb.err{background:var(--rel);color:var(--re);border:1px solid var(--rem);display:block}
-.sb.warn{background:var(--orl);color:var(--or);border:1px solid var(--orm);display:block}
+/* ─── STATUS BANNER ─── */
+.sb{font-family:var(--m);font-size:12px;padding:9px 13px;border-radius:var(--rm);margin-bottom:1rem;
+  display:none;line-height:1.5;border-left:3px solid}
+.sb.err{background:var(--rel);color:var(--re);border-color:var(--rem);display:block}
+.sb.warn{background:var(--orl);color:var(--or);border-color:var(--orm);display:block}
+.sb.info{background:var(--bll);color:var(--bl);border-color:var(--blm);display:block}
+.sb.ok{background:var(--grl);color:var(--gr);border-color:var(--grm);display:block}
 
-/* ─ PLACEHOLDER ─ */
-.ph{text-align:center;padding:3rem 1.5rem;color:var(--k3);border:2px dashed var(--bd);border-radius:var(--r)}
-.ph-i{font-size:36px;margin-bottom:8px;opacity:.2}
-.ph-t{font-size:14px;line-height:1.8}
-.ph-t strong{color:var(--k2)}
-#results{display:none}
-#irrSection{display:none}
+/* ─── ETO CHART ─── */
+.chart-wrap{position:relative;height:200px}
+.chart-wrap.tall{height:280px}
 
-/* ─ SUMMARY CARDS ─ */
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.9rem}
-@media(max-width:640px){.cards{grid-template-columns:repeat(2,1fr)}}
-.cv{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);padding:.8rem 1rem;box-shadow:var(--sh)}
-.cv.g{background:var(--grl);border-color:var(--grm)}.cv.b{background:var(--bll);border-color:var(--blm)}.cv.a{background:var(--orl);border-color:var(--orm)}
-.cv-l{font-family:var(--m);font-size:9px;color:var(--k3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.cv-v{font-family:var(--m);font-size:22px;font-weight:700;line-height:1}
-.cv.g .cv-v{color:var(--gr)}.cv.b .cv-v{color:var(--bl)}.cv.a .cv-v{color:var(--or)}
-.cv-v .su{font-size:11px;color:var(--k3);margin-left:2px;font-weight:400}
-.cv-s{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:3px;line-height:1.4}
+/* ─── METRIC CARDS ─── */
+.mc-row{display:grid;gap:.65rem;margin-bottom:1rem}
+.mc-row.c4{grid-template-columns:repeat(4,1fr)}
+.mc-row.c3{grid-template-columns:repeat(3,1fr)}
+.mc-row.c2{grid-template-columns:1fr 1fr}
+@media(max-width:640px){.mc-row.c4{grid-template-columns:1fr 1fr}.mc-row.c3{grid-template-columns:1fr 1fr}}
+.mc{background:var(--s);border:1px solid var(--bd);border-radius:var(--rm);
+  padding:.75rem 1rem;box-shadow:var(--sh);position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.mc.g::before{background:var(--grm)}.mc.b::before{background:var(--blm)}
+.mc.a::before{background:var(--orm)}.mc.r::before{background:var(--rem)}
+.mc.p::before{background:var(--pum)}.mc.n::before{background:var(--k3)}
+.mc-lbl{font-family:var(--m);font-size:9px;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--k3);margin-bottom:3px}
+.mc-val{font-family:var(--m);font-size:22px;font-weight:700;line-height:1;color:var(--ink)}
+.mc.g .mc-val{color:var(--gr)}.mc.b .mc-val{color:var(--bl)}
+.mc.a .mc-val{color:var(--or)}.mc.r .mc-val{color:var(--re)}.mc.p .mc-val{color:var(--pu)}
+.mc-val .u{font-size:11px;font-weight:400;color:var(--k3);margin-left:2px}
+.mc-sub{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:2px;line-height:1.4}
 
-/* ─ CHART ─ */
-.chp{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);
-  padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--sh)}
-.ch-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.8rem;gap:6px;flex-wrap:wrap}
-.ch-h{font-size:13px;font-weight:700}
-.ch-n{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:1px}
-.leg{display:flex;gap:12px;flex-wrap:wrap}
-.leg-i{display:flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;color:var(--k3)}
-.leg-b{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-.leg-l{width:20px;height:3px;border-radius:2px;flex-shrink:0}
-.ch-c{position:relative;height:220px}
+/* ─── TEXTURE BOXES ─── */
+.tex-boxes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin:.65rem 0}
+.tbox{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rm);padding:9px 10px}
+.tbox label{font-family:var(--m);font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--k3);margin-bottom:4px;display:block}
+.tbox input{width:100%;padding:7px 8px;font-size:16px;font-weight:700;border:1.5px solid var(--bds);
+  border-radius:var(--rs);background:var(--s);color:var(--ink);outline:none;text-align:center;transition:border-color .14s}
+.tbox input:focus{border-color:var(--grm);box-shadow:0 0 0 2px rgba(45,152,84,.12)}
+.tbox input.err{border-color:var(--rem);box-shadow:0 0 0 2px rgba(196,36,36,.12)}
+.tbox-unit{display:block;font-size:11px;color:var(--k3);text-align:center;margin-top:2px}
+.sum-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.sum-val{font-family:var(--m);font-size:13px;font-weight:700}
+.sum-ok{color:var(--gr)}.sum-bad{color:var(--re)}
+.classified{display:flex;align-items:center;gap:10px;margin-top:.75rem;padding:9px 12px;
+  background:var(--grl);border-radius:var(--rm);border:1px solid rgba(45,152,84,.2)}
+.classified-name{font-size:15px;font-weight:700;color:var(--gr);font-family:var(--m)}
+.classified-sub{font-size:11px;color:var(--k2);margin-top:1px}
 
-/* ─ TABLE ─ */
-.tp{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:.9rem;box-shadow:var(--sh)}
-.tp-h{padding:.75rem 1.1rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
-.tp-t{font-size:13px;font-weight:700}
-.tags{display:flex;gap:5px;flex-wrap:wrap}
-.tag{font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;background:var(--s2);color:var(--k3);border:1px solid var(--bd)}
-.tag.g{background:var(--grl);color:var(--gr);border-color:var(--grm)}
-.tag.b{background:var(--bll);color:var(--bl);border-color:var(--blm)}
-.tag.a{background:var(--orl);color:var(--or);border-color:var(--orm)}
+/* ─── SOIL PARAMS ─── */
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.75rem}
+.pbox{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rm);padding:9px 11px}
+.pbox label{font-family:var(--m);font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--k3);margin-bottom:3px;display:block}
+.pbox input{width:100%;padding:6px 9px;font-size:14px;border:1.5px solid var(--bds);border-radius:var(--rs);
+  background:var(--s);color:var(--ink);outline:none;transition:border-color .14s;font-family:var(--m)}
+.pbox input:focus{border-color:var(--grm);box-shadow:0 0 0 2px rgba(45,152,84,.12)}
+.pbox-derived{font-size:14px;font-weight:700;color:var(--ink);padding:6px 9px;background:var(--s3);
+  border-radius:var(--rs);border:1px solid var(--bd);font-family:var(--m)}
+.pbox-reset{display:block;font-size:10px;color:var(--k3);cursor:pointer;text-align:right;
+  text-decoration:underline;margin-top:3px;font-family:var(--m)}
+.pbox-reset:hover{color:var(--gr)}
+
+/* ─── TRIANGLE ─── */
+.tri-wrap{display:flex;justify-content:center;padding:4px 0}
+
+/* ─── WARN INLINE ─── */
+.warn-strip{font-size:12px;color:var(--or);background:var(--orl);border-radius:var(--rm);
+  border-left:3px solid var(--orm);padding:7px 11px;margin-top:.5rem;display:none;font-family:var(--m)}
+
+/* ─── KcA ─── */
+.kc-row{display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;margin-bottom:4px;font-family:var(--m);padding:0 2px}
+.kc-row:last-child{margin-bottom:0}
+
+/* ─── STRATEGY BUTTONS ─── */
+.strat-btn{flex:1;padding:7px 8px;font-size:12px;font-weight:600;border:1.5px solid var(--bds);
+  border-radius:var(--rm);cursor:pointer;background:var(--s2);color:var(--k3);
+  transition:all .15s;font-family:var(--f);text-align:center}
+.strat-btn:hover{border-color:var(--grm);color:var(--gr)}
+.strat-btn.active{background:var(--grl);color:var(--gr);border-color:var(--grm);font-weight:700}
+
+/* ─── DRIP PANEL ─── */
+.drip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.65rem;align-items:end}
+@media(max-width:520px){.drip-grid{grid-template-columns:1fr 1fr}}
+
+/* ─── RESULTS TABLE ─── */
+.tbl-wrap{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);
+  overflow:hidden;margin-bottom:1rem;box-shadow:var(--sh)}
+.tbl-head{padding:.65rem 1rem;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  background:var(--s2)}
+.tbl-title{font-size:13px;font-weight:700}
 table{width:100%;border-collapse:collapse}
-thead th{padding:7px 11px;font-family:var(--m);font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.4px;color:var(--k3);background:var(--s2);border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+thead th{padding:7px 10px;font-family:var(--m);font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.4px;color:var(--k3);
+  background:var(--s2);border-bottom:1px solid var(--bd);white-space:nowrap}
 th.r,td.r{text-align:right}
 tbody tr{border-bottom:1px solid var(--bd);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:var(--s2)}
-tbody tr.rp{background:rgba(202,240,218,.16)}
-tbody tr.rp:hover{background:var(--grl)}
-tbody tr.rf{background:rgba(211,232,255,.13)}
-tbody tr.rf:hover{background:var(--bll)}
-tbody tr.rt td:first-child{border-left:3px solid var(--orm)}
-tbody tr.rpk{font-weight:600}
-td{padding:8px 11px;font-size:13px;font-family:var(--m);color:var(--ink);vertical-align:middle}
-.dn{font-family:var(--f);font-size:13px;font-weight:600}
-.bw{display:flex;align-items:center;gap:5px;justify-content:flex-end}
-.bb{width:50px;height:5px;background:var(--s3);border-radius:3px;overflow:hidden;flex-shrink:0}
-.bf{height:100%;border-radius:3px}.bg{background:var(--grm)}.bbl{background:var(--blm)}.ba{background:var(--orm)}
-.ev{font-weight:700}.rp .ev{color:var(--gr)}.rf .ev{color:var(--bl)}.rpk .ev{color:var(--or)}
-.ptag{font-size:9px;padding:1px 5px;border-radius:6px;margin-left:3px;background:var(--orl);color:var(--or);border:1px solid var(--orm);font-family:var(--m)}
-tfoot tr td{padding:8px 11px;font-family:var(--m);font-size:12px;font-weight:700;background:var(--s2);border-top:2px solid var(--bds);color:var(--k2)}
+tbody tr.irr-row{background:rgba(211,232,255,.2)}
+tbody tr.irr-row:hover{background:var(--bll)}
+tbody tr.today-row td:first-child{border-left:3px solid var(--grm)}
+td{padding:7px 10px;font-size:12px;font-family:var(--m);vertical-align:middle}
+td.dn{font-family:var(--f);font-size:13px;font-weight:600}
+tfoot td{padding:7px 10px;font-family:var(--m);font-size:12px;font-weight:700;
+  background:var(--s2);border-top:2px solid var(--bds)}
 
-/* ─ METHOD NOTE ─ */
-.mn{font-family:var(--m);font-size:11px;color:var(--k3);background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;line-height:1.7;margin-bottom:.9rem;box-shadow:var(--sh)}
+/* ─── BADGE ─── */
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;
+  font-weight:700;font-family:var(--m);white-space:nowrap}
+.badge.g{background:var(--grl);color:var(--gr);border:1px solid var(--grm)}
+.badge.b{background:var(--bll);color:var(--bl);border:1px solid var(--blm)}
+.badge.a{background:var(--orl);color:var(--or);border:1px solid var(--orm)}
+.badge.r{background:var(--rel);color:var(--re);border:1px solid var(--rem)}
+.badge.n{background:var(--s2);color:var(--k3);border:1px solid var(--bd)}
+
+/* ─── NEXT BUTTON ROW ─── */
+.next-row{display:flex;align-items:center;justify-content:space-between;
+  margin-top:1rem;padding-top:1rem;border-top:1px solid var(--bd);gap:8px}
+.step-prog{font-family:var(--m);font-size:11px;color:var(--k3)}
+
+/* ─── SCHEDULE summary hero ─── */
+.sched-hero{display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:stretch;margin-bottom:1rem}
+.hero-box{background:var(--bl);border-radius:var(--r);padding:1.1rem 1.4rem;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  min-width:130px;color:#fff;box-shadow:var(--sh)}
+.hero-val{font-family:var(--m);font-size:42px;font-weight:700;line-height:1}
+.hero-lbl{font-family:var(--m);font-size:11px;color:rgba(255,255,255,.65);margin-top:4px;white-space:nowrap}
+.hero-sub{font-family:var(--m);font-size:10px;color:rgba(255,255,255,.45);margin-top:2px;white-space:nowrap}
+
+/* ─── CHART LEGEND ─── */
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-top:.5rem}
+.leg-i{display:flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;color:var(--k3)}
+.leg-b{width:11px;height:11px;border-radius:2px;flex-shrink:0}
+.leg-l{width:18px;height:3px;border-radius:2px;flex-shrink:0}
+
+/* ─── METHOD NOTE ─── */
+.mn{font-family:var(--m);font-size:11px;color:var(--k3);background:var(--s2);
+  border:1px solid var(--bd);border-radius:var(--rm);padding:7px 12px;
+  line-height:1.7;margin-bottom:1rem}
 .mn strong{color:var(--k2);font-weight:700}
 
-/* ─ IRR PANEL ─ */
-.irr-sc{background:var(--s);border:1.5px solid var(--blm);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:.9rem;box-shadow:var(--sh)}
-.irr-title{font-family:var(--m);font-size:10px;font-weight:700;color:var(--bl);text-transform:uppercase;letter-spacing:.7px;margin-bottom:.8rem;display:flex;align-items:center;gap:6px}
+/* ─── PLACEHOLDER ─── */
+.ph-empty{text-align:center;padding:3rem;color:var(--k3);
+  border:2px dashed var(--bd);border-radius:var(--r)}
+.ph-empty .ph-ico{font-size:40px;opacity:.2;margin-bottom:.5rem}
+.ph-empty p{font-size:14px;line-height:1.8}
 
-/* ─ IRR CARDS ─ */
-.icc{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.9rem}
-@media(max-width:600px){.icc{grid-template-columns:1fr 1fr}}
-.ic{background:var(--bll);border:1px solid var(--blm);border-radius:var(--r);padding:.8rem 1rem;box-shadow:var(--sh)}
-.ic.hi{background:var(--orl);border-color:var(--orm)}
-.ic-l{font-family:var(--m);font-size:9px;color:var(--bl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.ic.hi .ic-l{color:var(--or)}
-.ic-v{font-family:var(--m);font-size:22px;font-weight:700;line-height:1;color:var(--bl)}
-.ic.hi .ic-v{color:var(--or)}
-.ic-v .su{font-size:11px;color:var(--k3);margin-left:2px;font-weight:400}
-.ic-s{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:3px;line-height:1.4}
-td.it{font-weight:700;color:var(--bl)}
-td.ih{font-weight:700;color:var(--or)}
+/* ─── SCROLLABLE chart panel ─── */
+.chp{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);
+  padding:1rem 1.2rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.ch-top{display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:.75rem;gap:8px;flex-wrap:wrap}
+.ch-hd{font-size:13px;font-weight:700}
+.ch-note{font-family:var(--m);font-size:10px;color:var(--k3);margin-top:1px}
 </style>
 </head>
 <body>
 
+<!-- ═══ HEADER ═══ -->
 <header>
   <div class="logo">
-    <div class="logo-ico">
-      <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/></svg>
-    </div>
+    <div class="logo-ico">💧</div>
     <div>
       <div class="logo-name">IrriPlan</div>
-      <div class="logo-sub">By UCD Advanced Irrigation Lab</div>
+      <div class="logo-sub">UCD Advanced Irrigation Lab</div>
     </div>
   </div>
   <div class="hdr-r">
-    <div class="pill" id="stPill">No location</div>
     <div class="unit-toggle">
       <button class="unit-btn" id="btnSI" onclick="setUnits('SI')">SI</button>
       <button class="unit-btn active" id="btnUS" onclick="setUnits('US')">US</button>
     </div>
-    <div class="api-pill" id="apiPill" onclick="checkAPIs()">
-      <div class="dot chk" id="apiDot"></div><span id="apiTxt">Checking…</span>
+    <div class="api-pill" id="apiPill" onclick="checkAPI()">
+      <div class="dot chk" id="apiDot"></div>
+      <span id="apiTxt">Checking APIs…</span>
     </div>
   </div>
 </header>
 
-<main>
+<!-- ═══ STEP NAV ═══ -->
+<nav class="step-nav">
+  <div class="step-wrap">
+    <button class="step-btn active" id="nav1" onclick="gotoStep(1)">
+      <span class="step-num">1</span>Location &amp; ETo
+    </button>
+    <span class="step-arrow">›</span>
+    <button class="step-btn" id="nav2" onclick="gotoStep(2)">
+      <span class="step-num">2</span>Soil
+    </button>
+    <span class="step-arrow">›</span>
+    <button class="step-btn" id="nav3" onclick="gotoStep(3)">
+      <span class="step-num">3</span>Crop &amp; System
+    </button>
+    <span class="step-arrow">›</span>
+    <button class="step-btn" id="nav4" onclick="gotoStep(4)">
+      <span class="step-num">4</span>Schedule
+    </button>
+  </div>
+</nav>
 
-<!-- ── LOCATION + CROP + Kc ── -->
-<div class="sc">
-  <div class="g4" style="margin-bottom:.75rem">
+<!-- ══════════════════════════════════════
+     STEP 1: Location & ETo
+════════════════════════════════════════ -->
+<div id="page1" class="page active">
+<div class="pw">
+  <div class="ph">
+    <h2><span class="ph-num">1</span>Location &amp; Reference Evapotranspiration</h2>
+  </div>
 
-    <!-- LOCATION SEARCH -->
-    <div class="fl">
-      <label>Location (any city, region, or coordinates)</label>
-      <div class="loc-wrap" id="locWrap">
-        <div class="loc-row">
-          <input type="text" id="locIn"
-            placeholder="e.g. Fresno CA · Seville Spain · 36.7,-119.7"
-            autocomplete="off"
-            oninput="onLocInput()"
-            onkeydown="locKey(event)">
-          <button class="loc-btn" id="gpsBtn" onclick="useGPS()" title="Use my GPS location">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 4"/></svg>
-            GPS
-          </button>
+  <div class="tcol">
+    <div>
+      <div class="sc">
+        <div class="sc-title"><div class="ti">📍</div>Location</div>
+        <div class="fl" style="margin-bottom:.75rem">
+          <label>Search city, region, or coordinates</label>
+          <div class="loc-wrap" id="locWrap">
+            <div class="loc-row">
+              <input type="text" id="locIn" placeholder="e.g. Fresno CA · Seville Spain · 38.5,-121.8"
+                autocomplete="off" oninput="onLocInput()" onkeydown="locKey(event)">
+              <button class="loc-btn" id="gpsBtn" onclick="useGPS()" title="Use GPS">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+                GPS
+              </button>
+            </div>
+            <div class="loc-menu" id="locMenu"></div>
+            <div id="coordsBadge" style="display:none;margin-top:5px">
+              <div class="coords-badge"><span id="coordsTxt"></span></div>
+            </div>
+          </div>
         </div>
-        <div class="loc-menu" id="locMenu"></div>
-        <div id="coordsBadge" style="display:none;align-items:center;gap:6px;margin-top:4px">
-          <div class="coords-badge"><span id="coordsTxt"></span></div>
-          <button id="copyBtn" onclick="copyCoords()" title="Copy coordinates to clipboard"
-            style="padding:3px 9px;font-family:var(--m);font-size:10px;font-weight:700;
-              background:var(--s2);border:1px solid var(--bds);border-radius:6px;
-              cursor:pointer;color:var(--k3);transition:all .15s;display:flex;align-items:center;gap:4px">
-            <svg id="copyIcon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span id="copyLbl">Copy</span>
-          </button>
+
+        <button class="btn full" id="fetchBtn" onclick="fetchETo()" disabled>
+          <span class="spin-btn" id="fetchSpin"></span>
+          <span id="fetchLbl">Fetch 14-day ETo data</span>
+        </button>
+      </div>
+
+      <div id="etoSummary" style="display:none">
+        <div class="mc-row c2" id="etoCards"></div>
+        <div class="mn" id="etoMn"></div>
+      </div>
+    </div>
+
+    <div id="etoChartBox" style="display:none">
+      <div class="chp">
+        <div class="ch-top">
+          <div><div class="ch-hd">Daily ETo (mm/day)</div><div class="ch-note" id="etoChNote"></div></div>
+          <div class="leg">
+            <div class="leg-i"><div class="leg-b" style="background:var(--grm)"></div>ERA5 past</div>
+            <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>Forecast</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="etoChart"></canvas></div>
+      </div>
+      <div class="chp">
+        <div class="ch-top">
+          <div><div class="ch-hd">Temperature &amp; Rainfall (past 7d)</div></div>
+          <div class="leg">
+            <div class="leg-i"><div class="leg-l" style="background:var(--rem)"></div>Tmax</div>
+            <div class="leg-i"><div class="leg-l" style="background:var(--blm)"></div>Tmin</div>
+            <div class="leg-i"><div class="leg-b" style="background:var(--blm);opacity:.5"></div>Rain</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="metChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb" id="sb1"></div>
+  <div id="step1Next" style="display:none" class="next-row">
+    <span class="step-prog">Step 1 of 4 complete</span>
+    <button class="btn" onclick="gotoStep(2)">Next: Soil parameters →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     STEP 2: Soil
+════════════════════════════════════════ -->
+<div id="page2" class="page">
+<div class="pw">
+  <div class="ph">
+    <h2><span class="ph-num">2</span>Soil Characterization</h2>
+  </div>
+
+  <div class="tcol">
+    <div>
+      <div class="sc">
+        <div class="sc-title"><div class="ti">🪨</div>Texture &amp; Classification</div>
+        <div class="fl" style="margin-bottom:.65rem">
+          <label>USDA Texture Class</label>
+          <select id="soilSel" onchange="onSoilSelect()">
+            <option>Sand</option><option>Loamy Sand</option><option>Sandy Loam</option>
+            <option selected>Loam</option><option>Silt Loam</option><option>Silt</option>
+            <option>Sandy Clay Loam</option><option>Clay Loam</option>
+            <option>Silty Clay Loam</option><option>Sandy Clay</option>
+            <option>Silty Clay</option><option>Clay</option>
+          </select>
+        </div>
+        <div style="font-size:12px;color:var(--k3);margin-bottom:4px">Enter particle size percentages (must sum to 100%)</div>
+        <div class="tex-boxes">
+          <div class="tbox"><label>Sand</label><input type="number" id="inSand" min="0" max="100" step="1" value="42" oninput="onTexInput()"><span class="tbox-unit">%</span></div>
+          <div class="tbox"><label>Silt</label><input type="number" id="inSilt" min="0" max="100" step="1" value="38" oninput="onTexInput()"><span class="tbox-unit">%</span></div>
+          <div class="tbox"><label>Clay</label><input type="number" id="inClay" min="0" max="100" step="1" value="20" oninput="onTexInput()"><span class="tbox-unit">%</span></div>
+        </div>
+        <div class="sum-row">
+          <span style="font-size:13px;color:var(--k2)">Sum:</span>
+          <span id="texSum" class="sum-val sum-ok">100%</span>
+        </div>
+        <div class="warn-strip" id="texWarn">⚠ Sand + Silt + Clay must equal 100%</div>
+        <div class="classified" id="classifiedRow">
+          <div>
+            <div class="classified-name" id="classifiedName">Loam</div>
+            <div class="classified-sub" id="classifiedSub">Sand 42% · Silt 38% · Clay 20%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sc">
+        <div class="sc-title"><div class="ti">✏️</div>Soil Parameters <span style="font-size:10px;font-weight:400;color:var(--k3);margin-left:6px">(auto-estimated, editable)</span></div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--k3);margin-bottom:.5rem">Water retention</div>
+        <div class="param-grid">
+          <div class="pbox"><label>θ<sub>FC</sub> (33 kPa)</label><input type="number" id="pFC" step="0.001" oninput="onFCPWPEdit()"><span class="pbox-reset" onclick="curveReset()">↺ from curve</span></div>
+          <div class="pbox"><label>θ<sub>PWP</sub> (1500 kPa)</label><input type="number" id="pPWP" step="0.001" oninput="onFCPWPEdit()"><span class="pbox-reset" onclick="curveReset()">↺ from curve</span></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--k3);margin-bottom:.5rem;margin-top:.25rem">Physical</div>
+        <div class="param-grid">
+          <div class="pbox"><label>Bulk density (g/cm³)</label><input type="number" id="pBD" step="0.01" oninput="onBDEdit()"><span class="pbox-reset" onclick="resetBD()">↺ default</span></div>
+          <div class="pbox"><label>K<sub>sat</sub> (mm/day)</label><input type="number" id="pKsat" step="0.01"><span class="pbox-reset" onclick="resetKsat()">↺ default</span></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--k3);margin-bottom:.5rem;margin-top:.25rem">Derived</div>
+        <div class="param-grid">
+          <div class="pbox"><label>θ<sub>sat</sub></label><div class="pbox-derived" id="pTsat">—</div></div>
+          <div class="pbox"><label>Porosity</label><div class="pbox-derived" id="pPor">—</div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--k3);margin-bottom:.5rem;margin-top:.25rem">van Genuchten shape</div>
+        <div class="param-grid">
+          <div class="pbox"><label>α (kPa⁻¹)</label><input type="number" id="pAlpha" step="0.0001"><span class="pbox-reset" onclick="resetVG('alpha')">↺ class default</span></div>
+          <div class="pbox"><label>n</label><input type="number" id="pN" step="0.001"><span class="pbox-reset" onclick="resetVG('n')">↺ class default</span></div>
         </div>
       </div>
     </div>
 
-    <div class="fl">
-      <label>Crop</label>
-      <select id="cropSel" onchange="onCrop()"></select>
-    </div>
-    <div class="fl">
-      <label>Growth Stage</label>
-      <select id="stageSel" onchange="onStage()"></select>
-    </div>
-    <div class="fl">
-      <button class="btn" id="runBtn" onclick="runAll()">
-        <span class="spin" id="spin"></span><span id="runLbl">Load Data</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Kc row -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.75rem">
-    <div class="fl">
-      <label>Kc override</label>
-      <input type="number" id="kcIn" min="0.1" max="1.5" step="0.01" value="1.00" oninput="kcNum()">
-    </div>
-    <div class="fl">
-      <label>Active Kc &nbsp;<span id="kcDisp" style="font-family:var(--m);font-size:15px;font-weight:700;color:var(--gr)">1.00</span></label>
-      <input type="range" id="kcSlider" min="0.10" max="1.50" step="0.01" value="1.00" oninput="kcSlide()" style="height:4px;margin:6px 0 0 0">
-    </div>
-  </div>
-</div>
-
-<div class="sb" id="sb"></div>
-
-<!-- PLACEHOLDER -->
-<div class="ph" id="ph">
-  <div class="ph-i">🌍</div>
-  <div class="ph-t">
-    Type any city, region, or coordinates · choose crop &amp; stage · click <strong>Load Data</strong><br>
-    Past 7d: <strong>ERA5 reanalysis</strong> · Next 7d: <strong>Open-Meteo forecast</strong> · ETo: <strong>FAO-56 PM</strong>
-  </div>
-</div>
-
-<!-- RESULTS -->
-<div id="results">
-  <div class="mn" id="mn"></div>
-  <div class="cards" id="sumCards"></div>
-
-  <div class="chp">
-    <div class="ch-top">
-      <div><div class="ch-h">Reference ET₀ (mm/day)</div><div class="ch-n" id="etoNote"></div></div>
-      <div class="leg">
-        <div class="leg-i"><div class="leg-b" style="background:var(--grm)"></div>ERA5 past</div>
-        <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>Forecast</div>
+    <div>
+      <div class="sc" style="padding-bottom:.6rem">
+        <div class="sc-title"><div class="ti">📐</div>USDA Texture Triangle</div>
+        <div class="tri-wrap"><canvas id="triCanvas"></canvas></div>
+      </div>
+      <div class="sc" id="soilMetricsCard">
+        <div class="sc-title"><div class="ti">📊</div>Soil Hydraulic Summary</div>
+        <div class="mc-row c3" id="soilMetrics"></div>
+        <div class="chp" style="margin-bottom:0">
+          <div class="ch-top"><div class="ch-hd" style="font-size:12px">Soil-water characteristic curve</div></div>
+          <div class="chart-wrap tall"><canvas id="retChart"></canvas></div>
+        </div>
       </div>
     </div>
-    <div class="ch-c"><canvas id="etoC"></canvas></div>
   </div>
 
-  <div class="chp">
-    <div class="ch-top">
-      <div><div class="ch-h" id="etcH">Crop water demand ETc</div><div class="ch-n">ETc = ETo × Kc · orange = cumulative from today</div></div>
-      <div class="leg">
-        <div class="leg-i"><div class="leg-b" style="background:var(--grm)"></div>ETc past</div>
-        <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>ETc forecast</div>
-        <div class="leg-i"><div class="leg-l" style="background:var(--orm)"></div>Cumulative</div>
+  <div class="next-row">
+    <span class="step-prog">Step 2 of 4</span>
+    <button class="btn" onclick="gotoStep(3)">Next: Crop &amp; irrigation system →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     STEP 3: Crop & System
+════════════════════════════════════════ -->
+<div id="page3" class="page">
+<div class="pw">
+  <div class="ph">
+    <h2><span class="ph-num">3</span>Crop Parameters &amp; Irrigation System</h2>
+  </div>
+
+  <div class="tcol">
+    <div>
+      <div class="sc">
+        <div class="sc-title"><div class="ti">🌿</div>Crop Parameters</div>
+        <div class="g2" style="margin-bottom:.75rem">
+          <div class="fl"><label>Crop</label><select id="cropSel" onchange="onCrop()"></select></div>
+          <div class="fl"><label>Growth stage</label><select id="stageSel" onchange="onStage()"></select></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
+          <div class="fl">
+            <label>Kc override</label>
+            <input type="number" id="kcIn" min="0.1" max="1.5" step="0.01" value="1.00" oninput="kcNum()">
+          </div>
+          <div class="fl">
+            <label>Kc active &nbsp;<span id="kcDisp" style="font-family:var(--m);font-size:14px;font-weight:700;color:var(--gr)">1.00</span></label>
+            <input type="range" id="kcSlider" min="0.10" max="1.50" step="0.01" value="1.00" oninput="kcSlide()">
+          </div>
+        </div>
+
+        <!-- MAD default badge — shows crop recommended MAD before strategy selection -->
+        <div id="madDefaultBadge" style="background:var(--grl);border:1px solid var(--grm);border-radius:var(--rm);padding:7px 12px;margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+          <span style="font-family:var(--m);font-size:11px;color:var(--gr);font-weight:700">
+            🌿 Recommended MAD for this crop: <span id="madDefaultVal" style="font-size:14px">50%</span>
+            <span id="madDefaultFC" style="font-size:10px;font-weight:400;color:var(--k2);margin-left:6px"></span>
+          </span>
+          <button onclick="applyDefaultMAD()" style="padding:4px 12px;font-family:var(--m);font-size:10px;font-weight:700;background:var(--gr);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">Apply</button>
+        </div>
+
+        <div class="g2" style="margin-bottom:.75rem">
+          <div class="fl">
+            <label id="lblRD">Root depth (cm)</label>
+            <input type="number" id="rootDepth" value="60" min="5" max="300" step="5" oninput="updateStep3Derived()">
+          </div>
+          <div class="fl">
+            <label>Irrigation strategy</label>
+            <div style="display:flex;gap:4px">
+              <button class="strat-btn active" id="stratMADBtn" onclick="setStrategy('mad')" title="Irrigate when soil moisture depletion reaches MAD">💧 MAD trigger</button>
+              <button class="strat-btn" id="stratFixBtn" onclick="setStrategy('fixed')" title="Irrigate every N days regardless of soil moisture">📅 Fixed interval</button>
+              <button class="strat-btn" id="stratNoneBtn" onclick="setStrategy('none')" title="Track soil moisture only — no irrigation scheduled">🚫 No irrigation</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAD controls (shown when strategy = mad) -->
+        <div id="madControls" style="margin-bottom:.75rem">
+          <div class="fl">
+            <label>MAD — Management Allowable Deficit</label>
+            <select id="madSel" onchange="updateStep3Derived()">
+              <option value="20">20% — sensitive (rice, leafy veg)</option>
+              <option value="30">30% — sensitive (pepper, lettuce)</option>
+              <option value="40">40% — moderate-sensitive (tomato)</option>
+              <option value="50" selected>50% — standard (maize, soy)</option>
+              <option value="55">55% — tolerant (wheat, alfalfa)</option>
+              <option value="65">65% — drought tolerant (cotton)</option>
+              <option value="70">70% — very tolerant (avocado)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fixed interval controls (shown when strategy = fixed) -->
+        <div id="fixedControls" style="display:none;margin-bottom:.75rem">
+          <div class="g2">
+            <div class="fl">
+              <label>Irrigation interval (days)</label>
+              <input type="number" id="fixedInterval" value="3" min="1" max="14" step="1" oninput="updateStep3Derived()">
+            </div>
+            <div class="fl">
+              <label id="lblFixedDepth">Depth per event (mm)</label>
+              <select id="fixedDepthMode" onchange="onFixedDepthMode()">
+                <option value="refill">Refill to FC</option>
+                <option value="custom">Fixed depth</option>
+              </select>
+            </div>
+          </div>
+          <div id="fixedCustomDepthRow" style="display:none;margin-top:.5rem">
+            <div class="fl">
+              <label id="lblCustomDepth">Custom depth (mm)</label>
+              <input type="number" id="fixedCustomDepth" value="30" min="1" max="200" step="1" oninput="updateStep3Derived()">
+            </div>
+          </div>
+          <div class="sb info" id="fixedHint" style="margin-top:.5rem;font-size:11px">ℹ Fixed interval ignores soil moisture — water balance is still tracked and shown in the chart.</div>
+        </div>
+
+        <!-- Initial soil moisture -->
+        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--rm);padding:.75rem 1rem;margin-bottom:.75rem">
+          <div style="font-family:var(--m);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--k3);margin-bottom:.5rem">💧 Initial soil moisture (today)</div>
+          <div class="g2" style="margin-bottom:.5rem">
+            <div class="fl">
+              <label>Unit</label>
+              <select id="initSMUnit" onchange="onInitSMUnit()">
+                <option value="pct_fc">% of Field Capacity</option>
+                <option value="pct_vol">% Volumetric (θ)</option>
+                <option value="mm">mm in root zone</option>
+              </select>
+            </div>
+            <div class="fl">
+              <label id="lblInitSM">Initial SM (% FC)</label>
+              <input type="number" id="initSMVal" value="80" min="0" max="200" step="1" oninput="updateStep3Derived()">
+            </div>
+          </div>
+          <div class="mn" id="initSMHint" style="margin-bottom:0;font-size:11px">Starting at 80% FC</div>
+        </div>
+
+        <!-- Crop water demand preview -->
+        <div class="mc-row c2" id="cropMetrics"></div>
+      </div>
+
+      <div class="sc" style="border:1.5px solid var(--blm)">
+        <div class="sc-title" style="color:var(--bl)"><div class="ti" style="background:var(--bll)">💧</div>Drip Irrigation System</div>
+        <div class="drip-grid" style="margin-bottom:.75rem">
+          <div class="fl">
+            <label id="lblArea">Field area (ac)</label>
+            <input type="number" id="iArea" value="1" min="0.01" step="0.1" oninput="updateDrip()">
+          </div>
+          <div class="fl">
+            <label id="lblQ">Emitter discharge (gph)</label>
+            <input type="number" id="iQ" value="0.16" min="0.01" step="0.01" oninput="updateDrip()">
+          </div>
+          <div class="fl">
+            <label id="lblSe">Emitter spacing (in)</label>
+            <input type="number" id="iSe" value="12" min="1" step="1" oninput="updateDrip()">
+          </div>
+          <div class="fl">
+            <label id="lblSr">Row spacing (ft)</label>
+            <input type="number" id="iSr" value="5" min="0.5" step="0.5" oninput="updateDrip()">
+          </div>
+          <div class="fl">
+            <label>Efficiency (%)</label>
+            <input type="number" id="iEa" value="90" min="50" max="100" step="1" oninput="updateDrip()">
+          </div>
+        </div>
+        <div class="mc-row c3" id="dripMetrics"></div>
       </div>
     </div>
-    <div class="ch-c"><canvas id="etcC"></canvas></div>
-  </div>
 
-  <div class="tp">
-    <table>
-      <thead><tr id="tblHead"></tr></thead>
-      <tbody id="tb"></tbody>
-      <tfoot><tr id="tf"></tr></tfoot>
-    </table>
-  </div>
-</div>
+    <div>
+      <!-- Kc summary card -->
+      <div class="sc">
+        <div class="sc-title"><div class="ti">📋</div>Kc Reference — <span id="kcCropName">—</span></div>
+        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--rm);padding:.75rem 1rem;margin-bottom:.75rem">
+          <div class="kc-row"><span style="color:var(--k3)">Stage</span><span style="color:var(--k3)">Tabulated Kc</span></div>
+          <div style="height:1px;background:var(--bd);margin:4px 0"></div>
+          <div class="kc-row"><span>Initial</span><strong id="kcIni">—</strong></div>
+          <div class="kc-row"><span>Development</span><strong id="kcDev">—</strong></div>
+          <div class="kc-row"><span>Mid-season</span><strong id="kcMid">—</strong></div>
+          <div class="kc-row"><span>Late season</span><strong id="kcLate">—</strong></div>
+          <div style="height:1px;background:var(--bd);margin:4px 0"></div>
+          <div class="kc-row"><span>Active Kc (this stage)</span><strong id="kcActive" style="font-size:16px;color:var(--gr)">—</strong></div>
+        </div>
+        <div class="chp" style="margin-bottom:0">
+          <div class="ch-top"><div class="ch-hd" style="font-size:12px">ETc forecast (7 days)</div></div>
+          <div class="chart-wrap"><canvas id="etcChart"></canvas></div>
+          <div class="leg" style="margin-top:.5rem">
+            <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>ETc</div>
+            <div class="leg-i"><div class="leg-l" style="background:var(--orm)"></div>Cumulative ETc</div>
+          </div>
+        </div>
+      </div>
 
-<!-- ── DRIP SYSTEM ── -->
-<div class="irr-sc" id="dripPanel" style="display:none">
-  <div class="irr-title">💧 Drip System</div>
-  <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.75rem;align-items:end">
-    <div class="fl">
-      <label>Area <span id="lArea"></span></label>
-      <input type="number" id="iArea" value="1" min="0.01" step="0.1" oninput="liveIrr()">
-    </div>
-    <div class="fl">
-      <label>Discharge <span id="lQ"></span></label>
-      <input type="number" id="iQ" value="0.16" min="0.01" step="0.01" oninput="liveIrr()">
-    </div>
-    <div class="fl">
-      <label>Emitter sp. <span id="lSe"></span></label>
-      <input type="number" id="iSe" value="12" min="1" step="1" oninput="liveIrr()">
-    </div>
-    <div class="fl">
-      <label>Row sp. <span id="lSr"></span></label>
-      <input type="number" id="iSr" value="5" min="0.5" step="0.5" oninput="liveIrr()">
-    </div>
-    <div class="fl">
-      <label>Efficiency %</label>
-      <input type="number" id="iEa" value="90" min="50" max="100" step="1" oninput="liveIrr()">
-    </div>
-    <div class="fl">
-      <label>Days / week</label>
-      <input type="number" id="iDays" value="7" min="1" max="7" step="1" oninput="liveIrr()">
-    </div>
-    <div class="fl">
-      <label>Start time</label>
-      <input type="time" id="iStart" value="06:00" oninput="liveIrr()">
-    </div>
-  </div>
-</div>
-
-<!-- IRRIGATION SECTION -->
-<div id="irrSection">
-  <div style="display:grid;grid-template-columns:auto 1fr auto;gap:.9rem;margin-bottom:.9rem;align-items:stretch">
-    <div style="background:var(--or);border-radius:var(--r);padding:1.1rem 1.4rem;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:140px;box-shadow:var(--sh)">
-      <div style="font-family:var(--m);font-size:10px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;white-space:nowrap">Per event</div>
-      <div id="eventTimeDisplay" style="font-family:var(--m);font-size:44px;font-weight:700;color:#fff;line-height:1">—</div>
-      <div id="eventTimeLabel" style="font-family:var(--m);font-size:12px;color:rgba(255,255,255,.65);margin-top:4px">hr / event</div>
-    </div>
-    <div class="icc" id="irrCards" style="margin-bottom:0"></div>
-    <div style="display:flex;align-items:center">
-      <button onclick="exportExcel()" style="
-        padding:10px 18px;background:var(--gr);color:#fff;border:none;border-radius:var(--r);
-        font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;
-        display:flex;align-items:center;gap:7px;white-space:nowrap;
-        box-shadow:var(--sh);transition:opacity .15s;height:100%;
-      " onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
-        Export Excel
-      </button>
-    </div>
-  </div>
-
-  <div class="chp">
-    <div class="ch-top">
-      <div><div class="ch-h" style="color:var(--bl)">💧 7-Day Irrigation Schedule</div></div>
-      <div class="leg">
-        <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div><span id="legVol">Volume</span></div>
-        <div class="leg-i"><div class="leg-l" style="background:var(--orm)"></div>Time (hr)</div>
+      <div class="sc" id="waterBalPreview">
+        <div class="sc-title"><div class="ti">⚖️</div>Water Balance Preview</div>
+        <div class="mc-row c2" id="wbMetrics"></div>
       </div>
     </div>
-    <div class="ch-c"><canvas id="irrC"></canvas></div>
   </div>
 
-  <div class="tp">
-    <table>
-      <thead><tr>
-        <th>Date</th>
-        <th class="r">ETc</th>
-        <th class="r">Gross</th>
-        <th class="r" id="thVol">Volume</th>
-        <th class="r">Hr/day</th>
-        <th class="r">Hr/event</th>
-        <th class="r">Start</th>
-        <th class="r">End</th>
-      </tr></thead>
-      <tbody id="irrTb"></tbody>
-      <tfoot><tr id="irrTf"></tr></tfoot>
-    </table>
+  <div class="next-row">
+    <span class="step-prog">Step 3 of 4</span>
+    <button class="btn" onclick="runSchedule()">Calculate schedule →</button>
   </div>
 </div>
+</div>
 
-</main>
+<!-- ══════════════════════════════════════
+     STEP 4: Schedule
+════════════════════════════════════════ -->
+<div id="page4" class="page">
+<div class="pw">
+  <div class="ph">
+    <h2><span class="ph-num">4</span>Irrigation Schedule &amp; Soil Moisture Outlook</h2>
+  </div>
+
+  <div id="schedPH" class="ph-empty">
+    <div class="ph-ico">📅</div>
+    <p>Complete steps 1–3, then click <strong>Calculate schedule</strong></p>
+  </div>
+
+  <div id="schedResults" style="display:none">
+    <div class="mn" id="schedMn"></div>
+
+    <!-- Hero summary row -->
+    <div class="sched-hero">
+      <div class="hero-box">
+        <div class="hero-val" id="hNextIrr">—</div>
+        <div class="hero-lbl" id="hNextLbl">days until next irrigation</div>
+        <div class="hero-sub" id="hNextSub"></div>
+      </div>
+      <div class="mc-row" id="schedCards" style="margin-bottom:0;align-content:start;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.65rem"></div>
+    </div>
+
+    <!-- Soil moisture chart -->
+    <div class="chp">
+      <div class="ch-top">
+        <div><div class="ch-hd">Soil Moisture Balance (7-day forecast)</div></div>
+        <div class="leg">
+          <div class="leg-i"><div class="leg-l" style="background:#2b68c8"></div>θ % vol (left) / SM mm (right)</div>
+          <div class="leg-i"><div class="leg-l" style="background:rgba(202,108,16,.8)"></div>MAD threshold</div>
+          <div class="leg-i"><div class="leg-b" style="background:rgba(173,216,255,.8);border:1px solid rgba(43,104,200,.4)"></div>FC zone</div>
+          <div class="leg-i"><div class="leg-b" style="background:rgba(255,180,180,.8);border:1px solid rgba(196,36,36,.4)"></div>Stress zone</div>
+          <div class="leg-i"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#1a5c38;border:2px solid #fff;box-shadow:0 0 0 1.5px #1a5c38"></span>Irrigation event</div>
+          <div class="leg-i"><div class="leg-b" style="background:rgba(45,152,84,.75)"></div>Irrigation depth</div>
+          <div class="leg-i"><div class="leg-b" style="background:rgba(43,104,200,.38)"></div>Rainfall</div>
+        </div>
+      </div>
+      <div class="chart-wrap tall"><canvas id="smChart"></canvas></div>
+    </div>
+
+    <!-- ETc + Irrigation bar chart -->
+    <div class="chp">
+      <div class="ch-top">
+        <div><div class="ch-hd">Daily ETc &amp; Irrigation Depth</div></div>
+        <div class="leg">
+          <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>ETc forecast</div>
+          <div class="leg-i"><div class="leg-b" style="background:var(--grm)"></div>Irrigation applied</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="irrChart"></canvas></div>
+    </div>
+
+    <!-- Schedule table -->
+    <div class="tbl-wrap">
+      <div class="tbl-head">
+        <span class="tbl-title">7-Day Schedule</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn sm outline" onclick="exportXLS()">⬇ Export Excel</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="r">ETo</th>
+              <th class="r">ETc</th>
+              <th class="r" id="thRain">Rain</th>
+              <th class="r">Net demand</th>
+              <th class="r">θ start (%vol)</th>
+              <th class="r">θ end (%vol)</th>
+              <th class="r">|h| end (kPa)</th>
+              <th>Status</th>
+              <th class="r" id="thDepth">Irr. depth</th>
+              <th class="r" id="thVol">Volume</th>
+              <th class="r" id="thTime">Run time</th>
+            </tr>
+          </thead>
+          <tbody id="schedTb"></tbody>
+          <tfoot><tr id="schedTf"></tr></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Drip events detail -->
+    <div class="chp">
+      <div class="ch-top">
+        <div><div class="ch-hd">Daily System Run Time (hours)</div></div>
+        <div class="leg">
+          <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>Run time (hh:mm)</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="runChart"></canvas></div>
+    </div>
+  </div>
+</div>
+</div>
 
 <script>
-/* ══════ CROPS ══════ */
-const CROPS=[
-  {name:'Processing Tomato',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.90},{l:'Mid-season',kc:1.15},{l:'Late',kc:.80}]},
-  {name:'Fresh Tomato',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.90},{l:'Mid-season',kc:1.15},{l:'Late',kc:.70}]},
-  {name:'Alfalfa',stages:[{l:'Post-cut',kc:.40},{l:'Vegetative',kc:.85},{l:'Pre-bloom',kc:1.05},{l:'Dormancy',kc:.90}]},
-  {name:'Maize / Corn',stages:[{l:'Emergence',kc:.30},{l:'Development',kc:.70},{l:'Tasseling',kc:1.20},{l:'Dough',kc:.60}]},
-  {name:'Cotton',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.20},{l:'Late',kc:.70}]},
-  {name:'Wheat (winter)',stages:[{l:'Initial',kc:.30},{l:'Development',kc:.70},{l:'Heading',kc:1.15},{l:'Ripening',kc:.40}]},
-  {name:'Sunflower',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.10},{l:'Late',kc:.45}]},
-  {name:'Onion / Garlic',stages:[{l:'Initial',kc:.70},{l:'Development',kc:.90},{l:'Mid-season',kc:1.05},{l:'Bulbing',kc:.75}]},
-  {name:'Lettuce',stages:[{l:'Initial',kc:.70},{l:'Development',kc:.90},{l:'Mid-season',kc:1.00},{l:'Late',kc:.95}]},
-  {name:'Strawberry',stages:[{l:'Establishment',kc:.40},{l:'Vegetative',kc:.70},{l:'Fruiting',kc:.85},{l:'Late',kc:.75}]},
-  {name:'Almonds',stages:[{l:'Leaf-out',kc:.40},{l:'Bloom / nut set',kc:.90},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}]},
-  {name:'Pistachios',stages:[{l:'Leaf-out',kc:.35},{l:'Shoot growth',kc:.85},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}]},
-  {name:'Walnuts',stages:[{l:'Leaf-out',kc:.50},{l:'Canopy growth',kc:.85},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}]},
-  {name:'Wine Grapes',stages:[{l:'Budbreak',kc:.30},{l:'Canopy dev.',kc:.60},{l:'Véraison',kc:.70},{l:'Dormancy',kc:.45}]},
-  {name:'Table Grapes',stages:[{l:'Budbreak',kc:.35},{l:'Canopy dev.',kc:.65},{l:'Sizing',kc:.85},{l:'Harvest',kc:.60}]},
-  {name:'Citrus (mature)',stages:[{l:'Winter',kc:.75},{l:'Spring',kc:.80},{l:'Summer',kc:.85},{l:'Fall',kc:.75}]},
-  {name:'Rice',stages:[{l:'Transplanting',kc:1.05},{l:'Tillering',kc:1.10},{l:'Heading',kc:1.20},{l:'Ripening',kc:1.00}]},
-  {name:'Dry Bean',stages:[{l:'Initial',kc:.40},{l:'Development',kc:.75},{l:'Mid-season',kc:1.15},{l:'Pod fill',kc:.55}]},
-  {name:'Safflower',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.10},{l:'Late',kc:.50}]},
-  {name:'Turf / Grass',stages:[{l:'Full cover',kc:.85},{l:'Dormant',kc:.60},{l:'Summer',kc:1.00},{l:'Cool season',kc:.80}]},
-  {name:'Olive',stages:[{l:'Flowering',kc:.65},{l:'Fruit set',kc:.70},{l:'Full canopy',kc:.70},{l:'Harvest',kc:.60}]},
-  {name:'Sugarcane',stages:[{l:'Emergence',kc:.40},{l:'Tillering',kc:.80},{l:'Grand growth',kc:1.25},{l:'Ripening',kc:.75}]},
-  {name:'Soybean',stages:[{l:'Initial',kc:.40},{l:'Development',kc:.80},{l:'Mid-season',kc:1.15},{l:'Late',kc:.50}]},
-  {name:'Potato',stages:[{l:'Initial',kc:.50},{l:'Development',kc:.75},{l:'Mid-season',kc:1.15},{l:'Late',kc:.75}]},
-  {name:'Pepper',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.85},{l:'Mid-season',kc:1.05},{l:'Late',kc:.90}]},
-  {name:'Sugarbeet',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.20},{l:'Late',kc:.70}]},
-];
-
-/* ══════ UNIT CONSTANTS ══════ */
-const AC2HA=0.404686, IN2M=0.0254, GPH2LH=3.78541, MM2IN=0.0393701;
+// ═══════════════════════════════════════════════════
+//  CONSTANTS & UNIT SYSTEM
+// ═══════════════════════════════════════════════════
+const AC2HA=0.404686, IN2M=0.0254, GPH2LH=3.78541, MM2IN=0.0393701, FT2M=0.3048;
+const RHO_S=2.65;
 let unitSys='US';
 
-function setUnits(sys){
-  unitSys=sys;
-  document.getElementById('btnSI').classList.toggle('active',sys==='SI');
-  document.getElementById('btnUS').classList.toggle('active',sys==='US');
-  updateUnitLabels();
+function setUnits(u){
+  unitSys=u;
+  document.getElementById('btnSI').classList.toggle('active',u==='SI');
+  document.getElementById('btnUS').classList.toggle('active',u==='US');
+  applyUnitLabels();
   applyUnitDefaults();
-  liveIrr();
+  updateStep3Derived();
+  updateDrip();
 }
-function updateUnitLabels(){
+
+function applyUnitLabels(){
   const si=unitSys==='SI';
-  document.getElementById('lArea').textContent=si?'(ha)':'(ac)';
-  document.getElementById('lQ').textContent=si?'(L/hr)':'(gph)';
-  document.getElementById('lSe').textContent=si?'(m)':'(in)';
-  document.getElementById('lSr').textContent=si?'(m)':'(ft)';
+  document.getElementById('lblRD').textContent=si?'Root depth (cm)':'Root depth (in)';
+  document.getElementById('lblArea').textContent=si?'Field area (ha)':'Field area (ac)';
+  document.getElementById('lblQ').textContent=si?'Emitter discharge (L/hr)':'Emitter discharge (gph)';
+  document.getElementById('lblSe').textContent=si?'Emitter spacing (m)':'Emitter spacing (in)';
+  document.getElementById('lblSr').textContent=si?'Row spacing (m)':'Row spacing (ft)';
+  document.getElementById('thRain').textContent='Rain ('+uu()+')';
+  document.getElementById('thDepth').textContent='Depth ('+uu()+')';
+  document.getElementById('thVol').textContent='Volume ('+vuu()+')';
+  document.getElementById('thTime').textContent='Run time';
+  document.getElementById('lblCustomDepth').textContent=`Custom depth (${uu()})`;
 }
+
 function applyUnitDefaults(){
-  if(unitSys==='US'){
+  const si=unitSys==='SI';
+  if(si){
+    document.getElementById('iArea').value=(1*AC2HA).toFixed(3);
+    document.getElementById('iQ').value=(0.16*GPH2LH).toFixed(2);
+    document.getElementById('iSe').value=(12*IN2M).toFixed(2);
+    document.getElementById('iSr').value=(5*FT2M).toFixed(2);
+  } else {
     document.getElementById('iArea').value='1';
     document.getElementById('iQ').value='0.16';
     document.getElementById('iSe').value='12';
     document.getElementById('iSr').value='5';
-  } else {
-    document.getElementById('iArea').value=(1*AC2HA).toFixed(3);
-    document.getElementById('iQ').value=(0.16*GPH2LH).toFixed(2);
-    document.getElementById('iSe').value=(12*IN2M).toFixed(2);
-    document.getElementById('iSr').value=(5*0.3048).toFixed(2);
   }
 }
-function getSIValues(){
+
+function uu(){return unitSys==='SI'?'mm':'in';}
+function vuu(){return unitSys==='SI'?'m³':'gal';}
+function toDisp(mm){return unitSys==='SI'?+mm.toFixed(2):+(mm*MM2IN).toFixed(3);}
+function toDispV(m3){return unitSys==='SI'?+m3.toFixed(1):+(m3*264.172).toFixed(0);}
+function dispRD(){
+  const v=parseFloat(document.getElementById('rootDepth').value)||60;
+  return unitSys==='SI'?v:v; // input is always cm or in depending on mode
+}
+function getRD_m(){
+  const v=parseFloat(document.getElementById('rootDepth').value)||60;
+  return unitSys==='SI'?v/100:v*IN2M;
+}
+
+function getSIdripValues(){
   const ra=parseFloat(document.getElementById('iArea').value)||0;
   const rq=parseFloat(document.getElementById('iQ').value)||0;
   const rse=parseFloat(document.getElementById('iSe').value)||0;
   const rsr=parseFloat(document.getElementById('iSr').value)||0;
   const ea=(parseFloat(document.getElementById('iEa').value)||90)/100;
-  if(unitSys==='US')return{area:ra*AC2HA,q:rq*GPH2LH,se:rse*IN2M,sr:rsr*0.3048,ea};
+  if(unitSys==='US') return{area:ra*AC2HA,q:rq*GPH2LH,se:rse*IN2M,sr:rsr*FT2M,ea};
   return{area:ra,q:rq,se:rse,sr:rsr,ea};
 }
 
-/* ══════ LOCATION STATE ══════ */
-let selLoc=null; // {name, lat, lon, country, admin1}
-let locSearchTimer=null, locMenuOpen=false;
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let selLoc=null, locTimer=null;
+let eto14=[]; // [{date,src,eto,tmax,tmin,rain},...]
+let soilP={}; // {fc,pwp,tsat,tr,alpha,n,ksat,bd} — volumetric fractions & mm/day for ksat
+let kc=1.00;
+let schedData=[]; // computed schedule rows
+let charts={eto:null,met:null,ret:null,etc:null,sm:null,irr:null,run:null};
 
-/* ══════ GEOCODING via Open-Meteo ══════ */
+// ═══════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════
+function iso(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function doy(ds){const d=new Date(ds+'T12:00:00Z');return Math.ceil((d-new Date(d.getUTCFullYear(),0,0))/86400e3)}
+function todayISO(){return iso(new Date())}
+function toHHMM(h){
+  // Convert decimal hours to hh:mm string. e.g. 1.5 → "01:30", 0 → "00:00"
+  if(!h||h<=0) return '00:00';
+  const totalMin=Math.round(h*60);
+  const hh=Math.floor(totalMin/60);
+  const mm=totalMin%60;
+  return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+}
+function ld(ds){return new Date(ds+'T12:00:00Z').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}
+function sd(ds){return new Date(ds+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+function wd(ds){return new Date(ds+'T12:00:00Z').toLocaleDateString('en-US',{weekday:'short'})}
+function showSb(el,msg,cls){const b=document.getElementById(el);b.innerHTML=msg;b.className='sb '+cls}
+function hideSb(el){document.getElementById(el).className='sb'}
+function isDark(){return window.matchMedia('(prefers-color-scheme:dark)').matches}
+function gc(){return isDark()?'rgba(242,240,232,.07)':'rgba(24,24,15,.07)'}
+function tc(){return isDark()?'#66645c':'#90887c'}
+
+// ═══════════════════════════════════════════════════
+//  STEP NAV
+// ═══════════════════════════════════════════════════
+function gotoStep(n){
+  for(let i=1;i<=4;i++){
+    document.getElementById('page'+i).classList.toggle('active',i===n);
+    const nb=document.getElementById('nav'+i);
+    nb.classList.remove('active','done');
+    if(i<n) nb.classList.add('done');
+    else if(i===n) nb.classList.add('active');
+  }
+  if(n===2) setTimeout(()=>{drawTriangle(+document.getElementById('inSand').value||42,+document.getElementById('inSilt').value||38,+document.getElementById('inClay').value||20);redrawRetChart();},80);
+  if(n===3) setTimeout(()=>redrawEtcChart(),80);
+  if(n===4) setTimeout(()=>redrawScheduleCharts(),80);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════
+//  STEP 1 — LOCATION & ETO
+// ═══════════════════════════════════════════════════
 async function geocode(q){
-  const url=`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=en&format=json`;
-  const r=await fetch(url);
-  if(!r.ok)return[];
+  const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=en&format=json`);
+  if(!r.ok) return[];
   const j=await r.json();
   return(j.results||[]).map(x=>({
-    name:x.name,
-    lat:x.latitude,
-    lon:x.longitude,
-    country:x.country||'',
-    admin1:x.admin1||'',
-    timezone:x.timezone||'UTC',
+    name:x.name,lat:x.latitude,lon:x.longitude,
+    country:x.country||'',admin1:x.admin1||'',timezone:x.timezone||'UTC',
     display:`${x.name}${x.admin1?', '+x.admin1:''}${x.country?', '+x.country:''}`
   }));
 }
 
-/* Parse raw coordinate string: "36.7, -119.7" or "36.7 -119.7" or "36.7N 119.7W" */
 function parseCoords(s){
-  // Handle cardinal directions
   s=s.replace(/([0-9.]+)\s*N/gi,'$1').replace(/([0-9.]+)\s*S/gi,'-$1')
       .replace(/([0-9.]+)\s*E/gi,'$1').replace(/([0-9.]+)\s*W/gi,'-$1');
   const m=s.match(/(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)/);
-  if(!m)return null;
+  if(!m) return null;
   const lat=parseFloat(m[1]),lon=parseFloat(m[2]);
-  if(isNaN(lat)||isNaN(lon))return null;
-  if(lat<-90||lat>90||lon<-180||lon>180)return null;
+  if(isNaN(lat)||isNaN(lon)||lat<-90||lat>90||lon<-180||lon>180) return null;
   return{lat,lon};
 }
 
 function onLocInput(){
   const v=document.getElementById('locIn').value.trim();
-  clearTimeout(locSearchTimer);
+  clearTimeout(locTimer);
   if(!v){hideLocMenu();return;}
-  // Check if looks like coordinates
-  const coords=parseCoords(v);
-  if(coords){
-    showLocMenu([{
-      name:`${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`,
-      lat:coords.lat,lon:coords.lon,
-      country:'Custom coordinates',admin1:'',timezone:'auto',
-      display:`📍 ${coords.lat.toFixed(4)}°, ${coords.lon.toFixed(4)}°`
-    }]);
+  const co=parseCoords(v);
+  if(co){
+    showLocMenu([{name:`${co.lat.toFixed(4)}, ${co.lon.toFixed(4)}`,lat:co.lat,lon:co.lon,
+      country:'Custom coordinates',admin1:'',timezone:'auto',display:`📍 ${co.lat.toFixed(4)}°, ${co.lon.toFixed(4)}°`}]);
     return;
   }
   if(v.length<2){hideLocMenu();return;}
   showLocMenu([{searching:true}]);
-  locSearchTimer=setTimeout(async()=>{
-    try{
-      const results=await geocode(v);
-      if(results.length)showLocMenu(results);
-      else showLocMenu([{empty:true}]);
-    }catch(e){showLocMenu([{empty:true}]);}
+  locTimer=setTimeout(async()=>{
+    const res=await geocode(v).catch(()=>[]);
+    if(res.length) showLocMenu(res);
+    else showLocMenu([{empty:true}]);
   },350);
 }
 
 function showLocMenu(items){
   const m=document.getElementById('locMenu');
-  if(items.length===1&&items[0].searching){
-    m.innerHTML=`<div class="loc-searching"><div class="loc-spin"></div>Searching…</div>`;
-  } else if(items.length===1&&items[0].empty){
-    m.innerHTML=`<div class="loc-searching">No results — try coordinates (lat, lon)</div>`;
-  } else {
-    m.innerHTML=items.map((x,i)=>`
-      <div class="loc-item" onmousedown="pickLoc(${i})">
-        <div class="loc-name">${x.name}</div>
-        <div class="loc-detail">${[x.admin1,x.country].filter(Boolean).join(', ')||'Custom'}</div>
-        <div class="loc-coords">${x.lat.toFixed(4)}°, ${x.lon.toFixed(4)}°</div>
-      </div>`).join('');
-    // Store items for pick
+  if(items[0]?.searching) m.innerHTML=`<div class="loc-spin-row"><div class="spin-sm"></div>Searching…</div>`;
+  else if(items[0]?.empty) m.innerHTML=`<div class="loc-spin-row">No results — try coordinates (lat, lon)</div>`;
+  else{
+    m.innerHTML=items.map((x,i)=>`<div class="loc-item" onmousedown="pickLoc(${i})"><div class="loc-nm">${x.name}</div><div class="loc-dt">${[x.admin1,x.country].filter(Boolean).join(', ')||'Custom'}</div><div class="loc-cd">${x.lat.toFixed(4)}°, ${x.lon.toFixed(4)}°</div></div>`).join('');
     m._items=items;
   }
   m.classList.add('open');
-  locMenuOpen=true;
 }
 
-function hideLocMenu(){
-  document.getElementById('locMenu').classList.remove('open');
-  locMenuOpen=false;
-}
+function hideLocMenu(){document.getElementById('locMenu').classList.remove('open');}
 
 function pickLoc(i){
   const m=document.getElementById('locMenu');
-  const item=m._items?m._items[i]:null;
-  if(!item)return;
+  const item=m._items?.[i];
+  if(!item) return;
   selLoc=item;
   document.getElementById('locIn').value=item.display||item.name;
-  document.getElementById('stPill').textContent=item.name;
-  document.getElementById('coordsBadge').style.display='flex';
-  document.getElementById('coordsTxt').textContent=`${item.lat.toFixed(4)}°N  ${item.lon.toFixed(4)}°E`;
-  resetCopyBtn();
+  document.getElementById('coordsBadge').style.display='block';
+  document.getElementById('coordsTxt').innerHTML=`<span>${item.lat.toFixed(4)}°N &nbsp; ${item.lon.toFixed(4)}°E</span>`;
+  document.getElementById('fetchBtn').disabled=false;
   hideLocMenu();
 }
 
@@ -616,521 +1009,1065 @@ function locKey(e){
   if(e.key==='Enter'&&items.length){e.preventDefault();pickLoc(0);}
 }
 
-/* ── GPS ── */
-const GPS_SVG='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 4"/></svg>';
-
-function useGPS(){
-  const btn=document.getElementById('gpsBtn');
-  if(!navigator.geolocation){
-    alert('Geolocation not available in this browser');return;
-  }
-  // Show spinner in button
-  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" style="animation:rot .7s linear infinite"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="28 56" stroke-linecap="round"/></svg> Locating…';
-  btn.disabled=true;
-
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    const lat=+pos.coords.latitude.toFixed(6);
-    const lon=+pos.coords.longitude.toFixed(6);
-
-    // Fill coords immediately so user sees something
-    document.getElementById('locIn').value=`${lat}, ${lon}`;
-    document.getElementById('coordsBadge').style.display='flex';
-    document.getElementById('coordsTxt').textContent=`${lat}°  ${lon}°`;
-    resetCopyBtn();
-
-    // Set a basic selLoc right away so Load Data works even if reverse-geocode fails
-    selLoc={name:`${lat}, ${lon}`,lat,lon,country:'GPS location',admin1:'',timezone:'auto',display:`${lat}, ${lon}`};
-    document.getElementById('stPill').textContent='GPS location';
-
-    // Reverse-geocode: find nearest named place via Open-Meteo geocoding
-    // Use a bounding-box search by querying nearby place names — actually
-    // Open-Meteo doesn't have reverse geocoding, so we use the BigDataCloud
-    // free reverse geocoding API (no key required, CORS-enabled).
-    try{
-      const r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-      if(r.ok){
-        const j=await r.json();
-        const city=j.city||j.locality||j.principalSubdivision||'';
-        const admin=j.principalSubdivision||'';
-        const country=j.countryName||'';
-        const tz=j.localityInfo?.informative?.find(x=>x.description==='time zone')?.name||'auto';
-        if(city){
-          const displayName=`${city}${admin&&admin!==city?', '+admin:''}${country?', '+country:''}`;
-          selLoc={name:city,lat,lon,country,admin1:admin,timezone:tz||'auto',display:displayName};
-          // Show place name + coords in the input box
-          document.getElementById('locIn').value=`${displayName}  (${lat}, ${lon})`;
-          document.getElementById('stPill').textContent=city;
-          document.getElementById('coordsTxt').textContent=`${lat}°  ${lon}°`;
-        }
-      }
-    }catch(e){/* reverse geocode failed — coords already shown, that's fine */}
-
-    btn.innerHTML=GPS_SVG+' GPS';
-    btn.disabled=false;
-    btn.classList.add('active');
-
-  },err=>{
-    const msgs={1:'Permission denied — allow location access and try again.',2:'Position unavailable.',3:'Location request timed out.'};
-    alert(msgs[err.code]||'GPS error');
-    btn.innerHTML=GPS_SVG+' GPS';
-    btn.disabled=false;
-  },{timeout:10000,maximumAge:60000});
-}
-
-// Close menu on outside click
 document.addEventListener('mousedown',e=>{
-  if(!document.getElementById('locWrap').contains(e.target))hideLocMenu();
+  if(!document.getElementById('locWrap').contains(e.target)) hideLocMenu();
 });
 
-/* ══════ STATE ══════ */
-let kc=1.00, chartEto=null, chartEtc=null, chartIrr=null;
-let cachedFct=[], cachedCrop='', cachedStage='';
-let cachedAllRows=[], cachedKc=1.00;
+async function useGPS(){
+  const btn=document.getElementById('gpsBtn');
+  if(!navigator.geolocation){alert('Geolocation not available');return;}
+  btn.innerHTML='<div class="spin-sm"></div> Locating…';btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const lat=+pos.coords.latitude.toFixed(6),lon=+pos.coords.longitude.toFixed(6);
+    selLoc={name:`${lat}, ${lon}`,lat,lon,country:'GPS',admin1:'',timezone:'auto',display:`${lat}, ${lon}`};
+    document.getElementById('locIn').value=`${lat}, ${lon}`;
+    document.getElementById('coordsBadge').style.display='block';
+    document.getElementById('coordsTxt').innerHTML=`<span>${lat}° &nbsp; ${lon}°</span>`;
+    document.getElementById('fetchBtn').disabled=false;
+    try{
+      const r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+      if(r.ok){const j=await r.json();const city=j.city||j.locality||'';if(city){selLoc.name=city;document.getElementById('locIn').value=`${city} (${lat}, ${lon})`;}}
+    }catch(e){}
+    btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> GPS';
+    btn.classList.add('on');btn.disabled=false;
+  },err=>{alert('GPS error: '+err.message);btn.innerHTML='GPS';btn.disabled=false;},{timeout:10000});
+}
 
-/* ══════ FAO-56 PENMAN-MONTEITH ══════ */
-function pm(Tmax,Tmin,RH,Rs,u10,lat_deg,doy){
+// ─── FAO-56 Penman-Monteith ───
+function pm(Tmax,Tmin,RH,Rs_MJ,u10,lat_deg,doyN){
   const T=(Tmax+Tmin)/2, lat=lat_deg*Math.PI/180;
   const u2=u10*(4.87/Math.log(67.8*10-5.42));
   const D=4098*0.6108*Math.exp(17.27*T/(T+237.3))/Math.pow(T+237.3,2);
   const g=0.000665*101.3;
   const es=(0.6108*Math.exp(17.27*Tmax/(Tmax+237.3))+0.6108*Math.exp(17.27*Tmin/(Tmin+237.3)))/2;
   const ea=RH/100*es;
-  const dr=1+0.033*Math.cos(2*Math.PI*doy/365);
-  const dec=0.409*Math.sin(2*Math.PI*doy/365-1.39);
+  const dr=1+0.033*Math.cos(2*Math.PI*doyN/365);
+  const dec=0.409*Math.sin(2*Math.PI*doyN/365-1.39);
   const ws=Math.acos(Math.max(-1,Math.min(1,-Math.tan(lat)*Math.tan(dec))));
   const Ra=(24*60/Math.PI)*0.082*dr*(ws*Math.sin(lat)*Math.sin(dec)+Math.cos(lat)*Math.cos(dec)*Math.sin(ws));
-  const Rso=0.75*Ra, Rns=(1-0.23)*Rs;
+  const Rso=0.75*Ra, Rns=(1-0.23)*Rs_MJ;
   const sig=4.903e-9;
   const Rnl=sig*((Math.pow(Tmax+273.16,4)+Math.pow(Tmin+273.16,4))/2)*
-    (0.34-0.14*Math.sqrt(Math.max(0,ea)))*(1.35*Math.min(1,Rs/Math.max(Rso,.001))-.35);
+    (0.34-0.14*Math.sqrt(Math.max(0,ea)))*(1.35*Math.min(1,Rs_MJ/Math.max(Rso,.001))-.35);
   const Rn=Math.max(0,Rns-Rnl);
-  const num=0.408*D*Rn+g*(900/(T+273))*u2*(es-ea);
-  const den=D+g*(1+0.34*u2);
-  return Math.max(0,num/den);
+  return Math.max(0,(0.408*D*Rn+g*(900/(T+273))*u2*(es-ea))/(D+g*(1+0.34*u2)));
 }
 
-/* ══════ DATE UTILS ══════ */
-function iso(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function doy(ds){const d=new Date(ds+'T12:00:00');return Math.ceil((d-new Date(d.getFullYear(),0,0))/86400e3)}
-function ld(ds){return new Date(ds+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}
-function sd(ds){return new Date(ds+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}
-function wd(ds){return new Date(ds+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'})}
-function todayISO(){return iso(new Date())}
-
-/* ══════ UI ══════ */
-function showSb(msg,cls){const b=document.getElementById('sb');b.innerHTML=msg;b.className='sb '+cls}
-function hideSb(){document.getElementById('sb').className='sb'}
-function setLoading(on){
-  document.getElementById('spin').style.display=on?'block':'none';
-  document.getElementById('runLbl').textContent=on?'Loading…':'Load Data';
-  document.getElementById('runBtn').disabled=on;
+function parseOMDaily(d,src,lat){
+  return d.time.map((date,i)=>{
+    const Tmax=d.temperature_2m_max[i]??30,Tmin=d.temperature_2m_min[i]??15;
+    const RH=((d.relative_humidity_2m_max[i]??65)+(d.relative_humidity_2m_min[i]??35))/2;
+    const Rs=d.shortwave_radiation_sum[i]??20,u10=d.wind_speed_10m_max[i]??3;
+    const omEt=d.et0_fao_evapotranspiration?.[i];
+    const eto=omEt!=null&&!isNaN(omEt)?+omEt.toFixed(2):+pm(Tmax,Tmin,RH,Rs,u10,lat,doy(date)).toFixed(2);
+    const rain=d.precipitation_sum?.[i]??0;
+    return{date,src,eto,tmax:+Tmax.toFixed(1),tmin:+Tmin.toFixed(1),rh:+RH.toFixed(0),rain:+rain.toFixed(1)};
+  });
 }
 
-/* ══════ CROPS ══════ */
+async function fetchETo(){
+  if(!selLoc) return;
+  const spin=document.getElementById('fetchSpin'), lbl=document.getElementById('fetchLbl');
+  spin.style.display='block'; lbl.textContent='Loading…'; document.getElementById('fetchBtn').disabled=true;
+  hideSb('sb1');
+  const tz='auto';
+  const warns=[];
+  let past=[],fct=[];
+
+  const eP=iso(new Date(Date.now()-8*864e5)), sP=iso(new Date(Date.now()-864e5));
+  const urlP=`https://archive-api.open-meteo.com/v1/archive?latitude=${selLoc.lat}&longitude=${selLoc.lon}&start_date=${eP}&end_date=${sP}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${tz}`;
+  const urlF=`https://api.open-meteo.com/v1/forecast?latitude=${selLoc.lat}&longitude=${selLoc.lon}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${tz}&forecast_days=7`;
+
+  const [rP,rF]=await Promise.allSettled([fetch(urlP),fetch(urlF)]);
+  if(rP.status==='fulfilled'&&rP.value.ok){
+    const j=await rP.value.json();
+    if(j.daily?.time) past=parseOMDaily(j.daily,'past',selLoc.lat).slice(-7);
+    else warns.push('ERA5: no data');
+  } else warns.push('ERA5 unavailable');
+
+  if(rF.status==='fulfilled'&&rF.value.ok){
+    const j=await rF.value.json();
+    if(j.daily?.time) fct=parseOMDaily(j.daily,'fct',selLoc.lat);
+    else warns.push('Forecast: no data');
+  } else warns.push('Forecast unavailable');
+
+  spin.style.display='none'; lbl.textContent='Fetch 14-day ETo data'; document.getElementById('fetchBtn').disabled=false;
+
+  if(!past.length&&!fct.length){showSb('sb1','⚠ All data sources failed — check connection','err');return;}
+  if(warns.length) showSb('sb1','ℹ '+warns.join(' · '),'warn');
+  else hideSb('sb1');
+
+  eto14=[...past,...fct];
+  renderEToStep(past,fct);
+  document.getElementById('step1Next').style.display='flex';
+}
+
+function renderEToStep(past,fct){
+  const all=[...past,...fct];
+  const si=unitSys==='SI', fd=si?1:MM2IN;
+  const avgPast=past.reduce((s,r)=>s+r.eto,0)/Math.max(past.length,1);
+  const avgFct=fct.reduce((s,r)=>s+r.eto,0)/Math.max(fct.length,1);
+  const pk=all.reduce((a,b)=>a.eto>b.eto?a:b,all[0]);
+  const totRain=all.reduce((s,r)=>s+r.rain,0);
+  // Peak ETo from forecast only; rainfall from forecast only
+  const fctRain=fct.reduce((s,r)=>s+(r.rain??0),0);
+  const pkFct=fct.length?fct.reduce((a,b)=>a.eto>b.eto?a:b,fct[0]):pk;
+  document.getElementById('etoCards').innerHTML=`
+    <div class="mc g"><div class="mc-lbl">Avg ETo — past 7d</div><div class="mc-val" style="font-size:18px">${(avgPast*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
+    <div class="mc b"><div class="mc-lbl">Avg ETo — forecast 7d</div><div class="mc-val" style="font-size:18px">${(avgFct*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
+    <div class="mc a"><div class="mc-lbl">Peak ETo — forecast</div><div class="mc-val" style="font-size:18px">${(pkFct.eto*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
+    <div class="mc n"><div class="mc-lbl">Total rainfall — forecast</div><div class="mc-val" style="font-size:18px">${(fctRain*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>`;
+  document.getElementById('etoSummary').style.display='block';
+  document.getElementById('etoMn').innerHTML=`<strong>${selLoc.name}</strong>${selLoc.admin1?', '+selLoc.admin1:''}${selLoc.country?', '+selLoc.country:''} &nbsp;·&nbsp; ${selLoc.lat.toFixed(4)}°N ${selLoc.lon.toFixed(4)}°E &nbsp;·&nbsp; Past: ERA5 · Forecast: Open-Meteo · ETo: FAO-56 PM`;
+  document.getElementById('etoChartBox').style.display='block';
+  document.getElementById('etoChNote').textContent=`${selLoc.name} · ${past.length}d ERA5 + ${fct.length}d forecast`;
+
+  const labs=all.map(r=>wd(r.date)+'\n'+sd(r.date));
+  if(charts.eto) charts.eto.destroy();
+  charts.eto=new Chart(document.getElementById('etoChart'),{
+    type:'bar',data:{labels:labs,datasets:[
+      {label:'ETo past',data:all.map((r,i)=>i<past.length?+(r.eto*fd).toFixed(2):null),backgroundColor:'rgba(45,152,84,.75)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+      {label:'ETo forecast',data:all.map((r,i)=>i>=past.length?+(r.eto*fd).toFixed(2):null),backgroundColor:'rgba(43,104,200,.7)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>ld(all[c[0].dataIndex].date),label:c=>c.parsed.y!=null?`${c.dataset.label}: ${c.parsed.y} ${uu()}/d`:null}}},
+      scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},title:{display:true,text:`ETo (${uu()}/d)`,color:tc(),font:{size:11}},beginAtZero:true}},
+    },plugins:[divPlugin(past.length,all.length)]
+  });
+
+  if(charts.met) charts.met.destroy();
+  charts.met=new Chart(document.getElementById('metChart'),{
+    type:'bar',data:{labels:past.map(r=>wd(r.date)+'\n'+sd(r.date)),datasets:[
+      {label:'Rain',data:past.map(r=>+(r.rain*fd).toFixed(2)),backgroundColor:'rgba(43,104,200,.5)',borderWidth:0,yAxisID:'y2',borderRadius:2},
+      {label:'Tmax',data:past.map(r=>si?r.tmax:+(r.tmax*9/5+32).toFixed(1)),type:'line',yAxisID:'y',borderColor:'rgba(196,36,36,.9)',backgroundColor:'transparent',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
+      {label:'Tmin',data:past.map(r=>si?r.tmin:+(r.tmin*9/5+32).toFixed(1)),type:'line',yAxisID:'y',borderColor:'rgba(43,104,200,.9)',backgroundColor:'transparent',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>ld(past[c[0].dataIndex].date)}}},
+      scales:{
+        x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},
+        y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},title:{display:true,text:si?'°C':'°F',color:tc(),font:{size:11}}},
+        y2:{grid:{display:false},ticks:{color:tc(),font:{size:11}},title:{display:true,text:`Rain (${uu()})`,color:tc(),font:{size:11}},position:'right',beginAtZero:true}
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  STEP 2 — SOIL
+// ═══════════════════════════════════════════════════
+const SOIL_DB={
+  "Sand":            {tr:0.045,alpha:0.145,n:2.68,Ksat:297.28,bd:1.60,sand:90,silt:5, clay:5 },
+  "Loamy Sand":      {tr:0.057,alpha:0.124,n:2.28,Ksat:105.12,bd:1.55,sand:82,silt:12,clay:6 },
+  "Sandy Loam":      {tr:0.065,alpha:0.075,n:1.89,Ksat:44.28, bd:1.50,sand:65,silt:25,clay:10},
+  "Loam":            {tr:0.078,alpha:0.036,n:1.56,Ksat:10.37, bd:1.40,sand:42,silt:38,clay:20},
+  "Silt Loam":       {tr:0.067,alpha:0.020,n:1.41,Ksat:4.42,  bd:1.35,sand:20,silt:65,clay:15},
+  "Silt":            {tr:0.034,alpha:0.016,n:1.37,Ksat:2.59,  bd:1.30,sand:8, silt:84,clay:8 },
+  "Sandy Clay Loam": {tr:0.100,alpha:0.059,n:1.48,Ksat:4.42,  bd:1.45,sand:60,silt:13,clay:27},
+  "Clay Loam":       {tr:0.095,alpha:0.019,n:1.31,Ksat:1.04,  bd:1.35,sand:30,silt:37,clay:33},
+  "Silty Clay Loam": {tr:0.089,alpha:0.010,n:1.23,Ksat:0.68,  bd:1.30,sand:10,silt:56,clay:34},
+  "Sandy Clay":      {tr:0.100,alpha:0.027,n:1.23,Ksat:1.16,  bd:1.40,sand:52,silt:6, clay:42},
+  "Silty Clay":      {tr:0.070,alpha:0.005,n:1.09,Ksat:0.19,  bd:1.30,sand:7, silt:46,clay:47},
+  "Clay":            {tr:0.068,alpha:0.008,n:1.09,Ksat:0.20,  bd:1.25,sand:22,silt:18,clay:60}
+};
+
+let manualFCPWP=false;
+let curSand=42,curSilt=38,curClay=20;
+let curSoilClass='Loam';
+
+function vgTheta(h,p){
+  if(h<=0) return p.tsat;
+  const m=1-1/p.n;
+  return p.tr+(p.tsat-p.tr)/Math.pow(1+Math.pow(p.alpha*h,p.n),m);
+}
+
+function thetaToH(target,p){
+  if(target>=p.tsat) return 0;
+  if(target<=p.tr) return 1e8;
+  let lo=1e-4,hi=1e7;
+  for(let i=0;i<120;i++){const mid=(lo+hi)/2;vgTheta(mid,p)>target?lo=mid:hi=mid;if((hi-lo)/hi<1e-9)break;}
+  return(lo+hi)/2;
+}
+
+function fitVG(fc,pwp,tsat,tr){
+  if(fc>=tsat||pwp>=fc||pwp<=tr||fc<=tr) return null;
+  const Se_fc=(fc-tr)/(tsat-tr),Se_pwp=(pwp-tr)/(tsat-tr);
+  if(Se_fc<=0||Se_fc>=1||Se_pwp<=0||Se_pwp>=1) return null;
+  const lh1=Math.log(33),lh2=Math.log(1500);
+  let n=1.8,alpha=0.04;
+  for(let it=0;it<200;it++){
+    const m=1-1/n; if(m<=0||m>=1) return null;
+    const b1=Math.pow(Se_fc,-1/m)-1,b2=Math.pow(Se_pwp,-1/m)-1;
+    if(b1<=0||b2<=0||!isFinite(b1)||!isFinite(b2)) return null;
+    const n2=(Math.log(b1)-Math.log(b2))/(lh1-lh2);
+    const a2=Math.exp(Math.log(b1)/n2-lh1);
+    if(!isFinite(n2)||!isFinite(a2)||n2<=1.001||a2<=0) return null;
+    const ok=Math.abs(n2-n)<1e-10&&Math.abs(a2-alpha)<1e-12;
+    n=n2;alpha=a2; if(ok) break;
+  }
+  if(n<1.01||n>15||alpha<1e-7||alpha>20) return null;
+  const pv={tr,tsat,alpha,n};
+  if(Math.abs(vgTheta(33,pv)-fc)>0.003||Math.abs(vgTheta(1500,pv)-pwp)>0.003) return null;
+  return{alpha:+alpha.toFixed(6),n:+n.toFixed(5)};
+}
+
+function getSoilP(){
+  const base=SOIL_DB[curSoilClass];
+  const bd=parseFloat(document.getElementById('pBD').value)||base.bd;
+  const ksat=parseFloat(document.getElementById('pKsat').value)||base.Ksat;
+  const tsat=Math.max(0.05,Math.min(0.85,1-bd/RHO_S));
+  const alpha=parseFloat(document.getElementById('pAlpha').value)||base.alpha;
+  const n=parseFloat(document.getElementById('pN').value)||base.n;
+  const tr=base.tr;
+  const shape={tr,tsat,alpha,n};
+  let fc,pwp;
+  if(manualFCPWP){
+    fc=parseFloat(document.getElementById('pFC').value)||vgTheta(33,shape);
+    pwp=parseFloat(document.getElementById('pPWP').value)||vgTheta(1500,shape);
+  } else {
+    fc=+vgTheta(33,shape).toFixed(4);
+    pwp=+vgTheta(1500,shape).toFixed(4);
+    document.getElementById('pFC').value=fc.toFixed(3);
+    document.getElementById('pPWP').value=pwp.toFixed(3);
+  }
+  return{tr,alpha,n,bd,tsat,fc,pwp,ksat};
+}
+
+function onSoilSelect(){
+  curSoilClass=document.getElementById('soilSel').value;
+  const p=SOIL_DB[curSoilClass];
+  curSand=p.sand;curSilt=p.silt;curClay=p.clay;
+  document.getElementById('inSand').value=curSand;
+  document.getElementById('inSilt').value=curSilt;
+  document.getElementById('inClay').value=curClay;
+  loadSoilDefaults();
+  updateTexDisplay();
+  drawTriangle(curSand,curSilt,curClay);
+}
+
+function loadSoilDefaults(){
+  manualFCPWP=false;
+  const base=SOIL_DB[curSoilClass];
+  document.getElementById('pAlpha').value=base.alpha.toFixed(5);
+  document.getElementById('pN').value=base.n.toFixed(4);
+  document.getElementById('pBD').value=base.bd.toFixed(2);
+  document.getElementById('pKsat').value=base.Ksat.toFixed(2);
+  updateSoilDerived();
+}
+
+function onTexInput(){
+  const s=+document.getElementById('inSand').value||0;
+  const si=+document.getElementById('inSilt').value||0;
+  const c=+document.getElementById('inClay').value||0;
+  const sum=s+si+c;
+  const el=document.getElementById('texSum');
+  el.textContent=sum.toFixed(1)+'%';
+  el.className='sum-val '+(Math.abs(sum-100)<0.5?'sum-ok':'sum-bad');
+  document.getElementById('texWarn').style.display=Math.abs(sum-100)>=0.5?'block':'none';
+  if(Math.abs(sum-100)<0.5){
+    curSand=Math.round(s);curSilt=Math.round(si);curClay=Math.round(c);
+    const cls=classifyTexture(curSand,curSilt,curClay);
+    if(cls!==curSoilClass){curSoilClass=cls;document.getElementById('soilSel').value=cls;}
+    updateTexDisplay();
+    drawTriangle(curSand,curSilt,curClay);
+  }
+}
+
+function updateTexDisplay(){
+  document.getElementById('classifiedName').textContent=curSoilClass;
+  document.getElementById('classifiedSub').textContent=`Sand ${curSand}% · Silt ${curSilt}% · Clay ${curClay}%`;
+}
+
+function onFCPWPEdit(){
+  manualFCPWP=true;
+  const base=SOIL_DB[curSoilClass];
+  const bd=parseFloat(document.getElementById('pBD').value)||base.bd;
+  const tsat=Math.max(0.05,Math.min(0.85,1-bd/RHO_S));
+  const fc=parseFloat(document.getElementById('pFC').value)||0.30;
+  const pwp=parseFloat(document.getElementById('pPWP').value)||0.14;
+  const fit=fitVG(fc,pwp,tsat,base.tr);
+  if(fit){document.getElementById('pAlpha').value=fit.alpha.toFixed(5);document.getElementById('pN').value=fit.n.toFixed(4);}
+  updateSoilDerived();
+}
+
+function onBDEdit(){if(manualFCPWP) onFCPWPEdit();else updateSoilDerived();}
+function curveReset(){manualFCPWP=false;updateSoilDerived();}
+function resetBD(){document.getElementById('pBD').value=SOIL_DB[curSoilClass].bd.toFixed(2);onBDEdit();}
+function resetKsat(){document.getElementById('pKsat').value=SOIL_DB[curSoilClass].Ksat.toFixed(2);updateSoilDerived();}
+function resetVG(w){
+  const base=SOIL_DB[curSoilClass];
+  if(w==='alpha') document.getElementById('pAlpha').value=base.alpha.toFixed(5);
+  if(w==='n') document.getElementById('pN').value=base.n.toFixed(4);
+  manualFCPWP=false;
+  updateSoilDerived();
+}
+
+function updateSoilDerived(){
+  const p=getSoilP();
+  soilP=p;
+  const por=Math.max(0,1-p.bd/RHO_S);
+  document.getElementById('pTsat').textContent=(p.tsat*100).toFixed(1)+'%';
+  document.getElementById('pPor').textContent=(por*100).toFixed(1)+'%';
+  const paw=p.fc-p.pwp;
+  document.getElementById('soilMetrics').innerHTML=`
+    <div class="mc g"><div class="mc-lbl">Field capacity θ<sub>FC</sub></div><div class="mc-val">${(p.fc*100).toFixed(1)}<span class="u">%vol</span></div></div>
+    <div class="mc b"><div class="mc-lbl">Wilting point θ<sub>PWP</sub></div><div class="mc-val">${(p.pwp*100).toFixed(1)}<span class="u">%vol</span></div></div>
+    <div class="mc a"><div class="mc-lbl">Plant avail. water</div><div class="mc-val">${(paw*100).toFixed(1)}<span class="u">%vol</span></div></div>
+    <div class="mc n"><div class="mc-lbl">K<sub>sat</sub></div><div class="mc-val">${p.ksat.toFixed(1)}<span class="u">mm/d</span></div></div>
+    <div class="mc p"><div class="mc-lbl">Bulk density</div><div class="mc-val">${p.bd.toFixed(2)}<span class="u">g/cm³</span></div></div>
+    <div class="mc n"><div class="mc-lbl">Texture class</div><div class="mc-val" style="font-size:14px;line-height:1.3">${curSoilClass}</div></div>`;
+  redrawRetChart();
+}
+
+function redrawRetChart(){
+  const p=getSoilP();
+  const thetaIrr=p.pwp+(p.fc-p.pwp)*(1-parseFloat(document.getElementById('madSel')?.value||50)/100);
+  const cv=document.getElementById('retChart');
+  if(!cv||!cv.offsetParent) return;
+  const H_MIN=0.1,H_MAX=5000;
+  const curveData=[];
+  for(let i=0;i<=500;i++){
+    const h=Math.pow(10,i*(Math.log10(H_MAX)-Math.log10(H_MIN))/500+Math.log10(H_MIN));
+    curveData.push({x:+(vgTheta(h,p)*100).toFixed(3),y:+h.toFixed(3)});
+  }
+  const fcT=+(p.fc*100).toFixed(2),pwpT=+(p.pwp*100).toFixed(2),irrT=+(thetaIrr*100).toFixed(2);
+  const irrH=+thetaToH(thetaIrr,p).toFixed(1);
+  const annot={id:'an',afterDraw(ch){
+    const ctx=ch.ctx,xs=ch.scales.x,ys=ch.scales.y,{left,bottom,right,top}=ch.chartArea;
+    [[fcT,33,'#2a7a2a'],[pwpT,1500,'#8b5e00'],[irrT,irrH,'#c0392b']].forEach(([xv,yv,col])=>{
+      const xp=xs.getPixelForValue(xv),yp=ys.getPixelForValue(yv);
+      if(xp<left||xp>right||yp<top||yp>bottom) return;
+      ctx.save();ctx.setLineDash([4,4]);ctx.strokeStyle=col;ctx.lineWidth=1.3;ctx.globalAlpha=.6;
+      ctx.beginPath();ctx.moveTo(left,yp);ctx.lineTo(xp,yp);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(xp,yp);ctx.lineTo(xp,bottom);ctx.stroke();
+      ctx.setLineDash([]);ctx.globalAlpha=1;ctx.restore();
+    });
+  }};
+  if(charts.ret) charts.ret.destroy();
+  charts.ret=new Chart(cv,{type:'scatter',data:{datasets:[
+    {label:'curve',data:curveData,type:'line',borderColor:'#1a4e7a',borderWidth:2.5,pointRadius:0,tension:0,fill:false,showLine:true,order:4},
+    {label:'FC',data:[{x:fcT,y:33}],backgroundColor:'#2a7a2a',borderColor:'#fff',borderWidth:2.5,pointRadius:9,showLine:false,order:1},
+    {label:'PWP',data:[{x:pwpT,y:1500}],backgroundColor:'#8b5e00',borderColor:'#fff',borderWidth:2.5,pointRadius:9,showLine:false,order:1},
+    {label:'Irr',data:[{x:irrT,y:irrH}],backgroundColor:'#c0392b',borderColor:'#fff',borderWidth:2.5,pointRadius:9,showLine:false,order:1},
+  ]},plugins:[annot],
+  options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>{const d=items[0].dataset.label;return d==='FC'?'Field capacity (33 kPa)':d==='PWP'?'Perm. wilting point (1500 kPa)':d==='Irr'?`Irr. threshold (${irrH} kPa)`:`h=${items[0].parsed.y.toFixed(0)} kPa`;}}}},
+    scales:{
+      x:{min:Math.max(0,+(p.tr*100-1).toFixed(1)),max:+(p.tsat*100+2).toFixed(1),
+        title:{display:true,text:'θ (% vol)',font:{size:12,weight:'600'},color:tc()},
+        ticks:{color:tc(),font:{size:11}},grid:{color:gc()}},
+      y:{type:'logarithmic',min:0.1,max:5000,
+        title:{display:true,text:'|h| (kPa)',font:{size:12,weight:'600'},color:tc()},
+        ticks:{color:tc(),font:{size:11},callback:v=>{const s=[0.1,1,10,33,100,300,1000,1500,5000];const h=s.find(vv=>Math.abs(vv-v)/Math.max(vv,.001)<0.012);return h!=null?h<10?h.toFixed(1):h.toFixed(0):null;}},
+        grid:{color:gc()}}
+    }
+  }});
+}
+
+// ─── Texture classification ───
+function classifyTexture(sand,silt,clay){
+  if(clay>=40&&silt>=40)return'Silty Clay';
+  if(clay>=40&&sand>=45)return'Sandy Clay';
+  if(clay>=40)return'Clay';
+  if(clay>=35&&sand>=45)return'Sandy Clay';
+  if(clay>=27&&silt>53)return'Silty Clay Loam';
+  if(clay>=27&&sand>20)return'Clay Loam';
+  if(clay>=27)return'Clay Loam';
+  if(clay>=20&&clay<35&&silt<28&&sand>45)return'Sandy Clay Loam';
+  if(clay>=7&&clay<27&&silt>=50)return'Silt Loam';
+  if(silt>=80&&clay<12)return'Silt';
+  if(clay>=7&&clay<27&&silt>=28&&sand<=52)return'Loam';
+  if(sand>=85&&silt+1.5*clay<15)return'Sand';
+  if(sand>=70&&silt+1.5*clay<30)return'Loamy Sand';
+  if(sand>=52&&clay<20)return'Sandy Loam';
+  if(silt>=50)return'Silt Loam';
+  return'Loam';
+}
+
+// ─── Triangle ───
+function drawTriangle(sand,silt,clay){
+  const cv=document.getElementById('triCanvas');if(!cv)return;
+  const wrap=cv.parentElement;
+  let ww=wrap.clientWidth;if(!ww){let el=wrap;while(el&&!el.clientWidth)el=el.parentElement;ww=el?el.clientWidth:420;}
+  const aw=Math.max(260,Math.min(ww-16,480)),ah=Math.round(aw*.9);
+  const dpr=window.devicePixelRatio||1;
+  cv.width=aw*dpr;cv.height=ah*dpr;cv.style.width=aw+'px';cv.style.height=ah+'px';
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,aw,ah);
+  const W=aw,H=ah,pT=H*.08,pB=H*.1,pLR=W*.1;
+  const tW=W-2*pLR,tH=H-pT-pB;
+  const dk=isDark();
+  const oc=dk?'rgba(255,210,120,.85)':'rgba(40,24,4,.85)',tkc=dk?'#b09060':'#7a5020';
+  const ac=dk?'#c0a060':'#6b4010',zc=dk?'rgba(230,210,160,.82)':'rgba(40,24,4,.68)';
+  const gc2=dk?'rgba(255,210,120,.09)':'rgba(100,70,20,.09)';
+  function xy(cl,si){const sa=100-cl-si;return[pLR+(sa/100)*tW+(cl/100)*(tW/2),(H-pB)-(cl/100)*tH];}
+  const[Ax,Ay]=xy(100,0),[Bx,By]=xy(0,0),[Cx,Cy]=xy(0,100);
+  ctx.save();ctx.beginPath();ctx.moveTo(Ax,Ay);ctx.lineTo(Bx,By);ctx.lineTo(Cx,Cy);ctx.closePath();ctx.clip();
+  ctx.fillStyle=dk?'rgba(26,18,8,.55)':'rgba(246,240,226,.65)';ctx.fill();
+  ctx.lineWidth=.7;ctx.strokeStyle=gc2;
+  for(let v=10;v<100;v+=10){
+    const[[x1,y1],[x2,y2]]=[xy(v,0),xy(v,100-v)];ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    const[[x3,y3],[x4,y4]]=[xy(0,v),xy(100-v,v)];ctx.beginPath();ctx.moveTo(x3,y3);ctx.lineTo(x4,y4);ctx.stroke();
+    const[[x5,y5],[x6,y6]]=[xy(0,v),xy(v,0)];ctx.beginPath();ctx.moveTo(x5,y5);ctx.lineTo(x6,y6);ctx.stroke();
+  }
+  ctx.restore();
+  ctx.beginPath();ctx.lineWidth=2;ctx.strokeStyle=oc;ctx.moveTo(Ax,Ay);ctx.lineTo(Bx,By);ctx.lineTo(Cx,Cy);ctx.closePath();ctx.stroke();
+  const fs=Math.max(8,Math.round(W*.021));
+  ctx.font=fs+'px system-ui,sans-serif';ctx.fillStyle=tkc;
+  ctx.textAlign='right';for(let v=20;v<=80;v+=20){const[tx,ty]=xy(v,0);ctx.fillText(v+'%',tx-4,ty+4);}
+  ctx.textAlign='left';for(let v=20;v<=80;v+=20){const[tx,ty]=xy(100-v,0);ctx.fillText(v+'%',tx+4,ty+4);}
+  ctx.textAlign='center';for(let v=20;v<=80;v+=20){const[tx,ty]=xy(0,v);ctx.fillText(v+'%',tx,ty+12);}
+  const fL=Math.max(9,Math.round(W*.025));
+  ctx.font='bold '+fL+'px system-ui,sans-serif';ctx.fillStyle=ac;
+  ctx.save();ctx.translate((Ax+Cx)/2-16,(Ay+Cy)/2);ctx.rotate(-Math.PI/3);ctx.textAlign='center';ctx.fillText('% Clay',0,0);ctx.restore();
+  ctx.save();ctx.translate((Ax+Bx)/2+16,(Ay+By)/2);ctx.rotate(Math.PI/3);ctx.textAlign='center';ctx.fillText('% Sand',0,0);ctx.restore();
+  ctx.textAlign='center';ctx.fillText('% Silt',(Bx+Cx)/2,(By+Cy)/2+20);
+  ctx.fillStyle=oc;
+  ctx.textAlign='center';ctx.fillText('100% Clay',Ax,Ay-10);
+  ctx.textAlign='right';ctx.fillText('100% Sand',Bx+6,By+18);
+  ctx.textAlign='left';ctx.fillText('100% Silt',Cx-6,Cy+18);
+  const zones=[{n:'Sand',cl:3,si:5},{n:'Loamy\nSand',cl:5,si:22},{n:'Sandy\nLoam',cl:10,si:36},{n:'Loam',cl:17,si:43},
+    {n:'Silt\nLoam',cl:13,si:63},{n:'Silt',cl:4,si:87},{n:'Sandy\nClay Loam',cl:28,si:13},{n:'Clay\nLoam',cl:33,si:30},
+    {n:'Silty Clay\nLoam',cl:34,si:54},{n:'Sandy\nClay',cl:45,si:5},{n:'Silty\nClay',cl:48,si:38},{n:'Clay',cl:62,si:17}];
+  const fZ=Math.max(7,Math.round(W*.018));
+  ctx.textAlign='center';
+  zones.forEach(z=>{
+    const[zx,zy]=xy(z.cl,z.si);const ls=z.n.split('\n');
+    ctx.font='bold '+fZ+'px system-ui,sans-serif';ctx.fillStyle=zc;
+    ls.forEach((l,i)=>ctx.fillText(l,zx,zy+(i-(ls.length-1)/2)*(fZ+2)));
+  });
+  if(Math.abs(sand+silt+clay-100)<1){
+    const[px,py]=xy(clay,silt);
+    const g=ctx.createRadialGradient(px,py,0,px,py,16);
+    g.addColorStop(0,'rgba(180,40,40,.3)');g.addColorStop(1,'rgba(180,40,40,0)');
+    ctx.beginPath();ctx.arc(px,py,16,0,2*Math.PI);ctx.fillStyle=g;ctx.fill();
+    ctx.beginPath();ctx.arc(px,py,7,0,2*Math.PI);ctx.fillStyle='#c0392b';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.font='bold '+fZ+'px system-ui,sans-serif';ctx.fillStyle='#c0392b';ctx.textAlign='left';
+    ctx.fillText('▶ '+classifyTexture(sand,silt,clay),px+10,py+4);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  STEP 3 — CROP & SYSTEM
+// ═══════════════════════════════════════════════════
+const CROPS=[
+  {name:'Processing Tomato',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.90},{l:'Mid-season',kc:1.15},{l:'Late',kc:.80}],mad:40,rz:60},
+  {name:'Fresh Tomato',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.90},{l:'Mid-season',kc:1.15},{l:'Late',kc:.70}],mad:40,rz:70},
+  {name:'Alfalfa',stages:[{l:'Post-cut',kc:.40},{l:'Vegetative',kc:.85},{l:'Pre-bloom',kc:1.05},{l:'Dormancy',kc:.90}],mad:55,rz:150},
+  {name:'Maize / Corn',stages:[{l:'Emergence',kc:.30},{l:'Development',kc:.70},{l:'Tasseling',kc:1.20},{l:'Dough',kc:.60}],mad:50,rz:100},
+  {name:'Cotton',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.20},{l:'Late',kc:.70}],mad:65,rz:120},
+  {name:'Wheat (winter)',stages:[{l:'Initial',kc:.30},{l:'Development',kc:.70},{l:'Heading',kc:1.15},{l:'Ripening',kc:.40}],mad:55,rz:100},
+  {name:'Sunflower',stages:[{l:'Initial',kc:.35},{l:'Development',kc:.75},{l:'Mid-season',kc:1.10},{l:'Late',kc:.45}],mad:45,rz:100},
+  {name:'Onion / Garlic',stages:[{l:'Initial',kc:.70},{l:'Development',kc:.90},{l:'Mid-season',kc:1.05},{l:'Bulbing',kc:.75}],mad:30,rz:30},
+  {name:'Lettuce',stages:[{l:'Initial',kc:.70},{l:'Development',kc:.90},{l:'Mid-season',kc:1.00},{l:'Late',kc:.95}],mad:30,rz:30},
+  {name:'Strawberry',stages:[{l:'Establishment',kc:.40},{l:'Vegetative',kc:.70},{l:'Fruiting',kc:.85},{l:'Late',kc:.75}],mad:20,rz:25},
+  {name:'Almonds',stages:[{l:'Leaf-out',kc:.40},{l:'Bloom/nut set',kc:.90},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}],mad:40,rz:150},
+  {name:'Pistachios',stages:[{l:'Leaf-out',kc:.35},{l:'Shoot growth',kc:.85},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}],mad:60,rz:150},
+  {name:'Walnuts',stages:[{l:'Leaf-out',kc:.50},{l:'Canopy growth',kc:.85},{l:'Full canopy',kc:1.10},{l:'Harvest',kc:.65}],mad:50,rz:170},
+  {name:'Wine Grapes',stages:[{l:'Budbreak',kc:.30},{l:'Canopy dev.',kc:.60},{l:'Véraison',kc:.70},{l:'Dormancy',kc:.45}],mad:45,rz:100},
+  {name:'Table Grapes',stages:[{l:'Budbreak',kc:.35},{l:'Canopy dev.',kc:.65},{l:'Sizing',kc:.85},{l:'Harvest',kc:.60}],mad:35,rz:100},
+  {name:'Citrus (mature)',stages:[{l:'Winter',kc:.75},{l:'Spring',kc:.80},{l:'Summer',kc:.85},{l:'Fall',kc:.75}],mad:50,rz:120},
+  {name:'Rice',stages:[{l:'Transplanting',kc:1.05},{l:'Tillering',kc:1.10},{l:'Heading',kc:1.20},{l:'Ripening',kc:1.00}],mad:20,rz:50},
+  {name:'Soybean',stages:[{l:'Initial',kc:.40},{l:'Development',kc:.80},{l:'Mid-season',kc:1.15},{l:'Late',kc:.50}],mad:50,rz:80},
+  {name:'Potato',stages:[{l:'Initial',kc:.50},{l:'Development',kc:.75},{l:'Mid-season',kc:1.15},{l:'Late',kc:.75}],mad:35,rz:40},
+  {name:'Pepper',stages:[{l:'Initial',kc:.60},{l:'Development',kc:.85},{l:'Mid-season',kc:1.05},{l:'Late',kc:.90}],mad:30,rz:50},
+  {name:'Olive',stages:[{l:'Flowering',kc:.65},{l:'Fruit set',kc:.70},{l:'Full canopy',kc:.70},{l:'Harvest',kc:.60}],mad:65,rz:120},
+  {name:'Sugarcane',stages:[{l:'Emergence',kc:.40},{l:'Tillering',kc:.80},{l:'Grand growth',kc:1.25},{l:'Ripening',kc:.75}],mad:65,rz:120},
+];
+
 function buildCrops(){
   const sel=document.getElementById('cropSel');
-  CROPS.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.name;sel.appendChild(o)});
+  CROPS.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.name;sel.appendChild(o);});
   buildStages(0);
 }
+
 function buildStages(ci){
   const sel=document.getElementById('stageSel');sel.innerHTML='';
-  CROPS[ci].stages.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.l;sel.appendChild(o)});
+  CROPS[ci].stages.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.l;sel.appendChild(o);});
   applyKc(ci,0);
+  // Set default MAD and root depth for this crop
+  const crop=CROPS[ci];
+  document.getElementById('madSel').value=String(crop.mad);
+  const si=unitSys==='SI';
+  document.getElementById('rootDepth').value=si?crop.rz:Math.round(crop.rz/2.54);
+  // Update MAD badge
+  updateMADDefaultBadge(ci);
 }
-function onCrop(){buildStages(+document.getElementById('cropSel').value)}
-function onStage(){applyKc(+document.getElementById('cropSel').value,+document.getElementById('stageSel').value)}
+
+function updateMADDefaultBadge(ci){
+  const crop=CROPS[ci];
+  const madPct=crop.mad;
+  // Express MAD as % of FC: MAD fraction of AWC means threshold = FC - MAD%*AWC
+  // As % of FC: threshold_FC% = (1 - MAD_frac * (1 - PWP/FC))
+  // Simpler user-facing: threshold = FC × (1 - MAD × PAW_fraction)
+  // We just show the MAD% and note it = (100-MAD)% of AWC from FC perspective
+  const threshFC = 100 - madPct; // approximate: at MAD threshold, soil is at (100-MAD)% of AWC above PWP
+  document.getElementById('madDefaultVal').textContent = madPct + '%';
+  document.getElementById('madDefaultFC').textContent = '(irrigate when SM drops to ~' + threshFC + '% of AWC above PWP)';
+}
+
+function applyDefaultMAD(){
+  const ci=+document.getElementById('cropSel').value;
+  document.getElementById('madSel').value=String(CROPS[ci].mad);
+  updateStep3Derived();
+}
+
+function onCrop(){
+  const ci=+document.getElementById('cropSel').value;
+  buildStages(ci);
+  updateKcDisplay(ci,0);
+  updateStep3Derived();
+}
+
+function onStage(){
+  const ci=+document.getElementById('cropSel').value,si=+document.getElementById('stageSel').value;
+  applyKc(ci,si);
+  updateStep3Derived();
+}
+
 function applyKc(ci,si){kc=CROPS[ci].stages[si].kc;syncKc();}
-function kcNum(){const v=parseFloat(document.getElementById('kcIn').value);if(!isNaN(v)&&v>0){kc=v;syncKc('n')}}
-function kcSlide(){kc=parseFloat(document.getElementById('kcSlider').value);syncKc('s')}
+function kcNum(){const v=parseFloat(document.getElementById('kcIn').value);if(!isNaN(v)&&v>0){kc=v;syncKc('n');}}
+function kcSlide(){kc=parseFloat(document.getElementById('kcSlider').value);syncKc('s');}
 function syncKc(src){
-  if(src!=='n')document.getElementById('kcIn').value=kc.toFixed(2);
-  if(src!=='s')document.getElementById('kcSlider').value=kc;
+  if(src!=='n') document.getElementById('kcIn').value=kc.toFixed(2);
+  if(src!=='s') document.getElementById('kcSlider').value=kc;
   document.getElementById('kcDisp').textContent=kc.toFixed(2);
+  updateStep3Derived();
 }
 
-/* ══════ API CHECK ══════ */
-async function checkAPIs(){
-  const dot=document.getElementById('apiDot'), txt=document.getElementById('apiTxt');
-  dot.className='dot chk'; txt.textContent='Checking…';
-  let geo=false,arch=false,fct=false;
-  try{const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name=Davis&count=1');geo=r.ok&&(await r.json()).results!=null}catch(e){}
-  try{const y=iso(new Date(Date.now()-2*864e5));const r=await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=38.53&longitude=-121.77&start_date=${y}&end_date=${y}&daily=et0_fao_evapotranspiration&timezone=America%2FLos_Angeles`);arch=r.ok&&(await r.json()).daily!=null}catch(e){}
-  try{const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=38.53&longitude=-121.77&daily=temperature_2m_max&forecast_days=1&timezone=America%2FLos_Angeles');fct=r.ok&&(await r.json()).daily!=null}catch(e){}
-  const ok=geo&&(arch||fct);
-  dot.className=ok?'dot ok':'dot err';
-  txt.textContent=[geo?'Geocoding ✓':'Geocoding ✗',arch?'ERA5 ✓':'ERA5 ✗',fct?'Forecast ✓':'Forecast ✗'].join('  ');
+function updateKcDisplay(ci,si){
+  const crop=CROPS[ci];
+  document.getElementById('kcCropName').textContent=crop.name;
+  document.getElementById('kcIni').textContent=crop.stages[0].kc.toFixed(2);
+  document.getElementById('kcDev').textContent=crop.stages.length>1?crop.stages[1].kc.toFixed(2):'—';
+  document.getElementById('kcMid').textContent=crop.stages.length>2?crop.stages[2].kc.toFixed(2):'—';
+  document.getElementById('kcLate').textContent=crop.stages.length>3?crop.stages[3].kc.toFixed(2):'—';
+  document.getElementById('kcActive').textContent=kc.toFixed(2);
 }
 
-/* ══════ PARSE OPEN-METEO ══════ */
-function parseOM(d,src,lat){
-  return d.time.map((date,i)=>{
-    const Tmax=d.temperature_2m_max[i]??30, Tmin=d.temperature_2m_min[i]??15;
-    const RH=((d.relative_humidity_2m_max[i]??65)+(d.relative_humidity_2m_min[i]??35))/2;
-    const Rs=d.shortwave_radiation_sum[i]??20, u10=d.wind_speed_10m_max[i]??3;
-    const omEt=d.et0_fao_evapotranspiration?.[i];
-    const eto=(omEt!=null&&!isNaN(omEt))?+omEt.toFixed(2):+pm(Tmax,Tmin,RH,Rs,u10,lat,doy(date)).toFixed(2);
-    const rain=d.precipitation_sum?.[i]??null;
-    return{date,src,eto,tmax:+Tmax.toFixed(1),tmin:+Tmin.toFixed(1),rh:+RH.toFixed(0),
-      u2:+(u10*(4.87/Math.log(67.8*10-5.42))).toFixed(2),rs:+Rs.toFixed(1),rain:rain!=null?+rain.toFixed(1):null};
+function updateStep3Derived(){
+  const ci=+document.getElementById('cropSel').value,si=+document.getElementById('stageSel').value;
+  updateKcDisplay(ci,si);
+  const p=getSoilP(),mad=+document.getElementById('madSel').value/100;
+  const rz=getRD_m();
+  const fcMM=p.fc*rz*1000,pwpMM=p.pwp*rz*1000,awcMM=(p.fc-p.pwp)*rz*1000;
+  const madMM=awcMM*mad,taw=awcMM,raw=taw-madMM;
+  const fd=unitSys==='SI'?1:MM2IN;
+  const fct=eto14.filter(r=>r.src==='fct');
+  const avgEto=fct.length?fct.reduce((s,r)=>s+r.eto,0)/fct.length:0;
+  const avgEtc=avgEto*kc,netDaily=avgEtc;
+  const strategyIsFixed=(typeof irrStrategy!=='undefined')&&irrStrategy==='fixed';
+  const strategyIsNone=(typeof irrStrategy!=='undefined')&&irrStrategy==='none';
+  const fixedDays=+document.getElementById('fixedInterval').value||3;
+  // RAW sub-label: days to MAD (MAD mode) or expected depletion per interval (fixed mode)
+  const rawSub=strategyIsFixed
+    ?`ETc×${fixedDays}d ≈ ${(netDaily*fixedDays*fd).toFixed(1)} ${uu()} / event`
+    :`TAW × (1−MAD)`;
+  const daysLbl=strategyIsNone?'—':strategyIsFixed?fixedDays.toFixed(0):(netDaily>0.01?(raw/netDaily).toFixed(1):'—');
+  const daysDesc=strategyIsNone?'no irrigation scheduled':strategyIsFixed?'fixed interval (days)':'at avg ETc demand';
+  document.getElementById('cropMetrics').innerHTML=`
+    <div class="mc g"><div class="mc-lbl">Avg ETc (7d fct)</div><div class="mc-val">${(avgEtc*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
+    <div class="mc b"><div class="mc-lbl">TAW in root zone</div><div class="mc-val">${(taw*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
+    <div class="mc a"><div class="mc-lbl">RAW (readily avail.)</div><div class="mc-val">${(raw*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
+    <div class="mc n"><div class="mc-lbl">${strategyIsFixed?'Interval':'Days to MAD'}</div><div class="mc-val">${daysLbl}</div></div>`;
+  // MAD threshold as % of FC: threshold_mm / fc_mm × 100
+  const madThreshFC_pct = fcMM > 0 ? ((fcMM - madMM) / fcMM * 100).toFixed(1) : '—';
+  document.getElementById('wbMetrics').innerHTML=`
+    <div class="mc g"><div class="mc-lbl">FC in root zone</div><div class="mc-val">${(fcMM*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
+    <div class="mc b"><div class="mc-lbl">${strategyIsFixed?'Est. depletion / event':'MAD threshold SM'}</div><div class="mc-val">${strategyIsFixed?(netDaily*fixedDays*fd).toFixed(1):((fcMM-raw)*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>`;
+  // Refresh MAD badge in case soil/FC changed
+  try{updateMADDefaultBadge(+document.getElementById('cropSel').value);}catch(e){}
+  // Update initial SM hint
+  try{
+    const initUnit=document.getElementById('initSMUnit').value;
+    const initVal=parseFloat(document.getElementById('initSMVal').value)||80;
+    const initDr=getInitSM_mm(fcMM,pwpMM,awcMM,p);
+    const initSM_mm=fcMM-initDr;
+    const initTheta=(rz>0?(initSM_mm/1000/rz)*100:0).toFixed(1);
+    const initFC=(fcMM>0?initSM_mm/fcMM*100:0).toFixed(0);
+    const initMM=(initSM_mm*fd).toFixed(1);
+    document.getElementById('initSMHint').textContent=
+      `Starting θ = ${initTheta}% vol  |  ${initMM} ${uu()}  |  ${initFC}% of FC  —  depletion ${(initDr*fd).toFixed(1)} ${uu()} from FC`;
+  }catch(e){}
+  redrawEtcChart();
+  updateDrip();
+}
+
+function redrawEtcChart(){
+  const fct=eto14.filter(r=>r.src==='fct');
+  if(!fct.length) return;
+  const cv=document.getElementById('etcChart');if(!cv||!cv.offsetParent) return;
+  const fd=unitSys==='SI'?1:MM2IN;
+  let cum=0;const cumD=fct.map(r=>{cum+=r.eto*kc*fd;return+cum.toFixed(2);});
+  const labs=fct.map(r=>wd(r.date)+'\n'+sd(r.date));
+  if(charts.etc) charts.etc.destroy();
+  charts.etc=new Chart(cv,{type:'bar',data:{labels:labs,datasets:[
+    {label:'ETc',data:fct.map(r=>+(r.eto*kc*fd).toFixed(2)),backgroundColor:'rgba(43,104,200,.75)',borderWidth:1,borderRadius:3,yAxisID:'y',borderSkipped:'bottom'},
+    {label:'Cumulative',data:cumD,type:'line',yAxisID:'y2',borderColor:'rgba(202,108,16,1)',backgroundColor:'rgba(202,108,16,.08)',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>ld(fct[c[0].dataIndex].date)}}},
+    scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},
+      y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},title:{display:true,text:`ETc (${uu()}/d)`,color:tc(),font:{size:11}},beginAtZero:true},
+      y2:{grid:{display:false},ticks:{color:'rgba(202,108,16,.8)',font:{size:11}},title:{display:true,text:`Cumul. (${uu()})`,color:'rgba(202,108,16,.8)',font:{size:11}},beginAtZero:true,position:'right'}}}
   });
 }
 
-/* ══════ TIMEZONE ══════
-   Open-Meteo accepts a timezone string or "auto" for server-side detection.
-   We use "auto" so any global location gets local midnight-to-midnight days.
-══════════════════════════ */
-function tzParam(loc){
-  // Use "auto" for Open-Meteo — it resolves from lat/lon
-  return 'auto';
+function updateDrip(){
+  const{area,q,se,sr,ea}=getSIdripValues();
+  if(!area||!q||!se||!sr) return;
+  const nE=area*10000/(se*sr);
+  const Qhr=nE*q/1000;
+  const fd=unitSys==='SI'?1:MM2IN;
+  const fv=unitSys==='SI'?1:264.172;
+  const qDisp=unitSys==='SI'?`${q.toFixed(2)} L/hr`:`${(q/GPH2LH).toFixed(2)} gph`;
+  // Application rate: mm/hr = (nE * q_L/hr) / (area_m2) where area_m2 = area*10000
+  // = Qhr_m3/hr * 1000 / (area * 10000) = Qhr / (area * 10) mm/hr
+  const appRate_mm_hr = area > 0 ? Qhr / (area * 10) : 0;  // mm/hr gross
+  const appRateDisp = unitSys==='SI' ? appRate_mm_hr.toFixed(2) : (appRate_mm_hr*MM2IN).toFixed(3);
+  const appRateUnit = unitSys==='SI' ? 'mm/hr' : 'in/hr';
+  const grossRateMM = appRate_mm_hr;
+  const netRateMM = grossRateMM * ea;  // net mm/hr (after efficiency)
+  const netRateDisp = unitSys==='SI' ? netRateMM.toFixed(2) : (netRateMM*MM2IN).toFixed(3);
+  document.getElementById('dripMetrics').innerHTML=`
+    <div class="mc b"><div class="mc-lbl">Emitters</div><div class="mc-val">${Math.round(nE).toLocaleString()}</div></div>
+    <div class="mc b"><div class="mc-lbl">System flow rate</div><div class="mc-val">${unitSys==='SI'?Qhr.toFixed(1):(Qhr*264.172).toFixed(0)}<span class="u">${unitSys==='SI'?'m³/hr':'gal/hr'}</span></div></div>
+    <div class="mc g"><div class="mc-lbl">Application rate</div><div class="mc-val">${appRateDisp}<span class="u">${appRateUnit}</span></div></div>`;
 }
 
-/* ══════ FETCH ERA5 PAST 7D ══════ */
-async function fetchPast(lat,lon,tz){
-  const s=iso(new Date(Date.now()-8*864e5)), e=iso(new Date(Date.now()-864e5));
-  const url=`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${s}&end_date=${e}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${encodeURIComponent(tz)}`;
-  const r=await fetch(url); if(!r.ok)throw new Error('ERA5 '+r.status);
-  const j=await r.json(); if(!j.daily?.time)throw new Error('ERA5 no data');
-  return parseOM(j.daily,'past',lat).slice(-7);
+// ═══════════════════════════════════════════════════
+//  STEP 4 — SCHEDULE
+// ═══════════════════════════════════════════════════
+let irrStrategy='mad'; // 'mad' | 'fixed' | 'none'
+
+function setStrategy(s){
+  irrStrategy=s;
+  document.getElementById('stratMADBtn').classList.toggle('active',s==='mad');
+  document.getElementById('stratFixBtn').classList.toggle('active',s==='fixed');
+  document.getElementById('stratNoneBtn').classList.toggle('active',s==='none');
+  document.getElementById('madControls').style.display=s==='mad'?'block':'none';
+  document.getElementById('fixedControls').style.display=s==='fixed'?'block':'none';
+  updateStep3Derived();
 }
 
-/* ══════ FETCH FORECAST 7D ══════ */
-async function fetchFct(lat,lon,tz){
-  const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${encodeURIComponent(tz)}&forecast_days=7`;
-  const r=await fetch(url); if(!r.ok)throw new Error('Forecast '+r.status);
-  const j=await r.json(); if(!j.daily?.time)throw new Error('Forecast no data');
-  return parseOM(j.daily,'fct',lat);
+function onFixedDepthMode(){
+  const custom=document.getElementById('fixedDepthMode').value==='custom';
+  document.getElementById('fixedCustomDepthRow').style.display=custom?'block':'none';
+  updateStep3Derived();
 }
 
-/* ══════ CLAUDE FALLBACK ══════ */
-async function claudeFallback(lat,lon,mode){
-  const today=new Date(), dl=[];
-  if(mode==='past'){for(let i=7;i>=1;i--){const d=new Date(today);d.setDate(today.getDate()-i);dl.push(iso(d))}}
-  else{for(let i=0;i<7;i++){const d=new Date(today);d.setDate(today.getDate()+i);dl.push(iso(d))}}
-  const mo=today.getMonth()+1;
-  const isNH=lat>0;
-  const isTrop=Math.abs(lat)<23.5;
-  let hint;
-  if(isTrop)hint='Tropical: tmax 28-35,tmin 20-26,rh 65-85,rs 18-26,u2 1-3';
-  else if(isNH)hint=mo>=5&&mo<=9?'NH Summer: tmax 25-38,tmin 12-20,rh 25-60,rs 22-32,u2 1.5-3.5':mo>=10||mo<=2?'NH Winter: tmax 5-15,tmin -2-6,rh 55-80,rs 6-14,u2 1-3':'NH Spring/Fall: tmax 15-25,tmin 6-14,rh 40-65,rs 15-24,u2 1.5-3';
-  else hint=mo>=11||mo<=3?'SH Summer: tmax 25-35,tmin 14-20,rh 35-65,rs 22-30,u2 1.5-3':'SH Winter: tmax 8-16,tmin 2-8,rh 55-80,rs 8-15,u2 1-2.5';
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:`Realistic daily weather for lat=${lat.toFixed(2)},lon=${lon.toFixed(2)}. Dates: ${dl.join(',')}. ${hint}. Reply ONLY JSON array: [{"date":"YYYY-MM-DD","tmax":n,"tmin":n,"rh":n,"rs":n,"u2":n}]`}]})});
-  if(!resp.ok)throw new Error('Claude '+resp.status);
-  const j=await resp.json(); const raw=j.content?.[0]?.text??'';
-  const days=JSON.parse(raw.replace(/```json|```/g,'').trim());
-  return days.map(w=>({date:w.date,src:mode,eto:+pm(w.tmax,w.tmin,w.rh,w.rs,w.u2,lat,doy(w.date)).toFixed(2),tmax:w.tmax,tmin:w.tmin,rh:w.rh,u2:w.u2,rs:w.rs,fallback:true}));
+function runSchedule(){
+  if(!eto14.length){showSb('sb1','⚠ First load ETo data in Step 1','err');gotoStep(1);return;}
+  computeSchedule();
+  gotoStep(4);
+  setTimeout(()=>redrawScheduleCharts(),120);
 }
 
-/* ══════ MAIN RUN ══════ */
-async function runAll(){
-  // Accept manual coordinate input even without picking from dropdown
-  if(!selLoc){
-    const raw=document.getElementById('locIn').value.trim();
-    const coords=parseCoords(raw);
-    if(coords){
-      selLoc={name:`${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`,
-               lat:coords.lat,lon:coords.lon,country:'Custom coordinates',
-               admin1:'',timezone:'auto',
-               display:`📍 ${coords.lat.toFixed(4)}°, ${coords.lon.toFixed(4)}°`};
-    } else {
-      showSb('⚠ Select a location — type a city name or coordinates (lat, lon)','err');return;
-    }
+function getInitSM_mm(fcMM, pwpMM, awcMM, p){
+  // Returns initial depletion from FC in mm, from the UI input
+  const unit = document.getElementById('initSMUnit').value;
+  const val  = parseFloat(document.getElementById('initSMVal').value) || 80;
+  let smMM;
+  if(unit === 'pct_fc'){
+    smMM = fcMM * (val/100);                    // % of FC → mm
+  } else if(unit === 'pct_vol'){
+    const rz = getRD_m();
+    smMM = (val/100) * rz * 1000;               // θ%vol → mm
+  } else {
+    smMM = unitSys==='SI' ? val : val/MM2IN;     // mm or in → mm
   }
-  const ci=+document.getElementById('cropSel').value, si=+document.getElementById('stageSel').value;
-  const cn=CROPS[ci].name, sn=CROPS[ci].stages[si].l;
-  setLoading(true); hideSb();
-  let pRows=[],fRows=[]; const warns=[];
-  const tz=tzParam(selLoc);
-  const [pr,fr]=await Promise.allSettled([fetchPast(selLoc.lat,selLoc.lon,tz),fetchFct(selLoc.lat,selLoc.lon,tz)]);
-  if(pr.status==='fulfilled')pRows=pr.value;
-  else{try{pRows=await claudeFallback(selLoc.lat,selLoc.lon,'past');warns.push('Past: AI estimate')}catch(e){warns.push('Past data unavailable')}}
-  if(fr.status==='fulfilled')fRows=fr.value;
-  else{try{fRows=await claudeFallback(selLoc.lat,selLoc.lon,'fct');warns.push('Forecast: AI estimate')}catch(e){warns.push('Forecast unavailable')}}
-  setLoading(false);
-  if(!pRows.length&&!fRows.length){showSb('⚠ All data sources failed — check network connection','err');return}
-  if(warns.length)showSb('ℹ '+warns.join(' · '),'warn');
+  smMM = Math.max(pwpMM, Math.min(fcMM, smMM));
+  return Math.max(0, fcMM - smMM);              // depletion
+}
+
+function onInitSMUnit(){
+  const unit = document.getElementById('initSMUnit').value;
+  const labels = {'pct_fc':'Initial SM (% FC)','pct_vol':'Initial SM (θ %vol)','mm':'Initial SM ('+uu()+')'};
+  document.getElementById('lblInitSM').textContent = labels[unit];
+  updateStep3Derived();
+}
+
+function computeSchedule(){
+  const p=getSoilP();
+  const mad=+document.getElementById('madSel').value/100;
+  const rz=getRD_m();
+  const fcMM=p.fc*rz*1000,pwpMM=p.pwp*rz*1000,awcMM=(p.fc-p.pwp)*rz*1000;
+  const madMM=awcMM*mad;
+  const{area,q,se,sr,ea}=getSIdripValues();
+  const nE=area*10000/(se*sr);
+  const Qhr=nE*q/1000;
+
+  // Fixed interval params
+  const fixedInterval=Math.max(1,+document.getElementById('fixedInterval').value||3);
+  const fixedDepthMode=document.getElementById('fixedDepthMode').value;
+  const fixedCustomMM=unitSys==='SI'
+    ?(+document.getElementById('fixedCustomDepth').value||30)
+    :(+document.getElementById('fixedCustomDepth').value||30)*25.4;
+
+  // Initial depletion from user input
+  let dr=getInitSM_mm(fcMM,pwpMM,awcMM,p);
+
+  // Use ONLY forecast days (future 7d)
+  const fctOnly=eto14.filter(r=>r.src==='fct');
+
+  // Fixed interval: daysSinceIrr starts at (interval-1) so day 1 = first irrigation day
+  // e.g. interval=1 → irrigate every day; interval=3 → irrigate on day 1, 4, 7...
+  let daysSinceIrr=fixedInterval-1;
+
   const today=todayISO();
-  cachedFct=fRows.map(r=>({...r,etc:+(r.eto*kc).toFixed(2)}));
-  cachedCrop=cn; cachedStage=sn;
-  cachedAllRows=[...pRows,...fRows].map(r=>({...r,etc:+(r.eto*kc).toFixed(2),isToday:r.date===today}));
-  cachedKc=kc;
-  render(cachedAllRows,kc,cn,sn,pRows.length,fRows.length);
+  schedData=fctOnly.map((r,idx)=>{
+    const etc=+(r.eto*kc).toFixed(2);
+    const rainEffect=Math.min(r.rain,dr);
+    dr=Math.max(0,dr-rainEffect);
+    const netEtc=Math.max(0,etc-r.rain);
+    const smStart=Math.max(0,fcMM-dr);
+    dr=Math.min(awcMM,Math.max(0,dr+netEtc));
+
+    let irrMM=0,irrVol=0,runHr=0;
+    let shouldIrr=false;
+    if(irrStrategy==='none'){
+      shouldIrr=false;
+    } else if(irrStrategy==='mad'){
+      shouldIrr=dr>=madMM;
+    } else {
+      daysSinceIrr++;
+      shouldIrr=daysSinceIrr>=fixedInterval;
+    }
+
+    if(shouldIrr){
+      if(fixedDepthMode==='custom'&&irrStrategy==='fixed'){
+        irrMM=Math.min(fixedCustomMM,awcMM);
+      } else {
+        irrMM=Math.min(dr,awcMM);
+      }
+      irrMM=Math.max(0,irrMM);
+      const gross=irrMM/ea;
+      irrVol=gross*area*10;
+      runHr=Qhr>0?irrVol/Qhr:0;
+      dr=Math.max(0,dr-irrMM);
+      daysSinceIrr=0;
+    }
+
+    const smEnd=Math.max(0,fcMM-dr);
+    const smEnd_vol=rz>0?Math.max(0,Math.min(p.tsat,(smEnd/1000)/rz)):p.pwp;
+    const awcPct=awcMM>0?Math.min(100,Math.max(0,(smEnd-pwpMM)/awcMM*100)):0;
+    const smPct=awcPct;
+    const deplPct=awcMM>0?Math.min(100,dr/awcMM*100):0;
+    return{...r,etc,net:netEtc,smStart,smEnd,smEnd_mm:smEnd,smEnd_pct:smPct,smEnd_vol,
+      awcPct,deplPct,irrMM,irrVol,runHr,isToday:r.date===today,irr:irrMM>0.001};
+  });
+
+  renderSchedule(fcMM,pwpMM,awcMM,madMM,Qhr,area,ea);
 }
 
-/* ══════ RENDER ══════ */
-function render(rows,kcv,cn,sn,nP,nF){
-  document.getElementById('ph').style.display='none';
-  document.getElementById('results').style.display='block';
-  document.getElementById('dripPanel').style.display='block';
-  const pR=rows.filter(r=>r.src==='past'), fR=rows.filter(r=>r.src==='fct');
-  const etoSum=rows.reduce((s,r)=>s+r.eto,0);
-  const etcSum=rows.reduce((s,r)=>s+r.etc,0);
-  const pEto=pR.reduce((s,r)=>s+r.eto,0);
-  const fEtc=fR.reduce((s,r)=>s+r.etc,0);
-  const pk=rows.reduce((a,b)=>a.etc>b.etc?a:b,rows[0]);
-  const si=unitSys==='SI';
-  const pFall=pR.some(r=>r.fallback), fFall=fR.some(r=>r.fallback);
-  document.getElementById('mn').innerHTML=
-    `<strong>${selLoc.name}</strong>${selLoc.admin1?', '+selLoc.admin1:''}${selLoc.country?', '+selLoc.country:''} &nbsp;·&nbsp; ${selLoc.lat.toFixed(4)}°N ${selLoc.lon.toFixed(4)}°E &nbsp;·&nbsp;`+
-    ` Past: ${pFall?'Claude AI':'ERA5 reanalysis'} &nbsp;·&nbsp; Forecast: ${fFall?'Claude AI':'Open-Meteo'}`;
-  const uEto=si?'mm':'in';
-  document.getElementById('sumCards').innerHTML=`
-    <div class="cv"><div class="cv-l">Location</div><div class="cv-v" style="font-size:15px;line-height:1.3">${selLoc.name}</div><div class="cv-s">${[selLoc.admin1,selLoc.country].filter(Boolean).join(', ')||'Custom'}</div></div>
-    <div class="cv g"><div class="cv-l">Past ETo (${nP}d)</div><div class="cv-v">${si?pEto.toFixed(1):(pEto*MM2IN).toFixed(2)}<span class="su">${uEto}</span></div><div class="cv-s">avg ${si?(pEto/Math.max(nP,1)).toFixed(1):(pEto*MM2IN/Math.max(nP,1)).toFixed(2)} ${uEto}/d</div></div>
-    <div class="cv b"><div class="cv-l">Forecast ETc (${nF}d)</div><div class="cv-v">${si?fEtc.toFixed(1):(fEtc*MM2IN).toFixed(2)}<span class="su">${uEto}</span></div><div class="cv-s">Kc=${kcv.toFixed(2)} · ${cn}</div></div>
-    <div class="cv"><div class="cv-l">Peak ETc day</div><div class="cv-v">${si?pk.etc.toFixed(2):(pk.etc*MM2IN).toFixed(2)}<span class="su">${uEto}</span></div><div class="cv-s">${sd(pk.date)}</div></div>`;
-  document.getElementById('etcH').textContent=`ETc — ${cn} (${sn})`;
-  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
-  const gc=isDark?'rgba(242,240,232,.07)':'rgba(24,24,15,.07)', tc=isDark?'#66645c':'#90887c';
-  const labs=rows.map(r=>wd(r.date)+'\n'+sd(r.date));
-  const etoDisp=r=>si?r.eto:+(r.eto*MM2IN).toFixed(3);
-  document.getElementById('etoNote').textContent=`${selLoc.name} · past ${nP}d ERA5 + ${nF}d forecast`;
-  if(chartEto)chartEto.destroy();
-  chartEto=new Chart(document.getElementById('etoC'),{type:'bar',data:{labels:labs,datasets:[
-    {label:'ETo past',data:rows.map((r,i)=>i<nP?etoDisp(r):null),backgroundColor:'rgba(45,152,84,.72)',borderColor:'rgba(45,152,84,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
-    {label:'ETo forecast',data:rows.map((r,i)=>i>=nP?etoDisp(r):null),backgroundColor:'rgba(43,104,200,.68)',borderColor:'rgba(43,104,200,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>ld(rows[ctx[0].dataIndex].date),label:ctx=>ctx.parsed.y!=null?`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)} ${si?'mm':'in'}`:null}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},title:{display:true,text:`ETo (${si?'mm':'in'}/day)`,color:tc,font:{size:11}},beginAtZero:true}}},plugins:[divP(nP,rows.length,isDark)]});
-  if(chartEtc)chartEtc.destroy();
-  const etcDisp2=r=>si?r.etc:+(r.etc*MM2IN).toFixed(3);
-  let cum=0; const cumD=rows.map((r,i)=>{
-    if(i<nP){return null;}  // null for past days — line starts at today
-    cum+=(si?r.etc:r.etc*MM2IN);return+cum.toFixed(2);
-  });
-  chartEtc=new Chart(document.getElementById('etcC'),{type:'bar',data:{labels:labs,datasets:[
-    {label:'ETc past',data:rows.map((r,i)=>i<nP?etcDisp2(r):null),yAxisID:'y',backgroundColor:'rgba(45,152,84,.72)',borderColor:'rgba(45,152,84,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
-    {label:'ETc forecast',data:rows.map((r,i)=>i>=nP?etcDisp2(r):null),yAxisID:'y',backgroundColor:'rgba(43,104,200,.68)',borderColor:'rgba(43,104,200,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
-    {label:'Cumulative',data:cumD,type:'line',yAxisID:'y2',borderColor:'rgba(202,108,16,1)',backgroundColor:'rgba(202,108,16,.10)',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>ld(rows[ctx[0].dataIndex].date),label:ctx=>{if(ctx.parsed.y==null)return null;return ctx.dataset.yAxisID==='y2'?`Cumul.: ${ctx.parsed.y.toFixed(1)} ${si?'mm':'in'}`:`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)} ${si?'mm':'in'}/d`}}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},title:{display:true,text:`ETc (${si?'mm':'in'}/day)`,color:tc,font:{size:11}},beginAtZero:true,position:'left'},y2:{grid:{display:false},ticks:{color:'rgba(202,108,16,.8)',font:{size:11}},title:{display:true,text:`Cumul. (${si?'mm':'in'})`,color:'rgba(202,108,16,.8)',font:{size:11}},beginAtZero:true,position:'right'}}},plugins:[divP(nP,rows.length,isDark)]});
-  const tUnit=si?'mm':'in', wUnit=si?'m/s':'mph', tTUnit=si?'°C':'°F';
-  document.getElementById('tblHead').innerHTML=`
-    <th>Date</th>
-    <th class="r">Tmax ${tTUnit}</th><th class="r">Tmin ${tTUnit}</th>
-    <th class="r">RH %</th><th class="r">Wind ${wUnit}</th><th class="r">Rs MJ/m²</th>
-    <th class="r">Rain ${tUnit}</th>
-    <th class="r">ETo ${tUnit}</th><th class="r">ETc ${tUnit}</th>`;
-  const maxEto=Math.max(...rows.map(r=>r.eto),.1);
-  const tbody=document.getElementById('tb'); tbody.innerHTML='';
-  rows.forEach(r=>{
-    const bwE=Math.round(r.eto/maxEto*100), bwC=Math.round(r.etc/(maxEto*kcv)*100);
-    const isPk=r.date===pk.date;
-    const rc=[r.src==='past'?'rp':'rf',r.isToday?'rt':'',isPk?'rpk':''].filter(Boolean).join(' ');
-    const tMaxD=r.tmax!=null?(si?r.tmax.toFixed(1):((r.tmax*9/5+32).toFixed(1))):'—';
-    const tMinD=r.tmin!=null?(si?r.tmin.toFixed(1):((r.tmin*9/5+32).toFixed(1))):'—';
-    const windD=r.u2!=null?(si?r.u2.toFixed(1):(r.u2*2.237).toFixed(1)):'—';
-    const etoD=si?r.eto.toFixed(2):(r.eto*MM2IN).toFixed(3);
-    const etcD=si?r.etc.toFixed(2):(r.etc*MM2IN).toFixed(3);
-    const rainD=r.rain!=null?(si?r.rain.toFixed(1):(r.rain*MM2IN).toFixed(3)):'—';
-    const rainCls=r.rain>0?'style="color:var(--bl);font-weight:600"':'';
-    const tr=document.createElement('tr'); tr.className=rc;
-    tr.innerHTML=`<td><div class="dn">${ld(r.date)}</div></td><td class="r">${tMaxD}</td><td class="r">${tMinD}</td><td class="r">${r.rh??'—'}</td><td class="r">${windD}</td><td class="r">${r.rs!=null?r.rs.toFixed(1):'—'}</td><td class="r" ${rainCls}>${rainD}</td><td class="r"><div class="bw"><div class="bb"><div class="bf ${r.src==='past'?'bg':'bbl'}" style="width:${bwE}%"></div></div>${etoD}</div></td><td class="r"><div class="bw"><div class="bb"><div class="bf ${r.src==='past'?'bg':'bbl'}" style="width:${bwC}%"></div></div><span class="ev">${etcD}</span>${isPk?'<span class="ptag">peak</span>':''}</div></td>`;
+function renderSchedule(fcMM,pwpMM,awcMM,madMM,Qhr,area,ea){
+  const fd=unitSys==='SI'?1:MM2IN,fv=unitSys==='SI'?1:264.172;
+  const irrRows=schedData.filter(r=>r.irr);
+  const totEtc=schedData.reduce((s,r)=>s+r.etc,0);
+  const totIrr=schedData.reduce((s,r)=>s+r.irrMM,0);
+  const totRain=schedData.reduce((s,r)=>s+r.rain,0);
+  const totVol=schedData.reduce((s,r)=>s+r.irrVol,0);
+  const totRun=schedData.reduce((s,r)=>s+r.runHr,0);
+  const fct=schedData.filter(r=>r.src==='fct');
+  const today=todayISO();
+  const nextIrrRow=fct.find(r=>r.irr&&r.date>=today);
+  const daysToNext=nextIrrRow?Math.max(0,Math.ceil((new Date(nextIrrRow.date+'T12:00:00Z')-new Date())/86400e3)):null;
+
+  document.getElementById('schedPH').style.display='none';
+  document.getElementById('schedResults').style.display='block';
+  const stratLabel=irrStrategy==='none'?'No irrigation'
+    :irrStrategy==='mad'
+    ?`MAD ${Math.round(+document.getElementById('madSel').value)}%`
+    :`Fixed ${document.getElementById('fixedInterval').value}d interval`;
+  document.getElementById('schedMn').innerHTML=
+    `<strong>${selLoc?.name||'Location'}</strong> &nbsp;·&nbsp; ${curSoilClass} soil &nbsp;·&nbsp; Kc ${kc.toFixed(2)} &nbsp;·&nbsp; ${stratLabel} &nbsp;·&nbsp; Root ${(getRD_m()*100).toFixed(0)} cm &nbsp;·&nbsp; Ea ${Math.round(ea*100)}%`;
+
+  // Hero
+  document.getElementById('hNextIrr').textContent=daysToNext!=null?daysToNext:'—';
+  document.getElementById('hNextLbl').textContent=daysToNext!=null?'days to next irrigation':'no irrigation needed';
+  document.getElementById('hNextSub').textContent=nextIrrRow?`${sd(nextIrrRow.date)} — ${(nextIrrRow.irrMM*fd).toFixed(1)} ${uu()}`:irrRows.length?'':'Soil moisture adequate';
+
+  document.getElementById('schedCards').innerHTML=`
+    <div class="mc g"><div class="mc-lbl">Total ETc (7d)</div><div class="mc-val">${(totEtc*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
+    <div class="mc b"><div class="mc-lbl">Total irrigation</div><div class="mc-val">${(totIrr*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
+    <div class="mc a"><div class="mc-lbl">Total volume</div><div class="mc-val">${(totVol*fv).toFixed(0)}<span class="u">${vuu()}</span></div></div>
+    <div class="mc n"><div class="mc-lbl">Total run time</div><div class="mc-val" style="font-size:18px">${toHHMM(totRun)}</div></div>
+    <div class="mc p"><div class="mc-lbl">Avg time / event</div><div class="mc-val" style="font-size:18px">${irrRows.length>0?toHHMM(totRun/irrRows.length):'—'}</div></div>`;
+
+
+
+  // Table
+  const tbody=document.getElementById('schedTb');tbody.innerHTML='';
+  const past=schedData.filter(r=>r.src==='past').length;
+  const _sp=getSoilP();
+  const _mad_theta=_sp.pwp+(_sp.fc-_sp.pwp)*(1-+document.getElementById('madSel').value/100);
+  const _mad_h=Math.min(thetaToH(_mad_theta,_sp),1500);
+  schedData.forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    if(r.irr) tr.classList.add('irr-row');
+    if(r.isToday) tr.classList.add('today-row');
+    const rz_m=getRD_m();
+    const thetaStart_pct=+(r.smStart/(rz_m*1000)*100).toFixed(1);
+    const thetaEnd_pct=+(r.smEnd_vol*100).toFixed(1);
+    const h_kpa=Math.min(thetaToH(r.smEnd_vol,_sp),1500);
+    const h_disp=h_kpa>=1499?'>1500':h_kpa<10?h_kpa.toFixed(1):h_kpa.toFixed(0);
+    const hColor=h_kpa>_mad_h?'var(--or)':h_kpa>200?'var(--k2)':'var(--gr)';
+    const statusCls=r.irr?'b':h_kpa<=_mad_h?'g':h_kpa<800?'a':'r';
+    const statusTxt=r.irr?'Irrigate':h_kpa<=33?'At FC':h_kpa<=_mad_h?'OK':h_kpa<800?'Monitor':'Stress';
+    const statusHtml=`<span class="badge ${statusCls}">${statusTxt}</span>`;
+    tr.innerHTML=`
+      <td class="dn">${ld(r.date)}${r.isToday?'<span class="badge n" style="margin-left:6px">Today</span>':''}</td>
+      <td class="r">${(r.eto*fd).toFixed(2)}</td>
+      <td class="r">${(r.etc*fd).toFixed(2)}</td>
+      <td class="r">${r.rain>0?`<span style="color:var(--blm);font-weight:600">${(r.rain*fd).toFixed(1)}</span>`:'—'}</td>
+      <td class="r">${(r.net*fd).toFixed(2)}</td>
+      <td class="r">${thetaStart_pct}%</td>
+      <td class="r"><strong>${thetaEnd_pct}%</strong></td>
+      <td class="r" style="color:${hColor};font-weight:600">${h_disp}</td>
+      <td>${statusHtml}</td>
+      <td class="r">${r.irrMM>0?`<strong style="color:var(--blm)">${(r.irrMM*fd).toFixed(1)}</strong>`:'—'}</td>
+      <td class="r">${r.irrVol>0?`${(r.irrVol*fv).toFixed(0)}`:'—'}</td>
+      <td class="r">${r.runHr>0?toHHMM(r.runHr):'—'}</td>`;
     tbody.appendChild(tr);
   });
-  const rainTotal=rows.reduce((s,r)=>s+(r.rain??0),0);
-  const rainTD=si?rainTotal.toFixed(1):(rainTotal*MM2IN).toFixed(2);
-  document.getElementById('tf').innerHTML=`<td colspan="6" style="font-size:12px">Totals · ${nP}d past + ${nF}d forecast</td><td class="r" style="color:var(--bl)">${rainTD} ${tUnit}</td><td class="r">${si?etoSum.toFixed(1):(etoSum*MM2IN).toFixed(2)} ${tUnit}</td><td class="r" style="color:var(--or)">${si?etcSum.toFixed(1):(etcSum*MM2IN).toFixed(2)} ${tUnit}</td>`;
-  renderIrr();
+  // Footer
+  document.getElementById('schedTf').innerHTML=`
+    <td>7-day totals</td>
+    <td class="r">—</td>
+    <td class="r">${(totEtc*fd).toFixed(1)} ${uu()}</td>
+    <td class="r">${(totRain*fd).toFixed(1)} ${uu()}</td>
+    <td class="r">—</td>
+    <td class="r">—</td>
+    <td class="r">—</td>
+    <td class="r">—</td>
+    <td>—</td>
+    <td class="r">${(totIrr*fd).toFixed(1)} ${uu()}</td>
+    <td class="r">${(totVol*fv).toFixed(0)} ${vuu()}</td>
+    <td class="r">${toHHMM(totRun)}</td>`;
 }
 
-/* ══════ IRRIGATION ══════ */
-function liveIrr(){if(cachedFct.length)renderIrr()}
+function redrawScheduleCharts(){
+  if(!schedData.length) return;
+  const fd=unitSys==='SI'?1:MM2IN,fv=unitSys==='SI'?1:264.172;
+  const past=0; // schedule now shows forecast only
+  const labs=schedData.map(r=>wd(r.date)+'\n'+sd(r.date));
+  const p=getSoilP(),mad=+document.getElementById('madSel').value/100;
+  const rz=getRD_m();
+  const fcMM=p.fc*rz*1000,pwpMM=p.pwp*rz*1000,awcMM=(p.fc-p.pwp)*rz*1000;
+  const madThreshMM=fcMM-awcMM*mad;  // SM level at MAD
 
-function renderIrr(){
-  if(!cachedFct.length)return;
-  const {area,q,se,sr,ea}=getSIValues();
-  if(!area||!q||!se||!sr||!ea)return;
-  document.getElementById('irrSection').style.display='block';
-  const si=unitSys==='SI';
-  const dFreq=Math.max(1,Math.min(7,parseInt(document.getElementById('iDays').value)||7));
-  const nE=area*10000/(se*sr);
-  const Qhr=nE*q/1000;
-  const rows=cachedFct.map(r=>{
-    const dGross=r.etc/ea;
-    const vol=dGross*area*10;
-    const tHr=Qhr>0?vol/Qhr:0;
-    return{...r,dGross:+dGross.toFixed(2),vol:+vol.toFixed(2),tHr:+tHr.toFixed(2)};
+  // ── Soil moisture chart — left: θ vol% (sensor), right: SM mm in root zone ──
+  const smArr_vol = schedData.map(r => +(r.smEnd_vol * 100).toFixed(2));   // % vol
+  const smArr_mm  = schedData.map(r => +(r.smEnd_mm  * fd).toFixed(1));    // mm (display units)
+
+  // Reference thresholds
+  const fc_vol    = +(p.fc  * 100).toFixed(2);
+  const pwp_vol   = +(p.pwp * 100).toFixed(2);
+  const mad_theta = p.pwp + (p.fc - p.pwp) * (1 - mad);
+  const mad_vol   = +(mad_theta * 100).toFixed(2);
+
+  // mm values for reference lines (right axis, display units)
+  const fcMM_d    = +(fcMM  * fd).toFixed(1);
+  const pwpMM_d   = +(pwpMM * fd).toFixed(1);
+  const madMM_d   = +(madThreshMM * fd).toFixed(1);
+
+  // Convert vol% reference lines so both axes stay in sync
+  // Right axis range mirrors left axis range via the same physical units
+  const fcVolArr  = schedData.map(()=>fc_vol);
+  const madVolArr = schedData.map(()=>mad_vol);
+  const pwpVolArr = schedData.map(()=>pwp_vol);
+  const fcMMArr   = schedData.map(()=>fcMM_d);
+  const madMMArr  = schedData.map(()=>madMM_d);
+  const pwpMMArr  = schedData.map(()=>pwpMM_d);
+
+  const irrBarArr  = schedData.map(r => r.irrMM > 0 ? +(r.irrMM * fd).toFixed(2) : null);
+  const rainBarArr = schedData.map(r => r.rain  > 0 ? +(r.rain  * fd).toFixed(2) : null);
+  const maxBar = Math.max(...schedData.map(r => Math.max(r.irrMM, r.rain)), 1) * fd * 3;
+
+  const cv1 = document.getElementById('smChart'); if(!cv1||!cv1.offsetParent) return;
+  if(charts.sm) charts.sm.destroy();
+
+  // Left axis (vol%) and right axis (mm) must be perfectly aligned:
+  // They represent the same physical quantity via different units.
+  // Scale factor: mm = vol% * rz * 10  (rz in m, ×10 → mm per 10mm depth per %)
+  // So right axis min/max are just left axis values × rz_m × 10 (in display units)
+  const rz_m_val = getRD_m();
+  const scale_vol2mm = rz_m_val * 10 * fd;  // converts vol% → display-unit mm
+  const yMin_vol = Math.max(0, pwp_vol - 1);
+  const yMax_vol = Math.min(65, fc_vol + 2);
+  const yMin_mm  = +(yMin_vol * scale_vol2mm).toFixed(1);
+  const yMax_mm  = +(yMax_vol * scale_vol2mm).toFixed(1);
+
+  charts.sm = new Chart(cv1, {
+    type: 'line',
+    data: {labels: labs, datasets: [
+      // ── Left axis (θ vol%) — filled bands ──
+      {label:'FC (vol%)',    data:fcVolArr,  borderColor:'rgba(43,104,200,.28)',borderWidth:1,pointRadius:0,fill:'+1',backgroundColor:'rgba(173,216,255,.45)',tension:0,order:8,yAxisID:'y'},
+      {label:'MAD (vol%)',   data:madVolArr, borderColor:'rgba(202,108,16,.75)',borderDash:[8,5],borderWidth:1.8,pointRadius:0,fill:'+1',backgroundColor:'rgba(255,180,180,.35)',tension:0,order:7,yAxisID:'y'},
+      {label:'PWP (vol%)',   data:pwpVolArr, borderColor:'rgba(196,36,36,.3)',borderWidth:1,pointRadius:0,fill:false,tension:0,order:6,yAxisID:'y'},
+      // SM vol% line
+      {label:'θ vol%',       data:smArr_vol, borderColor:'#2b68c8',borderWidth:2.8,
+        pointRadius:schedData.map(r=>r.irr?5:3),
+        pointBackgroundColor:schedData.map(r=>r.irr?'#1a5c38':'#2b68c8'),
+        pointBorderColor:schedData.map(r=>r.irr?'#fff':'#2b68c8'),
+        pointBorderWidth:schedData.map(r=>r.irr?2:0),
+        fill:false,tension:0.3,order:0,yAxisID:'y',type:'line'},
+      // ── Right axis (mm) — shadow line for scale alignment ──
+      {label:'SM (mm)',      data:smArr_mm,  borderColor:'rgba(43,104,200,.0)',borderWidth:0,
+        pointRadius:0,fill:false,tension:0.3,order:1,yAxisID:'y2',type:'line'},
+      // Invisible reference lines on right axis (keep axes aligned)
+      {label:'FC (mm)',      data:fcMMArr,   borderColor:'rgba(0,0,0,0)',borderWidth:0,pointRadius:0,fill:false,tension:0,order:9,yAxisID:'y2'},
+      {label:'MAD (mm)',     data:madMMArr,  borderColor:'rgba(0,0,0,0)',borderWidth:0,pointRadius:0,fill:false,tension:0,order:9,yAxisID:'y2'},
+      {label:'PWP (mm)',     data:pwpMMArr,  borderColor:'rgba(0,0,0,0)',borderWidth:0,pointRadius:0,fill:false,tension:0,order:9,yAxisID:'y2'},
+      // ── Bars (hidden scale) ──
+      {label:'Irrigation',   data:irrBarArr, type:'bar',yAxisID:'y3',backgroundColor:'rgba(45,152,84,.78)',borderWidth:0,borderRadius:3,order:4},
+      {label:'Rainfall',     data:rainBarArr,type:'bar',yAxisID:'y3',backgroundColor:'rgba(43,104,200,.38)',borderWidth:0,borderRadius:3,order:4},
+    ]},
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title: c => ld(schedData[c[0].dataIndex].date),
+          label: c => {
+            const d=c.dataset.label, u=uu(), i=c.dataIndex;
+            if(d==='θ vol%')     return [`θ = ${smArr_vol[i].toFixed(1)} % vol  —  SM = ${smArr_mm[i]} ${u}`];
+            if(d==='FC (vol%)')  return `FC:  ${fc_vol.toFixed(1)}% vol  /  ${fcMM_d} ${u}`;
+            if(d==='MAD (vol%)') return `MAD: ${mad_vol.toFixed(1)}% vol  /  ${madMM_d} ${u}`;
+            if(d==='PWP (vol%)') return `PWP: ${pwp_vol.toFixed(1)}% vol  /  ${pwpMM_d} ${u}`;
+            if(d==='Irrigation'&&c.parsed.y!=null) return `Irrigation applied: ${c.parsed.y} ${u}`;
+            if(d==='Rainfall'&&c.parsed.y!=null)   return `Rainfall: ${c.parsed.y} ${u}`;
+            return null;
+          }
+        }}
+      },
+      scales:{
+        x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},
+        // Left: θ % vol
+        y:{
+          position:'left',
+          grid:{color:gc()},
+          min: yMin_vol,
+          max: yMax_vol,
+          title:{display:true,text:'θ  (% vol)',color:'#2b68c8',font:{size:11,weight:'600'}},
+          ticks:{color:'#2b68c8',font:{size:11},callback:v=>v.toFixed(1)+'%'}
+        },
+        // Right: soil moisture in mm — perfectly aligned with left axis
+        y2:{
+          position:'right',
+          grid:{display:false},
+          min: yMin_mm,
+          max: yMax_mm,
+          title:{display:true,text:`SM  (${u=uu()})`,color:'#1a5c38',font:{size:11,weight:'600'}},
+          ticks:{color:'#1a5c38',font:{size:10},callback:v=>v.toFixed(0)+' '+uu()}
+        },
+        // Hidden bar scale
+        y3:{display:false,beginAtZero:true,max:+maxBar.toFixed(1)}
+      }
+    },
+    plugins:[divPlugin(0, schedData.length)]
   });
-  const totVol=rows.reduce((s,r)=>s+r.vol,0);
-  const totHr=rows.reduce((s,r)=>s+r.tHr,0);
-  const pkVol=Math.max(...rows.map(r=>r.vol));
-  const pkRow=rows.find(r=>r.vol===pkVol);
-  const avgDailyVol=totVol/rows.length;
-  const volPerEvent=avgDailyVol*(7/dFreq);
-  const hrPerEvent=Qhr>0?volPerEvent/Qhr:0;
-  const vNum=v=>si?+v.toFixed(1):+(v*264.172).toFixed(0);
-  const vUnit=si?'m³':'gal';
-  const qDisp=si?`${q.toFixed(2)} L/hr`:`${(q/GPH2LH).toFixed(2)} gph`;
-  document.getElementById('legVol').textContent=`Volume (${vUnit})`;
-  document.getElementById('thVol').textContent=`Volume ${vUnit}`;
-  document.getElementById('eventTimeDisplay').textContent=hrPerEvent.toFixed(2);
-  document.getElementById('eventTimeLabel').textContent=`hr / event  (${dFreq}×/wk)`;
-  document.getElementById('irrCards').innerHTML=`
-    <div class="ic"><div class="ic-l">System Q</div><div class="ic-v">${si?Qhr.toFixed(1):(Qhr*264.172).toFixed(0)}<span class="su">${si?'m³/hr':'gal/hr'}</span></div><div class="ic-s">${Math.round(nE).toLocaleString()} emitters · ${qDisp}</div></div>
-    <div class="ic"><div class="ic-l">Total volume 7d</div><div class="ic-v">${si?totVol.toFixed(0):(totVol*264.172).toFixed(0)}<span class="su">${vUnit}</span></div><div class="ic-s">avg ${si?avgDailyVol.toFixed(1):(avgDailyVol*264.172).toFixed(0)} ${vUnit}/d</div></div>
-    <div class="ic hi"><div class="ic-l">Peak day</div><div class="ic-v">${si?pkVol.toFixed(1):(pkVol*264.172).toFixed(0)}<span class="su">${vUnit}</span></div><div class="ic-s">${sd(pkRow.date)} · ${pkRow.tHr.toFixed(1)} hr</div></div>
-    <div class="ic"><div class="ic-l">Total time 7d</div><div class="ic-v">${totHr.toFixed(1)}<span class="su">hr</span></div><div class="ic-s">forecast period</div></div>`;
-  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
-  const gc=isDark?'rgba(242,240,232,.07)':'rgba(24,24,15,.07)', tc=isDark?'#66645c':'#90887c';
-  if(chartIrr)chartIrr.destroy();
-  chartIrr=new Chart(document.getElementById('irrC'),{type:'bar',data:{
-    labels:rows.map(r=>wd(r.date)+'\n'+sd(r.date)),
-    datasets:[
-      {label:`Volume (${vUnit})`,data:rows.map(r=>vNum(r.vol)),yAxisID:'y',backgroundColor:'rgba(43,104,200,.72)',borderColor:'rgba(43,104,200,1)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
-      {label:'Time (hr)',data:rows.map(r=>r.tHr),type:'line',yAxisID:'y2',borderColor:'rgba(202,108,16,1)',backgroundColor:'rgba(202,108,16,.10)',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
-    ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>ld(rows[ctx[0].dataIndex].date),label:ctx=>ctx.dataset.yAxisID==='y2'?`Time: ${ctx.parsed.y.toFixed(2)} hr`:`Volume: ${ctx.parsed.y} ${vUnit}`}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},title:{display:true,text:`Volume (${vUnit}/day)`,color:'rgba(43,104,200,.9)',font:{size:11}},beginAtZero:true,position:'left'},y2:{grid:{display:false},ticks:{color:'rgba(202,108,16,.8)',font:{size:11}},title:{display:true,text:'Time (hr/day)',color:'rgba(202,108,16,.8)',font:{size:11}},beginAtZero:true,position:'right'}}}});
-  const startH=()=>{const t=document.getElementById('iStart').value||'06:00';const[h,m]=t.split(':');return+h+(+m)/60};
-  const fmtT=h=>{const hh=Math.floor(h)%24,mm=Math.round((h-Math.floor(h))*60);return`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`};
-  const maxVol=Math.max(...rows.map(r=>r.vol));
-  const tbody=document.getElementById('irrTb'); tbody.innerHTML='';
-  rows.forEach(r=>{
-    const isPk=r.vol===pkVol, bw=Math.round(r.vol/maxVol*100), sh=startH(), eh=sh+r.tHr;
-    const volDisp=si?r.vol.toFixed(1):(r.vol*264.172).toFixed(0);
-    const etcD=si?r.etc.toFixed(2):(r.etc*MM2IN).toFixed(3);
-    const dgD=si?r.dGross.toFixed(2):(r.dGross*MM2IN).toFixed(3);
-    const vEvent=r.vol*(7/dFreq);
-    const hEvent=Qhr>0?vEvent/Qhr:0;
-    const tr=document.createElement('tr'); tr.className=isPk?'rpk':'';
-    tr.innerHTML=`<td><div class="dn">${ld(r.date)}</div></td>`+
-      `<td class="r">${etcD}</td>`+
-      `<td class="r">${dgD}</td>`+
-      `<td class="r"><div class="bw"><div class="bb"><div class="bf ba" style="width:${bw}%"></div></div><span class="${isPk?'ih':'it'}">${volDisp}</span></div></td>`+
-      `<td class="r ${isPk?'ih':'it'}">${r.tHr.toFixed(2)}</td>`+
-      `<td class="r" style="color:var(--or);font-weight:600">${hEvent.toFixed(2)}</td>`+
-      `<td class="r">${fmtT(sh)}</td>`+
-      `<td class="r">${fmtT(eh)}</td>`;
-    tbody.appendChild(tr);
-  });
-  const totVolD=si?totVol.toFixed(0):(totVol*264.172).toFixed(0);
-  const tUnit=si?'mm':'in';
-  document.getElementById('irrTf').innerHTML=
-    `<td colspan="3" style="font-size:12px">7-day totals</td>`+
-    `<td class="r" style="color:var(--bl)">${totVolD} ${vUnit}</td>`+
-    `<td class="r" style="color:var(--or)">${totHr.toFixed(1)} hr</td>`+
-    `<td class="r" style="color:var(--or);font-size:11px">avg ${hrPerEvent.toFixed(2)} hr/ev</td>`+
-    `<td colspan="2"></td>`;
+
+  // ── ETc + Irrigation bar chart ──
+  const cv2=document.getElementById('irrChart');if(!cv2||!cv2.offsetParent) return;
+  if(charts.irr) charts.irr.destroy();
+  charts.irr=new Chart(cv2,{type:'bar',data:{labels:labs,datasets:[
+    {label:'ETc forecast',data:schedData.map(r=>+(r.etc*fd).toFixed(2)),backgroundColor:'rgba(43,104,200,.72)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+    {label:'Irrigation applied',data:schedData.map(r=>r.irrMM>0?+(r.irrMM*fd).toFixed(2):null),backgroundColor:'rgba(45,152,84,.82)',borderWidth:1,borderRadius:3,borderSkipped:'bottom'},
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>ld(schedData[c[0].dataIndex].date),label:c=>c.parsed.y!=null?`${c.dataset.label}: ${c.parsed.y} ${uu()}`:null}}},
+    scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},title:{display:true,text:`Depth (${uu()})`,color:tc(),font:{size:11}},beginAtZero:true}},
+  },plugins:[divPlugin(past,schedData.length)]});
+
+  // ── Run time bar chart ──
+  const cv3=document.getElementById('runChart');if(!cv3||!cv3.offsetParent) return;
+  if(charts.run) charts.run.destroy();
+  charts.run=new Chart(cv3,{type:'bar',data:{labels:labs,datasets:[
+    {label:'Run time',data:schedData.map(r=>r.runHr>0?+r.runHr.toFixed(2):null),backgroundColor:'rgba(43,104,200,.75)',borderWidth:1,borderRadius:4,borderSkipped:'bottom'},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>ld(schedData[c[0].dataIndex].date),label:c=>{
+      if(c.parsed.y==null) return null;
+      const r=schedData[c.dataIndex];
+      const fd_=unitSys==='SI'?1:MM2IN;
+      const appR=r.runHr>0?(r.irrMM/r.runHr*fd_).toFixed(2):0;
+      return [`Run time: ${toHHMM(c.parsed.y)}`,`Depth applied: ${(r.irrMM*fd_).toFixed(1)} ${uu()}`,`Application rate: ${appR} ${uu()}/hr`];
+    }}}},
+    scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},title:{display:true,text:'Run time (hh:mm)',color:tc(),font:{size:11}},beginAtZero:true,ticks:{color:tc(),font:{size:10},callback:v=>v>0?toHHMM(v):'0:00'}}},
+  }});
 }
 
-/* ══════ EXPORT EXCEL ══════ */
-function exportExcel(){
-  if(!cachedAllRows.length){alert('No data to export. Load data first.');return;}
-  const si=unitSys==='SI';
-  const {area,q,se,sr,ea}=getSIValues();
-  const dFreq=Math.max(1,Math.min(7,parseInt(document.getElementById('iDays').value)||7));
-  const nE=area*10000/(se*sr);
-  const Qhr=nE*q/1000;
-  const tUnit=si?'mm':'in', wUnit=si?'m/s':'mph', tTUnit=si?'°C':'°F', vUnit=si?'m³':'gal';
-  const areaDisp=si?`${area.toFixed(2)} ha`:`${(area/AC2HA).toFixed(2)} ac`;
-  const locLabel=selLoc?`${selLoc.name}${selLoc.admin1?', '+selLoc.admin1:''}${selLoc.country?', '+selLoc.country:''}`:'Unknown';
-  const wb=XLSX.utils.book_new();
-  const s1data=[
-    [`ETc & Irrigation Report — ${locLabel}  |  ${cachedCrop} · ${cachedStage}  |  Kc=${cachedKc.toFixed(2)}  |  Units: ${si?'SI (metric)':'US (imperial)'}`],
-    [],
-    ['Date','Source',`Tmax ${tTUnit}`,`Tmin ${tTUnit}`,'RH %',`Wind ${wUnit}`,'Rs MJ/m²',`Rain ${tUnit}`,`ETo ${tUnit}`,`ETc ${tUnit}`],
-    ...cachedAllRows.map(r=>[
-      r.date,r.src==='past'?'ERA5 archive':'Forecast',
-      r.tmax!=null?(si?r.tmax:+(r.tmax*9/5+32).toFixed(1)):null,
-      r.tmin!=null?(si?r.tmin:+(r.tmin*9/5+32).toFixed(1)):null,
-      r.rh??null,
-      r.u2!=null?(si?r.u2:+(r.u2*2.237).toFixed(1)):null,
-      r.rs??null,
-      r.rain!=null?(si?r.rain:+(r.rain*MM2IN).toFixed(3)):null,
-      si?r.eto:+(r.eto*MM2IN).toFixed(3),
-      si?r.etc:+(r.etc*MM2IN).toFixed(3),
-    ])
-  ];
-  const etoSum=cachedAllRows.reduce((s,r)=>s+r.eto,0);
-  const etcSum=cachedAllRows.reduce((s,r)=>s+r.etc,0);
-  const rainSum=cachedAllRows.reduce((s,r)=>s+(r.rain??0),0);
-  s1data.push(['Totals','','','','','','',
-    si?+rainSum.toFixed(1):+(rainSum*MM2IN).toFixed(2),
-    si?+etoSum.toFixed(1):+(etoSum*MM2IN).toFixed(2),
-    si?+etcSum.toFixed(1):+(etcSum*MM2IN).toFixed(2)
-  ]);
-  const ws1=XLSX.utils.aoa_to_sheet(s1data);
-  ws1['!cols']=[{wch:14},{wch:14},{wch:10},{wch:10},{wch:8},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10}];
-  XLSX.utils.book_append_sheet(wb,ws1,'ETo & ETc');
-  if(cachedFct.length&&Qhr>0){
-    const fctRows=cachedFct.map(r=>{
-      const dGross=r.etc/ea, vol=dGross*area*10, tHr=vol/Qhr;
-      const vEvent=vol*(7/dFreq), hEvent=vEvent/Qhr;
-      return{...r,dGross,vol,tHr,vEvent,hEvent};
-    });
-    const totVol=fctRows.reduce((s,r)=>s+r.vol,0);
-    const totHr=fctRows.reduce((s,r)=>s+r.tHr,0);
-    const hrPerEvent=fctRows.reduce((s,r)=>s+r.hEvent,0)/fctRows.length;
-    const startH=()=>{const t=document.getElementById('iStart').value||'06:00';const[h,m]=t.split(':');return+h+(+m)/60};
-    const fmtT=h=>{const hh=Math.floor(h)%24,mm=Math.round((h-Math.floor(h))*60);return`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`};
-    const s2data=[
-      [`Irrigation Schedule — ${locLabel}  |  ${areaDisp}  |  Q=${si?Qhr.toFixed(1):(Qhr*264.172).toFixed(0)} ${si?'m³/hr':'gal/hr'}  |  Ea=${Math.round(ea*100)}%  |  ${dFreq}×/week`],
-      [`Emitters: ${Math.round(nE).toLocaleString()}  |  Discharge: ${si?q.toFixed(2)+'L/hr':(q/GPH2LH).toFixed(2)+'gph'}  |  Spacing: ${si?se.toFixed(2)+'m':(se/IN2M).toFixed(0)+'in'} × ${si?sr.toFixed(2)+'m':(sr/0.3048).toFixed(1)+'ft'}`],
-      [],
-      ['Date',`ETc ${tUnit}`,`Gross depth ${tUnit}`,`Volume ${vUnit}`,'Hr/day',`Hr/event (${dFreq}×/wk)`,'Start','End'],
-      ...fctRows.map(r=>{
-        const sh=startH(), eh=sh+r.tHr;
-        return[r.date,si?+r.etc.toFixed(2):+(r.etc*MM2IN).toFixed(3),
-          si?+r.dGross.toFixed(2):+(r.dGross*MM2IN).toFixed(3),
-          si?+r.vol.toFixed(1):+(r.vol*264.172).toFixed(0),
-          +r.tHr.toFixed(2),+r.hEvent.toFixed(2),fmtT(sh),fmtT(eh)];
-      }),
-      ['Totals','','',si?+totVol.toFixed(0):+(totVol*264.172).toFixed(0),+totHr.toFixed(1),+hrPerEvent.toFixed(2),'',''],
-      [],
-      ['Avg hr/event',+hrPerEvent.toFixed(2),'hr'],
-      ['Total volume',si?+totVol.toFixed(0):+(totVol*264.172).toFixed(0),vUnit],
-      ['Total time',+totHr.toFixed(1),'hr'],
-    ];
-    const ws2=XLSX.utils.aoa_to_sheet(s2data);
-    ws2['!cols']=[{wch:14},{wch:12},{wch:14},{wch:12},{wch:10},{wch:18},{wch:8},{wch:8}];
-    XLSX.utils.book_append_sheet(wb,ws2,'Irrigation Schedule');
-  }
-  const locSlug=(selLoc?selLoc.name:'location').replace(/[^a-z0-9]/gi,'_').slice(0,20);
-  const dateStr=todayISO().replace(/-/g,'');
-  XLSX.writeFile(wb,`ETc_Irrigation_${locSlug}_${dateStr}.xlsx`);
-}
-
-/* ══════ DIVIDER PLUGIN ══════ */
-function divP(nP,nT,isDark){return{id:'div'+Math.random(),afterDraw(chart){
-  if(nP<=0||nP>=nT)return;
-  const{ctx,chartArea:{top,bottom},scales:{x}}=chart;
+// ── Chart divider plugin ──
+function divPlugin(nP,nT){return{id:'div'+nP,afterDraw(ch){
+  if(nP<=0||nP>=nT) return;
+  const{ctx,chartArea:{top,bottom},scales:{x}}=ch;
   const xPos=(x.getPixelForValue(nP-1)+x.getPixelForValue(nP))/2;
   ctx.save();ctx.setLineDash([4,3]);
-  ctx.strokeStyle=isDark?'rgba(242,240,232,.3)':'rgba(24,24,15,.25)';
+  ctx.strokeStyle=isDark()?'rgba(242,240,232,.35)':'rgba(24,24,15,.3)';
   ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(xPos,top);ctx.lineTo(xPos,bottom);ctx.stroke();
   ctx.setLineDash([]);ctx.font='10px JetBrains Mono,monospace';
-  ctx.fillStyle=isDark?'rgba(242,240,232,.45)':'rgba(24,24,15,.4)';
-  ctx.textAlign='center';ctx.fillText('Today →',xPos+26,top+12);ctx.restore();
+  ctx.fillStyle=isDark()?'rgba(242,240,232,.5)':'rgba(24,24,15,.45)';
+  ctx.textAlign='center';ctx.fillText('Today →',xPos+28,top+11);ctx.restore();
 }}}
 
-/* ══════ COPY COORDS ══════ */
-function copyCoords(){
-  if(!selLoc)return;
-  const txt=`${selLoc.lat.toFixed(6)}, ${selLoc.lon.toFixed(6)}`;
-  navigator.clipboard.writeText(txt).then(()=>{
-    document.getElementById('copyLbl').textContent='Copied!';
-    document.getElementById('copyIcon').innerHTML='<polyline points="20 6 9 17 4 12"/>';
-    document.getElementById('copyBtn').style.color='var(--gr)';
-    document.getElementById('copyBtn').style.borderColor='var(--grm)';
-    document.getElementById('copyBtn').style.background='var(--grl)';
-    setTimeout(resetCopyBtn,2000);
-  }).catch(()=>{
-    // Fallback for browsers without clipboard API
-    const ta=document.createElement('textarea');
-    ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
-    document.body.appendChild(ta);ta.select();
-    document.execCommand('copy');document.body.removeChild(ta);
-    document.getElementById('copyLbl').textContent='Copied!';
-    setTimeout(resetCopyBtn,2000);
-  });
-}
-function resetCopyBtn(){
-  document.getElementById('copyLbl').textContent='Copy';
-  document.getElementById('copyIcon').innerHTML='<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
-  document.getElementById('copyBtn').style.color='';
-  document.getElementById('copyBtn').style.borderColor='';
-  document.getElementById('copyBtn').style.background='';
+// ── API check ──
+async function checkAPI(){
+  const dot=document.getElementById('apiDot'),txt=document.getElementById('apiTxt');
+  dot.className='dot chk';txt.textContent='Checking…';
+  let ok=false;
+  try{const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name=Davis&count=1');ok=r.ok&&(await r.json()).results!=null;}catch(e){}
+  dot.className=ok?'dot ok':'dot err';
+  txt.textContent=ok?'APIs ready ✓':'APIs offline ✗';
 }
 
-/* ══════ INIT ══════ */
-buildCrops();
-updateUnitLabels();
-checkAPIs();
+// ── Excel export ──
+function exportXLS(){
+  if(!schedData.length) return;
+  const si=unitSys==='SI',fd=si?1:MM2IN,fv=si?1:264.172;
+  const wb=XLSX.utils.book_new();
+  const _spXls=getSoilP(),_rzXls=getRD_m();
+  const rows=[
+    [`IrriPlan Schedule — ${selLoc?.name||''} · ${curSoilClass} · Kc ${kc.toFixed(2)} · MAD ${document.getElementById('madSel').value}%`],[],
+    ['Date','Source','ETo ('+uu()+')','ETc ('+uu()+')','Rain ('+uu()+')','Net demand ('+uu()+')',
+     'θ start (%vol)','θ end (%vol)','|h| end (kPa)','Irrigate?',
+     'Depth ('+uu()+')','Volume ('+vuu()+')','Run time (hh:mm)'],
+    ...schedData.map(r=>{
+      const th_s=+( r.smStart/(_rzXls*1000)*100).toFixed(1);
+      const th_e=+(r.smEnd_vol*100).toFixed(1);
+      const hx=Math.min(thetaToH(r.smEnd_vol,_spXls),1500);
+      return[r.date,r.src,(r.eto*fd).toFixed(2),(r.etc*fd).toFixed(2),
+        (r.rain*fd).toFixed(1),(r.net*fd).toFixed(2),
+        th_s,th_e,hx>=1499?'>1500':+hx.toFixed(0),
+        r.irr?'Yes':'No',
+        r.irrMM>0?(r.irrMM*fd).toFixed(1):'',
+        r.irrVol>0?(r.irrVol*fv).toFixed(0):'',
+        r.runHr>0?toHHMM(r.runHr):''];
+    })
+  ];
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:14},{wch:9},{wch:10},{wch:10},{wch:10},{wch:14},{wch:12},{wch:12},{wch:8},{wch:9},{wch:12},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,ws,'Schedule');
+  XLSX.writeFile(wb,`IrriPlan_${(selLoc?.name||'location').replace(/[^a-z0-9]/gi,'_').slice(0,20)}_${todayISO()}.xlsx`);
+}
+
+// ── INIT ──
+function init(){
+  buildCrops();
+  applyUnitLabels();
+  applyUnitDefaults();
+  loadSoilDefaults();
+  updateTexDisplay();
+  checkAPI();
+  // Init step 3 derived
+  setTimeout(()=>updateStep3Derived(),50);
+}
+init();
+
+window.addEventListener('resize',()=>{
+  const p=+document.getElementById('inSand').value||42;
+  const sl=+document.getElementById('inSilt').value||38;
+  const c=+document.getElementById('inClay').value||20;
+  drawTriangle(p,sl,c);
+});
 </script>
 </body>
 </html>
