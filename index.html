@@ -397,7 +397,7 @@ tfoot td{padding:7px 10px;font-family:var(--m);font-size:12px;font-weight:700;
 
         <button class="btn full" id="fetchBtn" onclick="fetchETo()" disabled>
           <span class="spin-btn" id="fetchSpin"></span>
-          <span id="fetchLbl">Fetch 14-day ETo data</span>
+          <span id="fetchLbl">Fetch 23-day ETo data</span>
         </button>
       </div>
 
@@ -420,11 +420,14 @@ tfoot td{padding:7px 10px;font-family:var(--m);font-size:12px;font-weight:700;
       </div>
       <div class="chp">
         <div class="ch-top">
-          <div><div class="ch-hd">Temperature &amp; Rainfall (past 7d)</div></div>
+          <div><div class="ch-hd">Temperature &amp; Rainfall (23 days)</div></div>
           <div class="leg">
-            <div class="leg-i"><div class="leg-l" style="background:var(--rem)"></div>Tmax</div>
-            <div class="leg-i"><div class="leg-l" style="background:var(--blm)"></div>Tmin</div>
-            <div class="leg-i"><div class="leg-b" style="background:var(--blm);opacity:.5"></div>Rain</div>
+            <div class="leg-i"><div class="leg-l" style="background:var(--rem)"></div>Tmax past</div>
+            <div class="leg-i"><div class="leg-l" style="background:var(--rem);opacity:.5;border-top-style:dashed"></div>Tmax forecast</div>
+            <div class="leg-i"><div class="leg-l" style="background:var(--blm)"></div>Tmin past</div>
+            <div class="leg-i"><div class="leg-l" style="background:var(--blm);opacity:.5;border-top-style:dashed"></div>Tmin forecast</div>
+            <div class="leg-i"><div class="leg-b" style="background:rgba(43,104,200,.5)"></div>Rain past</div>
+            <div class="leg-i"><div class="leg-b" style="background:rgba(43,104,200,.25);border:1px solid rgba(43,104,200,.5)"></div>Rain forecast</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="metChart"></canvas></div>
@@ -486,8 +489,8 @@ tfoot td{padding:7px 10px;font-family:var(--m);font-size:12px;font-weight:700;
         <div class="sc-title"><div class="ti">✏️</div>Soil Parameters <span style="font-size:10px;font-weight:400;color:var(--k3);margin-left:6px">(auto-estimated, editable)</span></div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--k3);margin-bottom:.5rem">Water retention</div>
         <div class="param-grid">
-          <div class="pbox"><label>θ<sub>FC</sub> (33 kPa)</label><input type="number" id="pFC" step="0.001" oninput="onFCPWPEdit()"><span class="pbox-reset" onclick="curveReset()">↺ from curve</span></div>
-          <div class="pbox"><label>θ<sub>PWP</sub> (1500 kPa)</label><input type="number" id="pPWP" step="0.001" oninput="onFCPWPEdit()"><span class="pbox-reset" onclick="curveReset()">↺ from curve</span></div>
+          <div class="pbox"><label>θ<sub>FC</sub> — Saxton &amp; Rawls PTF</label><input type="number" id="pFC" step="0.001" oninput="onFCPWPEdit()"><span class="pbox-reset" onclick="curveReset()">↺ from PTF</span></div>
+          <div class="pbox"><label>θ<sub>PWP</sub> — Saxton &amp; Rawls PTF</label><input type="number" id="pPWP" step="0.001" oninput="onFCPWPEdit()"><span class="pbox-reset" onclick="curveReset()">↺ from PTF</span></div>
         </div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--k3);margin-bottom:.5rem;margin-top:.25rem">Physical</div>
         <div class="param-grid">
@@ -501,8 +504,8 @@ tfoot td{padding:7px 10px;font-family:var(--m);font-size:12px;font-weight:700;
         </div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--k3);margin-bottom:.5rem;margin-top:.25rem">van Genuchten shape</div>
         <div class="param-grid">
-          <div class="pbox"><label>α (kPa⁻¹)</label><input type="number" id="pAlpha" step="0.0001"><span class="pbox-reset" onclick="resetVG('alpha')">↺ class default</span></div>
-          <div class="pbox"><label>n</label><input type="number" id="pN" step="0.001"><span class="pbox-reset" onclick="resetVG('n')">↺ class default</span></div>
+          <div class="pbox"><label>α (kPa⁻¹)</label><input type="number" id="pAlpha" step="0.0001"><span class="pbox-reset" onclick="resetVG('alpha')">↺ refit from PTF</span></div>
+          <div class="pbox"><label>n</label><input type="number" id="pN" step="0.001"><span class="pbox-reset" onclick="resetVG('n')">↺ refit from PTF</span></div>
         </div>
       </div>
     </div>
@@ -690,7 +693,7 @@ tfoot td{padding:7px 10px;font-family:var(--m);font-size:12px;font-weight:700;
           <div class="kc-row"><span>Active Kc (this stage)</span><strong id="kcActive" style="font-size:16px;color:var(--gr)">—</strong></div>
         </div>
         <div class="chp" style="margin-bottom:0">
-          <div class="ch-top"><div class="ch-hd" style="font-size:12px">ETc forecast (7 days)</div></div>
+          <div class="ch-top"><div class="ch-hd" style="font-size:12px">ETc forecast (16 days)</div></div>
           <div class="chart-wrap"><canvas id="etcChart"></canvas></div>
           <div class="leg" style="margin-top:.5rem">
             <div class="leg-i"><div class="leg-b" style="background:var(--blm)"></div>ETc</div>
@@ -743,7 +746,7 @@ tfoot td{padding:7px 10px;font-family:var(--m);font-size:12px;font-weight:700;
     <!-- Soil moisture chart -->
     <div class="chp">
       <div class="ch-top">
-        <div><div class="ch-hd">Soil Moisture Balance (7-day forecast)</div></div>
+        <div><div class="ch-hd">Soil Moisture Balance (16-day forecast)</div></div>
         <div class="leg">
           <div class="leg-i"><div class="leg-l" style="background:#2b68c8"></div>θ % vol (left) / SM mm (right)</div>
           <div class="leg-i"><div class="leg-l" style="background:rgba(202,108,16,.8)"></div>MAD threshold</div>
@@ -772,7 +775,7 @@ tfoot td{padding:7px 10px;font-family:var(--m);font-size:12px;font-weight:700;
     <!-- Schedule table -->
     <div class="tbl-wrap">
       <div class="tbl-head">
-        <span class="tbl-title">7-Day Schedule</span>
+        <span class="tbl-title">16-Day Schedule</span>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn sm outline" onclick="exportXLS()">⬇ Export Excel</button>
         </div>
@@ -824,9 +827,44 @@ const RHO_S=2.65;
 let unitSys='US';
 
 function setUnits(u){
+  const prev=unitSys;
   unitSys=u;
   document.getElementById('btnSI').classList.toggle('active',u==='SI');
   document.getElementById('btnUS').classList.toggle('active',u==='US');
+  // Convert rootDepth: cm↔in (only if actually changing system)
+  if(prev!==u){
+    const rdEl=document.getElementById('rootDepth');
+    const rdVal=parseFloat(rdEl.value)||60;
+    if(u==='US'){
+      // was cm → convert to inches
+      rdEl.value=+(rdVal/2.54).toFixed(1);
+    } else {
+      // was inches → convert to cm
+      rdEl.value=Math.round(rdVal*2.54);
+    }
+    // Convert initSMVal if in mm/in mode
+    const smUnitEl=document.getElementById('initSMUnit');
+    if(smUnitEl&&smUnitEl.value==='mm'){
+      const smEl=document.getElementById('initSMVal');
+      const smVal=parseFloat(smEl.value)||0;
+      if(u==='US'){
+        smEl.value=+(smVal*MM2IN).toFixed(2);  // mm→in
+      } else {
+        smEl.value=+(smVal/MM2IN).toFixed(1);  // in→mm
+      }
+    }
+    // Convert fixedCustomDepth if in custom mode
+    const fdMode=document.getElementById('fixedDepthMode');
+    if(fdMode&&fdMode.value==='custom'){
+      const fdEl=document.getElementById('fixedCustomDepth');
+      const fdVal=parseFloat(fdEl.value)||30;
+      if(u==='US'){
+        fdEl.value=+(fdVal*MM2IN).toFixed(2);  // mm→in
+      } else {
+        fdEl.value=+(fdVal/MM2IN).toFixed(1);  // in→mm
+      }
+    }
+  }
   applyUnitLabels();
   applyUnitDefaults();
   updateStep3Derived();
@@ -845,6 +883,8 @@ function applyUnitLabels(){
   document.getElementById('thVol').textContent='Volume ('+vuu()+')';
   document.getElementById('thTime').textContent='Run time';
   document.getElementById('lblCustomDepth').textContent=`Custom depth (${uu()})`;
+  // Also update rootDepth label (already set by lblRD but confirm correct unit)
+  document.getElementById('lblRD').textContent=unitSys==='SI'?'Root depth (cm)':'Root depth (in)';
 }
 
 function applyUnitDefaults(){
@@ -1076,7 +1116,7 @@ async function fetchETo(){
 
   const eP=iso(new Date(Date.now()-8*864e5)), sP=iso(new Date(Date.now()-864e5));
   const urlP=`https://archive-api.open-meteo.com/v1/archive?latitude=${selLoc.lat}&longitude=${selLoc.lon}&start_date=${eP}&end_date=${sP}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${tz}`;
-  const urlF=`https://api.open-meteo.com/v1/forecast?latitude=${selLoc.lat}&longitude=${selLoc.lon}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${tz}&forecast_days=7`;
+  const urlF=`https://api.open-meteo.com/v1/forecast?latitude=${selLoc.lat}&longitude=${selLoc.lon}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,relative_humidity_2m_min,wind_speed_10m_max,shortwave_radiation_sum,et0_fao_evapotranspiration,precipitation_sum&wind_speed_unit=ms&timezone=${tz}&forecast_days=16`;
 
   const [rP,rF]=await Promise.allSettled([fetch(urlP),fetch(urlF)]);
   if(rP.status==='fulfilled'&&rP.value.ok){
@@ -1091,7 +1131,7 @@ async function fetchETo(){
     else warns.push('Forecast: no data');
   } else warns.push('Forecast unavailable');
 
-  spin.style.display='none'; lbl.textContent='Fetch 14-day ETo data'; document.getElementById('fetchBtn').disabled=false;
+  spin.style.display='none'; lbl.textContent='Fetch 23-day ETo data'; document.getElementById('fetchBtn').disabled=false;
 
   if(!past.length&&!fct.length){showSb('sb1','⚠ All data sources failed — check connection','err');return;}
   if(warns.length) showSb('sb1','ℹ '+warns.join(' · '),'warn');
@@ -1114,7 +1154,7 @@ function renderEToStep(past,fct){
   const pkFct=fct.length?fct.reduce((a,b)=>a.eto>b.eto?a:b,fct[0]):pk;
   document.getElementById('etoCards').innerHTML=`
     <div class="mc g"><div class="mc-lbl">Avg ETo — past 7d</div><div class="mc-val" style="font-size:18px">${(avgPast*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
-    <div class="mc b"><div class="mc-lbl">Avg ETo — forecast 7d</div><div class="mc-val" style="font-size:18px">${(avgFct*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
+    <div class="mc b"><div class="mc-lbl">Avg ETo — forecast 16d</div><div class="mc-val" style="font-size:18px">${(avgFct*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
     <div class="mc a"><div class="mc-lbl">Peak ETo — forecast</div><div class="mc-val" style="font-size:18px">${(pkFct.eto*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
     <div class="mc n"><div class="mc-lbl">Total rainfall — forecast</div><div class="mc-val" style="font-size:18px">${(fctRain*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>`;
   document.getElementById('etoSummary').style.display='block';
@@ -1136,20 +1176,71 @@ function renderEToStep(past,fct){
   });
 
   if(charts.met) charts.met.destroy();
+  // Combine past + forecast for 14-day temperature & rainfall chart
+  const allMet=[...past,...fct];
+  const nPast=past.length;
   charts.met=new Chart(document.getElementById('metChart'),{
-    type:'bar',data:{labels:past.map(r=>wd(r.date)+'\n'+sd(r.date)),datasets:[
-      {label:'Rain',data:past.map(r=>+(r.rain*fd).toFixed(2)),backgroundColor:'rgba(43,104,200,.5)',borderWidth:0,yAxisID:'y2',borderRadius:2},
-      {label:'Tmax',data:past.map(r=>si?r.tmax:+(r.tmax*9/5+32).toFixed(1)),type:'line',yAxisID:'y',borderColor:'rgba(196,36,36,.9)',backgroundColor:'transparent',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
-      {label:'Tmin',data:past.map(r=>si?r.tmin:+(r.tmin*9/5+32).toFixed(1)),type:'line',yAxisID:'y',borderColor:'rgba(43,104,200,.9)',backgroundColor:'transparent',borderWidth:2,pointRadius:3,fill:false,tension:0.3},
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>ld(past[c[0].dataIndex].date)}}},
+    type:'bar',
+    data:{
+      labels:allMet.map(r=>wd(r.date)+'\n'+sd(r.date)),
+      datasets:[
+        // Rainfall past (solid bars)
+        {label:'Rain past',
+          data:allMet.map((r,i)=>i<nPast?+(r.rain*fd).toFixed(2):null),
+          backgroundColor:'rgba(43,104,200,.55)',borderWidth:0,yAxisID:'y2',borderRadius:2,type:'bar'},
+        // Rainfall forecast (lighter bars)
+        {label:'Rain forecast',
+          data:allMet.map((r,i)=>i>=nPast?+(r.rain*fd).toFixed(2):null),
+          backgroundColor:'rgba(43,104,200,.25)',borderWidth:1,borderColor:'rgba(43,104,200,.55)',yAxisID:'y2',borderRadius:2,type:'bar'},
+        // Tmax past (solid red line)
+        {label:'Tmax past',
+          data:allMet.map((r,i)=>i<nPast?(si?r.tmax:+(r.tmax*9/5+32).toFixed(1)):null),
+          type:'line',yAxisID:'y',borderColor:'rgba(196,36,36,.9)',backgroundColor:'transparent',
+          borderWidth:2,pointRadius:3,fill:false,tension:0.3},
+        // Tmax forecast (dashed red line)
+        {label:'Tmax forecast',
+          data:allMet.map((r,i)=>i>=nPast?(si?r.tmax:+(r.tmax*9/5+32).toFixed(1)):null),
+          type:'line',yAxisID:'y',borderColor:'rgba(196,36,36,.55)',backgroundColor:'transparent',
+          borderWidth:2,borderDash:[5,4],pointRadius:3,pointStyle:'circle',fill:false,tension:0.3},
+        // Tmin past (solid blue line)
+        {label:'Tmin past',
+          data:allMet.map((r,i)=>i<nPast?(si?r.tmin:+(r.tmin*9/5+32).toFixed(1)):null),
+          type:'line',yAxisID:'y',borderColor:'rgba(43,104,200,.9)',backgroundColor:'transparent',
+          borderWidth:2,pointRadius:3,fill:false,tension:0.3},
+        // Tmin forecast (dashed blue line)
+        {label:'Tmin forecast',
+          data:allMet.map((r,i)=>i>=nPast?(si?r.tmin:+(r.tmin*9/5+32).toFixed(1)):null),
+          type:'line',yAxisID:'y',borderColor:'rgba(43,104,200,.5)',backgroundColor:'transparent',
+          borderWidth:2,borderDash:[5,4],pointRadius:3,pointStyle:'circle',fill:false,tension:0.3},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title:c=>ld(allMet[c[0].dataIndex].date),
+          label:c=>{
+            const v=c.parsed.y; if(v==null) return null;
+            const tUnit=si?'°C':'°F', rUnit=uu();
+            if(c.dataset.label.startsWith('Tmax')) return `Tmax: ${v}${tUnit}`;
+            if(c.dataset.label.startsWith('Tmin')) return `Tmin: ${v}${tUnit}`;
+            if(c.dataset.label.startsWith('Rain')) return `Rain: ${v} ${rUnit}`;
+            return null;
+          }
+        }}
+      },
       scales:{
         x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},
-        y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},title:{display:true,text:si?'°C':'°F',color:tc(),font:{size:11}}},
-        y2:{grid:{display:false},ticks:{color:tc(),font:{size:11}},title:{display:true,text:`Rain (${uu()})`,color:tc(),font:{size:11}},position:'right',beginAtZero:true}
+        y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},
+           title:{display:true,text:si?'°C':'°F',color:tc(),font:{size:11}}},
+        y2:{grid:{display:false},ticks:{color:tc(),font:{size:11}},
+            title:{display:true,text:`Rain (${uu()})`,color:tc(),font:{size:11}},
+            position:'right',beginAtZero:true}
       }
-    }
+    },
+    plugins:[divPlugin(nPast, allMet.length)]
   });
 }
 
@@ -1172,6 +1263,7 @@ const SOIL_DB={
 };
 
 let manualFCPWP=false;
+let fittedTR=null; // tr from fitVG — may differ from Carsel & Parrish base.tr
 let curSand=42,curSilt=38,curClay=20;
 let curSoilClass='Loam';
 
@@ -1189,26 +1281,73 @@ function thetaToH(target,p){
   return(lo+hi)/2;
 }
 
-function fitVG(fc,pwp,tsat,tr){
-  if(fc>=tsat||pwp>=fc||pwp<=tr||fc<=tr) return null;
-  const Se_fc=(fc-tr)/(tsat-tr),Se_pwp=(pwp-tr)/(tsat-tr);
-  if(Se_fc<=0||Se_fc>=1||Se_pwp<=0||Se_pwp>=1) return null;
-  const lh1=Math.log(33),lh2=Math.log(1500);
-  let n=1.8,alpha=0.04;
-  for(let it=0;it<200;it++){
-    const m=1-1/n; if(m<=0||m>=1) return null;
-    const b1=Math.pow(Se_fc,-1/m)-1,b2=Math.pow(Se_pwp,-1/m)-1;
-    if(b1<=0||b2<=0||!isFinite(b1)||!isFinite(b2)) return null;
-    const n2=(Math.log(b1)-Math.log(b2))/(lh1-lh2);
-    const a2=Math.exp(Math.log(b1)/n2-lh1);
-    if(!isFinite(n2)||!isFinite(a2)||n2<=1.001||a2<=0) return null;
-    const ok=Math.abs(n2-n)<1e-10&&Math.abs(a2-alpha)<1e-12;
-    n=n2;alpha=a2; if(ok) break;
+function fitVG(fc,pwp,tsat,tr_cp){
+  // Robust bisection solver: finds α and n so VG curve passes exactly through
+  // (θ=fc, h=33 kPa) and (θ=pwp, h=1500 kPa).
+  // θ_r is clamped to min(tr_cp×0.5, pwp×0.5, pwp−0.005) so tr < pwp always holds.
+  const tr=Math.max(0.001,Math.min(tr_cp*0.5, pwp*0.5, pwp-0.005));
+  if(!(tr<pwp&&pwp<fc&&fc<tsat)) return null;
+  const Se_fc=(fc-tr)/(tsat-tr), Se_pwp=(pwp-tr)/(tsat-tr);
+  if(!(0<Se_pwp&&Se_pwp<Se_fc&&Se_fc<1)) return null;
+  const lhd=Math.log(33)-Math.log(1500); // ≈ −3.815
+
+  function calcNimplied(n){
+    const m=1-1/n; if(m<=0) return null;
+    try{
+      const b1=Math.pow(Se_fc,-1/m)-1;
+      const b2=Math.pow(Se_pwp,-1/m)-1;
+      if(b1<=0||b2<=0||!isFinite(b1)||!isFinite(b2)) return null;
+      return(Math.log(b1)-Math.log(b2))/lhd;
+    }catch(e){return null;}
   }
-  if(n<1.01||n>15||alpha<1e-7||alpha>20) return null;
+
+  // Scan for sign change of (n_implied − n) in [1.005, 8]
+  const ns=[1.005,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.2,2.5,3.0,4.0,5.0,7.0];
+  let nLo=null,nHi=null,rLo=null;
+  let prevN=null,prevR=null;
+  for(const nt of ns){
+    const ni=calcNimplied(nt); if(ni===null) continue;
+    const r=ni-nt;
+    if(prevR!==null&&prevR*r<0){nLo=prevN;nHi=nt;rLo=prevR;break;}
+    prevN=nt;prevR=r;
+  }
+  if(nLo===null) return null;
+
+  // Bisect to convergence
+  for(let i=0;i<80;i++){
+    const mid=(nLo+nHi)/2;
+    const ni=calcNimplied(mid); if(ni===null) break;
+    const rm=ni-mid;
+    if(rLo*rm<=0){nHi=mid;}else{nLo=mid;rLo=rm;}
+    if(nHi-nLo<1e-10) break;
+  }
+  const n=(nLo+nHi)/2;
+  const m=1-1/n;
+  const b1=Math.pow(Se_fc,-1/m)-1;
+  if(b1<=0||!isFinite(b1)) return null;
+  const alpha=Math.exp(Math.log(b1)/n-Math.log(33));
+  if(!isFinite(alpha)||alpha<=0||alpha>20) return null;
+
+  // Verify
   const pv={tr,tsat,alpha,n};
-  if(Math.abs(vgTheta(33,pv)-fc)>0.003||Math.abs(vgTheta(1500,pv)-pwp)>0.003) return null;
-  return{alpha:+alpha.toFixed(6),n:+n.toFixed(5)};
+  if(Math.abs(vgTheta(33,pv)-fc)>0.005||Math.abs(vgTheta(1500,pv)-pwp)>0.005) return null;
+  return{alpha:+alpha.toFixed(6),n:+n.toFixed(5),tr:+tr.toFixed(5)};
+}
+
+// ── Saxton & Rawls (2006) PTF — primary source for FC and PWP ─────────────────
+// This PTF gives agronomically appropriate field capacity and wilting point
+// values that match FAO-56 Table 19 reference ranges. The VG shape (α, n) is
+// retained separately for the retention curve plot.
+function saxtonRawls(sand_pct, clay_pct, bd){
+  const S=sand_pct/100, C=clay_pct/100, Si=Math.max(0,1-S-C);
+  const t1500 = -0.024*S+0.487*C+0.005*(S*C)-0.013*(Si*C)+0.068*(Si*S)-0.032;
+  const t33   = -0.251*S+0.195*C+0.006*(S*C)-0.027*(Si*C)+0.452*(Si*S)+0.299;
+  const t33a  = t33   + (1.283*t33*t33   - 0.374*t33   - 0.015);
+  const t1500a= t1500 + (0.14 *t1500     - 0.02);
+  const tsat  = Math.max(0.05, Math.min(0.85, 1.0-bd/RHO_S));
+  const fc    = Math.min(Math.max(+t33a.toFixed(4),   0.05), tsat-0.02);
+  const pwp   = Math.min(Math.max(+t1500a.toFixed(4), 0.01), fc  -0.01);
+  return{fc:+fc.toFixed(3), pwp:+pwp.toFixed(3)};
 }
 
 function getSoilP(){
@@ -1218,15 +1357,17 @@ function getSoilP(){
   const tsat=Math.max(0.05,Math.min(0.85,1-bd/RHO_S));
   const alpha=parseFloat(document.getElementById('pAlpha').value)||base.alpha;
   const n=parseFloat(document.getElementById('pN').value)||base.n;
-  const tr=base.tr;
+  const tr=fittedTR!==null?fittedTR:base.tr; // use fitted tr if available
   const shape={tr,tsat,alpha,n};
   let fc,pwp;
   if(manualFCPWP){
-    fc=parseFloat(document.getElementById('pFC').value)||vgTheta(33,shape);
-    pwp=parseFloat(document.getElementById('pPWP').value)||vgTheta(1500,shape);
+    // User has manually overridden FC/PWP — use their values directly
+    fc=parseFloat(document.getElementById('pFC').value)||saxtonRawls(curSand,curClay,bd).fc;
+    pwp=parseFloat(document.getElementById('pPWP').value)||saxtonRawls(curSand,curClay,bd).pwp;
   } else {
-    fc=+vgTheta(33,shape).toFixed(4);
-    pwp=+vgTheta(1500,shape).toFixed(4);
+    // Default: Saxton & Rawls (2006) PTF — matches FAO-56 agronomic ranges
+    const sr=saxtonRawls(curSand,curClay,bd);
+    fc=sr.fc; pwp=sr.pwp;
     document.getElementById('pFC').value=fc.toFixed(3);
     document.getElementById('pPWP').value=pwp.toFixed(3);
   }
@@ -1248,10 +1389,22 @@ function onSoilSelect(){
 function loadSoilDefaults(){
   manualFCPWP=false;
   const base=SOIL_DB[curSoilClass];
-  document.getElementById('pAlpha').value=base.alpha.toFixed(5);
-  document.getElementById('pN').value=base.n.toFixed(4);
-  document.getElementById('pBD').value=base.bd.toFixed(2);
+  const bd=base.bd;
+  const tsat=Math.max(0.05,Math.min(0.85,1-bd/RHO_S));
+  document.getElementById('pBD').value=bd.toFixed(2);
   document.getElementById('pKsat').value=base.Ksat.toFixed(2);
+  // Compute SR FC/PWP first, then back-fit VG so curve passes through both points
+  const sr=saxtonRawls(curSand,curClay,bd);
+  const fit=fitVG(sr.fc,sr.pwp,tsat,base.tr);
+  if(fit){
+    document.getElementById('pAlpha').value=fit.alpha.toFixed(5);
+    document.getElementById('pN').value=fit.n.toFixed(4);
+    fittedTR=fit.tr;
+  } else {
+    document.getElementById('pAlpha').value=base.alpha.toFixed(5);
+    document.getElementById('pN').value=base.n.toFixed(4);
+    fittedTR=null;
+  }
   updateSoilDerived();
 }
 
@@ -1270,6 +1423,20 @@ function onTexInput(){
     if(cls!==curSoilClass){curSoilClass=cls;document.getElementById('soilSel').value=cls;}
     updateTexDisplay();
     drawTriangle(curSand,curSilt,curClay);
+    // Refit VG to SR PTF for the new texture composition
+    if(!manualFCPWP){
+      const base=SOIL_DB[curSoilClass];
+      const bd=parseFloat(document.getElementById('pBD').value)||base.bd;
+      const tsat=Math.max(0.05,Math.min(0.85,1-bd/RHO_S));
+      const sr=saxtonRawls(curSand,curClay,bd);
+      const fit=fitVG(sr.fc,sr.pwp,tsat,base.tr);
+      if(fit){
+        document.getElementById('pAlpha').value=fit.alpha.toFixed(5);
+        document.getElementById('pN').value=fit.n.toFixed(4);
+        fittedTR=fit.tr;
+      } else {fittedTR=null;}
+      updateSoilDerived();
+    }
   }
 }
 
@@ -1286,19 +1453,48 @@ function onFCPWPEdit(){
   const fc=parseFloat(document.getElementById('pFC').value)||0.30;
   const pwp=parseFloat(document.getElementById('pPWP').value)||0.14;
   const fit=fitVG(fc,pwp,tsat,base.tr);
-  if(fit){document.getElementById('pAlpha').value=fit.alpha.toFixed(5);document.getElementById('pN').value=fit.n.toFixed(4);}
+  if(fit){document.getElementById('pAlpha').value=fit.alpha.toFixed(5);document.getElementById('pN').value=fit.n.toFixed(4);fittedTR=fit.tr;} else {fittedTR=null;}
   updateSoilDerived();
 }
 
-function onBDEdit(){if(manualFCPWP) onFCPWPEdit();else updateSoilDerived();}
+function onBDEdit(){
+  if(manualFCPWP){
+    onFCPWPEdit();
+  } else {
+    // BD changed → tsat changes → SR FC/PWP may shift → refit VG
+    const base=SOIL_DB[curSoilClass];
+    const bd=parseFloat(document.getElementById('pBD').value)||base.bd;
+    const tsat=Math.max(0.05,Math.min(0.85,1-bd/RHO_S));
+    const sr=saxtonRawls(curSand,curClay,bd);
+    const fit=fitVG(sr.fc,sr.pwp,tsat,base.tr);
+    if(fit){
+      document.getElementById('pAlpha').value=fit.alpha.toFixed(5);
+      document.getElementById('pN').value=fit.n.toFixed(4);
+      fittedTR=fit.tr;
+    } else {fittedTR=null;}
+    updateSoilDerived();
+  }
+}
 function curveReset(){manualFCPWP=false;updateSoilDerived();}
 function resetBD(){document.getElementById('pBD').value=SOIL_DB[curSoilClass].bd.toFixed(2);onBDEdit();}
 function resetKsat(){document.getElementById('pKsat').value=SOIL_DB[curSoilClass].Ksat.toFixed(2);updateSoilDerived();}
 function resetVG(w){
-  const base=SOIL_DB[curSoilClass];
-  if(w==='alpha') document.getElementById('pAlpha').value=base.alpha.toFixed(5);
-  if(w==='n') document.getElementById('pN').value=base.n.toFixed(4);
+  // Re-fit VG from current SR FC/PWP rather than reverting to Carsel & Parrish
   manualFCPWP=false;
+  const base=SOIL_DB[curSoilClass];
+  const bd=parseFloat(document.getElementById('pBD').value)||base.bd;
+  const tsat=Math.max(0.05,Math.min(0.85,1-bd/RHO_S));
+  const sr=saxtonRawls(curSand,curClay,bd);
+  const fit=fitVG(sr.fc,sr.pwp,tsat,base.tr);
+  if(fit){
+    document.getElementById('pAlpha').value=fit.alpha.toFixed(5);
+    document.getElementById('pN').value=fit.n.toFixed(4);
+    fittedTR=fit.tr;
+  } else {
+    document.getElementById('pAlpha').value=base.alpha.toFixed(5);
+    document.getElementById('pN').value=base.n.toFixed(4);
+    fittedTR=null;
+  }
   updateSoilDerived();
 }
 
@@ -1566,7 +1762,7 @@ function updateStep3Derived(){
   const daysLbl=strategyIsNone?'—':strategyIsFixed?fixedDays.toFixed(0):(netDaily>0.01?(raw/netDaily).toFixed(1):'—');
   const daysDesc=strategyIsNone?'no irrigation scheduled':strategyIsFixed?'fixed interval (days)':'at avg ETc demand';
   document.getElementById('cropMetrics').innerHTML=`
-    <div class="mc g"><div class="mc-lbl">Avg ETc (7d fct)</div><div class="mc-val">${(avgEtc*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
+    <div class="mc g"><div class="mc-lbl">Avg ETc (16d fct)</div><div class="mc-val">${(avgEtc*fd).toFixed(2)}<span class="u">${uu()}/d</span></div></div>
     <div class="mc b"><div class="mc-lbl">TAW in root zone</div><div class="mc-val">${(taw*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
     <div class="mc a"><div class="mc-lbl">RAW (readily avail.)</div><div class="mc-val">${(raw*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
     <div class="mc n"><div class="mc-lbl">${strategyIsFixed?'Interval':'Days to MAD'}</div><div class="mc-val">${daysLbl}</div></div>`;
@@ -1706,7 +1902,7 @@ function computeSchedule(){
   // Initial depletion from user input
   let dr=getInitSM_mm(fcMM,pwpMM,awcMM,p);
 
-  // Use ONLY forecast days (future 7d)
+  // Use ONLY forecast days (future 16d)
   const fctOnly=eto14.filter(r=>r.src==='fct');
 
   // Fixed interval: daysSinceIrr starts at (interval-1) so day 1 = first irrigation day
@@ -1787,7 +1983,7 @@ function renderSchedule(fcMM,pwpMM,awcMM,madMM,Qhr,area,ea){
   document.getElementById('hNextSub').textContent=nextIrrRow?`${sd(nextIrrRow.date)} — ${(nextIrrRow.irrMM*fd).toFixed(1)} ${uu()}`:irrRows.length?'':'Soil moisture adequate';
 
   document.getElementById('schedCards').innerHTML=`
-    <div class="mc g"><div class="mc-lbl">Total ETc (7d)</div><div class="mc-val">${(totEtc*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
+    <div class="mc g"><div class="mc-lbl">Total ETc (16d)</div><div class="mc-val">${(totEtc*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
     <div class="mc b"><div class="mc-lbl">Total irrigation</div><div class="mc-val">${(totIrr*fd).toFixed(1)}<span class="u">${uu()}</span></div></div>
     <div class="mc a"><div class="mc-lbl">Total volume</div><div class="mc-val">${(totVol*fv).toFixed(0)}<span class="u">${vuu()}</span></div></div>
     <div class="mc n"><div class="mc-lbl">Total run time</div><div class="mc-val" style="font-size:18px">${toHHMM(totRun)}</div></div>
@@ -1831,7 +2027,7 @@ function renderSchedule(fcMM,pwpMM,awcMM,madMM,Qhr,area,ea){
   });
   // Footer
   document.getElementById('schedTf').innerHTML=`
-    <td>7-day totals</td>
+    <td>16-day totals</td>
     <td class="r">—</td>
     <td class="r">${(totEtc*fd).toFixed(1)} ${uu()}</td>
     <td class="r">${(totRain*fd).toFixed(1)} ${uu()}</td>
